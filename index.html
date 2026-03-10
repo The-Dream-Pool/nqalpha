@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NQ Alpha — Algorithmic Futures Trading</title>
+<meta name="description" content="Three proprietary mean-reversion strategies on Micro E-Mini Nasdaq futures. Fully automated. 5-year track record.">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABmUlEQVR4nOWXO0vEQBSFv5nsYiWCiA/EwsZGwcJCLQTBQnw1gtiIP0AUFP+BlYWICLYiFnY2uiJbWQkWayFoIwiCiC8QLGV3JxZZdB9JdjLJZgtPNzO555w5uRkm8N8hjKpeD23PtfbFQJz6D/uJhjAjayauWefv0FTYDR5peCcQpbgPn7uBqMV9eBM6deLhDWtso2Quf7CEPdpbMmct7yNS186gpZFcZrMqd2UCmruXW6dgGwRVxi/9Fv0gbp8Q6ZvgBsp09D5DD8jtFKhw7WJmIGEBIO5fECeZiAwEiF/NDf0R7JxBTgVXLuiZJdDXhT3eD4B4/EAeXxnRmBsA1PoMSOdwk7vnkM3Fa8Du6cCeHnAGz5/Io8t4DQCotSmwHAq5l4bvbLwG7O5W1OygM3j/QlzcxWsAQK1OQrJwoufyIQwEvMn8orMZNT8cvK6gFzoBALUyAQ1Jo9pIDNDWhFoYMSqtjL1Wd4FiFL3uygRMe8FA3N1AzHA3UKsUXHi9E4jahAefnkiYxqyyEb0eME1Do67u/4Z1xw/vwXZCIDmAhAAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<!-- Open Graph (text/social preview) -->
+<meta property="og:title" content="NQ Alpha — Algorithmic Futures Trading">
+<meta property="og:description" content="Three proprietary mean-reversion strategies on MNQ futures. $1.45M backtested over 5 years. 67% win rate. Fully automated.">
+<meta property="og:image" content="https://nqalpha.com/og_image.png">
+<meta property="og:url" content="https://nqalpha.com">
+<meta property="og:type" content="website">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NQ Alpha — Algorithmic Futures Trading">
+<meta name="twitter:description" content="$1.45M backtested over 5 years. 67% win rate. Fully automated futures trading.">
+<meta name="twitter:image" content="https://nqalpha.com/og_image.png">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04080D;--sf:#0A1018;--sf2:#0E1620;--bd:#162030;--green:#00E8A2;--cyan:#00C4FF;--gold:#F0C040;--red:#FF4466;--text:#B8C8D8;--muted:#405060;--white:#F0F4F8;--font:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);}
+::selection{background:rgba(0,232,162,.2);color:var(--white);}
+input::placeholder{color:var(--muted);}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.page{display:none;}.page.active{display:block;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:rgba(4,8,13,.92);backdrop-filter:blur(12px);z-index:100;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(0,232,162,.4);animation:pulse 2s ease infinite;}
+.logo-text{font-size:18px;font-weight:800;color:var(--white);letter-spacing:-.5px;}
+.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-left:4px;}
+.btn{font-family:var(--mono);font-size:11px;padding:10px 28px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);cursor:pointer;transition:all .2s;}
+.btn:hover{border-color:var(--green);color:var(--green);}
+.btn-primary{background:var(--green);border:none;color:var(--bg);font-family:var(--font);font-weight:700;font-size:14px;padding:14px 36px;border-radius:10px;}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-ghost{font-family:var(--mono);font-size:12px;padding:14px 32px;background:transparent;border:1px solid var(--bd);border-radius:10px;color:var(--text);cursor:pointer;}
+
+.hero{text-align:center;padding:100px 40px 60px;position:relative;overflow:hidden;}
+.hero:before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:1000px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,232,162,.04) 0%,transparent 70%);pointer-events:none;}
+.hero-tag{font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:4px;margin-bottom:20px;animation:fadeUp .6s ease both;}
+.hero h1{font-size:60px;font-weight:900;color:var(--white);letter-spacing:-3px;line-height:1.05;margin-bottom:20px;animation:fadeUp .6s ease .1s both;}
+.hero h1 span{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:17px;color:rgba(184,200,216,.8);max-width:560px;margin:0 auto 48px;line-height:1.75;animation:fadeUp .6s ease .2s both;}
+.hero-btns{display:flex;gap:16px;justify-content:center;animation:fadeUp .6s ease .3s both;}
+
+.main{max-width:1100px;margin:0 auto;padding:0 40px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px;}
+.grid6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+
+.stat{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:22px 26px;animation:fadeUp .6s ease both;transition:border-color .3s,transform .3s;}
+.stat:hover{border-color:rgba(0,232,162,.25);transform:translateY(-2px);}
+.stat-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-1px;}
+.stat-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;}
+
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:28px;margin-bottom:48px;}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.card-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}
+.card-subtitle{font-size:16px;font-weight:600;color:var(--white);margin-top:6px;}
+.card-value{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--green);text-align:right;}
+.card-hint{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;text-align:right;}
+
+.yr-card{text-align:center;padding:20px;background:var(--sf2);border-radius:12px;border:1px solid var(--bd);transition:all .3s;cursor:default;}
+.yr-card:hover{border-color:rgba(0,232,162,.25);transform:translateY(-3px);}
+.yr-card .year{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px;}
+.yr-card .val{font-size:24px;font-weight:700;color:var(--green);}
+.yr-card .pct{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;}
+
+.strat-card{background:var(--sf);border-radius:16px;border:1px solid var(--bd);overflow:hidden;transition:all .3s;}
+.strat-card:hover{transform:translateY(-4px);}
+.strat-bar{height:3px;}
+.strat-body{padding:24px 24px 20px;}
+.strat-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.strat-icon{font-size:18px;}
+.strat-name{font-size:20px;font-weight:700;color:var(--white);}
+.strat-tag{font-family:var(--mono);font-size:10px;letter-spacing:1px;margin-bottom:16px;}
+.strat-desc{font-size:13px;color:rgba(184,200,216,.8);line-height:1.7;margin-bottom:20px;min-height:80px;}
+.strat-stats{background:var(--sf2);border-radius:10px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.ss-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;}
+.ss-val{font-size:18px;font-weight:700;color:var(--white);margin-top:2px;}
+
+.chars{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.char{text-align:center;}
+.char-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
+.char-val{font-size:22px;font-weight:700;}
+.char-sub{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}
+
+.cta{text-align:center;padding:48px 0 80px;}
+.cta-tag{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:16px;}
+.cta h2{font-size:32px;font-weight:800;color:var(--white);margin-bottom:12px;}
+.cta p{font-size:14px;color:var(--muted);max-width:460px;margin:0 auto 32px;}
+.cta .fee{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px;}
+
+.footer{border-top:1px solid var(--bd);padding:28px 40px;text-align:center;}
+.footer p{font-family:var(--mono);font-size:9px;color:var(--muted);line-height:2;max-width:700px;margin:0 auto;}
+
+/* Monthly bars */
+.mb-wrap{position:relative;}.mb-tip{position:absolute;top:-44px;transform:translateX(-50%);background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:6px 12px;white-space:nowrap;z-index:10;box-shadow:0 4px 16px rgba(4,8,13,.8);display:none;pointer-events:none;}
+.mb-row{display:flex;align-items:flex-end;gap:2px;height:130px;padding:0 2px;}
+.mb-bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;cursor:crosshair;}
+.mb-fill{border-radius:2px 2px 0 0;transition:all .15s;transform-origin:bottom;}
+.mb-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:10px;}
+.mb-legend{display:flex;gap:16px;font-family:var(--mono);font-size:10px;}
+
+/* Chart tooltip */
+.eq-tip{position:absolute;top:8px;pointer-events:none;z-index:10;display:none;}
+.eq-tip-inner{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:8px 14px;box-shadow:0 8px 24px rgba(4,8,13,.87);}
+.eq-tip .month{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.eq-tip .val{font-size:18px;font-weight:700;margin-top:2px;}
+.eq-tip .chg{font-family:var(--mono);font-size:10px;margin-top:2px;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-box{width:420px;animation:fadeUp .4s ease both;}
+.login-logo{text-align:center;margin-bottom:36px;cursor:pointer;}
+.login-form{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:36px;}
+.login-toggle{display:flex;gap:0;margin-bottom:32px;background:var(--sf2);border-radius:10px;padding:3px;}
+.login-toggle button{flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;}
+.login-toggle .active{background:var(--bd);color:var(--white);}
+.login-toggle .inactive{background:transparent;color:var(--muted);}
+.field{margin-bottom:16px;}
+.field label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;display:block;margin-bottom:6px;}
+.field input{width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;}
+.field input:focus{border-color:var(--cyan);}
+.login-submit{width:100%;padding:14px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.login-back{text-align:center;margin-top:20px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;}
+.login-back:hover{color:var(--cyan);}
+
+/* DASHBOARD */
+.dash{display:flex;max-width:1200px;margin:0 auto;padding:24px 32px;gap:24px;}
+.dash-side{width:180px;flex-shrink:0;}
+.dash-tab{display:block;width:100%;text-align:left;padding:11px 16px;margin-bottom:4px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);font-size:13px;transition:all .15s;background:transparent;color:var(--muted);}
+.dash-tab.active{background:rgba(0,232,162,.06);color:var(--green);}
+.dash-main{flex:1;}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.dash-card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;}
+.dc-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;}
+.dc-val{font-size:28px;font-weight:700;margin-top:8px;}
+.dc-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;}
+
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+th{padding:12px 14px;text-align:left;color:var(--muted);font-size:10px;letter-spacing:1px;border-bottom:1px solid var(--bd);}
+td{padding:12px 14px;}
+.badge-tp{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green);}
+.badge-pending{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold);}
+.pay-btn{font-family:var(--mono);font-size:10px;padding:6px 18px;background:var(--green);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;}
+
+.conn-box{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:28px;max-width:480px;}
+.conn-ok{background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.15);border-radius:14px;padding:28px;text-align:center;}
+.warn-box{background:rgba(240,192,64,.04);border:1px solid rgba(240,192,64,.15);border-radius:8px;padding:12px;margin-bottom:16px;font-family:var(--mono);font-size:11px;color:var(--gold);line-height:1.7;}
+.how-box{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;}
+.how-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:14px;}
+.how-item{font-size:13px;color:var(--text);line-height:1.9;margin-bottom:6px;}
+.how-item strong{color:var(--white);}
+
+@media(max-width:768px){
+  nav{padding:16px 20px;}
+  .hero{padding:60px 20px 40px;}
+  .hero h1{font-size:36px;letter-spacing:-1.5px;}
+  .hero p{font-size:14px;}
+  .hero-btns{flex-direction:column;align-items:center;}
+  .main{padding:0 16px;}
+  .grid4,.chars{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .grid6{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .grid3{grid-template-columns:1fr;gap:14px;}
+  .card{padding:16px;margin-bottom:28px;}
+  .cta h2{font-size:24px;}
+  .footer{padding:20px 16px;}
+  .mb-legend{display:none;}
+  .dash{flex-direction:column;padding:16px;}
+  .dash-side{width:100%;display:flex;flex-direction:row;overflow-x:auto;gap:4px;}
+  .dash-tab{white-space:nowrap;}
+  .dash-grid{grid-template-columns:1fr;}
+  table{font-size:10px;}
+  th,td{padding:8px 6px;}
+  .yr-card .val{font-size:18px;}
+  .stat-value{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PAGES (toggled by JS) ═══ -->
+<div id="homePage" class="page active"></div>
+<div id="loginPage" class="page"></div>
+<div id="dashPage" class="page"></div>
+
+<script>
+var D={
+  eq:[0,10239,45366,36744,73674,126180,176445,194331,239649,281952,313545,343701,348318,376305,385431,378492,401667,423324,453192,483417,497403,519816,537156,563679,581340,604974,628608,645807,692487,725073,755970,763662,769980,803058,855270,872556,889842,907935,931761,983019,1025739,1045806,1057845,1112049,1135614,1166184,1189806,1206810,1204617,1219509,1227009,1247370,1288872,1330473,1338630,1360188,1387851,1415514,1429923,1466676,1450896],
+  monthly:{"2021-03":10239,"2021-04":35127,"2021-05":-8622,"2021-06":36930,"2021-07":52506,"2021-08":50265,"2021-09":17886,"2021-10":45318,"2021-11":42303,"2021-12":31593,"2022-01":30156,"2022-02":4617,"2022-03":27987,"2022-04":9126,"2022-05":-6939,"2022-06":23175,"2022-07":21657,"2022-08":29868,"2022-09":30225,"2022-10":13986,"2022-11":22413,"2022-12":17340,"2023-01":26523,"2023-02":17661,"2023-03":23634,"2023-04":17199,"2023-05":46680,"2023-06":32586,"2023-07":30897,"2023-08":7692,"2023-09":6318,"2023-10":33078,"2023-11":52212,"2023-12":17286,"2024-01":13026,"2024-02":18093,"2024-03":23826,"2024-04":19944,"2024-05":51258,"2024-06":42720,"2024-07":20067,"2024-08":12039,"2024-09":54204,"2024-10":23565,"2024-11":30570,"2024-12":23622,"2025-01":17004,"2025-02":-2193,"2025-03":14892,"2025-04":7500,"2025-05":20361,"2025-06":41502,"2025-07":41601,"2025-08":8157,"2025-09":21558,"2025-10":27663,"2025-11":14409,"2025-12":36753,"2026-01":13323,"2026-02":6210,"2026-03":300},
+  yearly:{2021:313545,2022:223611,2023:311766,2024:332934,2025:249207,2026:19833},
+  strats:[
+    {name:"Alpha",trades:839,wr:71.4,pnl:174300,pf:2.17,desc:"Our tightest filter. Identifies extreme statistical dislocations using a proprietary volume-weighted pricing model. Trades less frequently but with the highest precision — only entering when the market reaches rare extremes.",tag:"HIGH-PRECISION ENTRIES AT EXTREME LEVELS",color:"#00C4FF",icon:"◇"},
+    {name:"Beta",trades:1262,wr:72.3,pnl:278076,pf:2.31,desc:"The workhorse. Same proprietary volume-weighted model as Alpha but calibrated to capture more opportunities with a slightly wider threshold. Delivers the highest profit factor of all three strategies.",tag:"BEST RISK-ADJUSTED RETURNS",color:"#B070FF",icon:"◈"},
+    {name:"Gamma",trades:9013,wr:65.8,pnl:998520,pf:1.44,desc:"The volume engine. Runs around the clock using a proprietary rolling statistical model. Generates the most trades and the highest total profit. Designed for consistent returns across all market conditions.",tag:"24-HOUR COVERAGE, HIGHEST TOTAL RETURN",color:"#00E8A2",icon:"◆"}
+  ]
+};
+var ML=Object.keys(D.monthly);
+var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
+function fmtD(n){return"$"+n.toLocaleString();}
+function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
+
+function showPage(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+// ═══ BUILD HOMEPAGE ═══
+function buildHome(){
+  var h='';
+  h+='<nav><div class="logo"><div class="logo-dot"></div><span class="logo-text">NQ ALPHA</span><span class="logo-sub">FUTURES</span></div><button class="btn" onclick="showPage(\'loginPage\');buildLogin()">INVESTOR LOGIN</button></nav>';
+  h+='<div class="hero"><div class="hero-tag">ALGORITHMIC FUTURES TRADING</div><h1>Systematic Edge.<br><span>Consistent Returns.</span></h1><p>Three proprietary mean-reversion strategies on Micro E-Mini Nasdaq futures. Fully automated execution. Backtested across 5 years and 11,000+ trades.</p><div class="hero-btns"><button class="btn-primary" onclick="showPage(\'loginPage\');buildLogin()">Start Investing</button><button class="btn-ghost" onclick="document.getElementById(\'perf\').scrollIntoView({behavior:\'smooth\'})">View Performance ↓</button></div></div>';
+  h+='<div class="main" id="perf">';
+  // Stats
+  h+='<div class="grid4">';
+  h+='<div class="stat" style="animation-delay:.1s"><div class="stat-label">5-YEAR RETURN</div><div class="stat-value" style="color:var(--green)" id="animPnl">$0</div><div class="stat-sub">March 2021 — March 2026</div></div>';
+  h+='<div class="stat" style="animation-delay:.2s"><div class="stat-label">WIN RATE</div><div class="stat-value" id="animWR">0%</div><div class="stat-sub">11,114 total trades</div></div>';
+  h+='<div class="stat" style="animation-delay:.3s"><div class="stat-label">PROFIT FACTOR</div><div class="stat-value">1.55</div><div class="stat-sub">Gross profit / gross loss</div></div>';
+  h+='<div class="stat" style="animation-delay:.4s"><div class="stat-label">MAX DRAWDOWN</div><div class="stat-value" style="color:var(--gold)">$20.9K</div><div class="stat-sub">1.4% of peak equity</div></div>';
+  h+='</div>';
+  // Equity
+  h+='<div class="card"><div class="card-header"><div><div class="card-title">GROWTH OF PORTFOLIO</div><div class="card-subtitle">Cumulative P&L — 61 Months</div></div><div><div class="card-value">$1,450,896</div><div class="card-hint">HOVER TO EXPLORE</div></div></div><div style="position:relative"><canvas id="eqChart" style="width:100%;height:300px;cursor:crosshair;display:block"></canvas><div class="eq-tip" id="eqTip"><div class="eq-tip-inner"><div class="month" id="tipMonth"></div><div class="val" id="tipVal"></div><div class="chg" id="tipChg"></div></div></div></div><div style="display:flex;justify-content:space-between;padding:8px 10px 0;font-family:var(--mono);font-size:9px;color:var(--muted)"><span>Mar 2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>Mar 2026</span></div></div>';
+  // Monthly
+  h+='<div class="card"><div class="card-header"><div><div class="card-title">MONTHLY RETURNS</div><div class="card-subtitle">58 of 61 months profitable</div></div><div class="mb-legend"><span style="color:var(--green)">● Profit</span><span style="color:var(--red)">● Loss</span><span style="color:var(--muted)">AVG $23,785/mo</span></div></div><div class="mb-wrap"><div class="mb-tip" id="mbTip"></div><div class="mb-row" id="mbRow"></div></div><div class="mb-labels"><span>MAR 2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>MAR 2026</span></div></div>';
+  // Yearly
+  h+='<div class="card"><div class="card-title" style="margin-bottom:20px">ANNUAL PERFORMANCE</div><div class="grid6">';
+  Object.keys(D.yearly).forEach(function(y){var p=D.yearly[y];h+='<div class="yr-card"><div class="year">'+y+'</div><div class="val">$'+(y==="2026"?"20K":Math.round(p/1000)+"K")+'</div><div class="pct">+'+Math.round(p/1450896*100)+'% of total</div></div>';});
+  h+='</div></div>';
+  // Strategies
+  h+='<div style="text-align:center;margin-bottom:32px"><div class="card-title" style="margin-bottom:8px">STRATEGY BREAKDOWN</div><div style="font-size:24px;font-weight:700;color:var(--white)">Three Strategies. One Portfolio.</div><div style="font-size:14px;color:var(--muted);margin-top:8px;max-width:600px;margin-left:auto;margin-right:auto">Each strategy targets a different market condition, ensuring consistent performance whether markets are trending, ranging, or volatile.</div></div>';
+  h+='<div class="grid3" style="margin-bottom:48px">';
+  D.strats.forEach(function(s){
+    h+='<div class="strat-card" onmouseover="this.style.borderColor=\''+s.color+'50\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
+    h+='<div class="strat-bar" style="background:linear-gradient(90deg,'+s.color+','+s.color+'40)"></div>';
+    h+='<div class="strat-body"><div class="strat-head"><span class="strat-icon" style="color:'+s.color+'">'+s.icon+'</span><span class="strat-name">Strategy '+s.name+'</span></div>';
+    h+='<div class="strat-tag" style="color:'+s.color+'">'+s.tag+'</div>';
+    h+='<div class="strat-desc">'+s.desc+'</div>';
+    h+='<div class="strat-stats"><div><div class="ss-label">TRADES</div><div class="ss-val">'+s.trades.toLocaleString()+'</div></div><div><div class="ss-label">WIN RATE</div><div class="ss-val">'+s.wr+'%</div></div><div><div class="ss-label">TOTAL P&L</div><div class="ss-val" style="color:var(--green)">$'+Math.round(s.pnl/1000)+'K</div></div><div><div class="ss-label">PROFIT FACTOR</div><div class="ss-val">'+s.pf+'</div></div></div>';
+    h+='</div></div>';
+  });
+  h+='</div>';
+  // Characteristics
+  h+='<div class="card"><div class="card-title" style="margin-bottom:20px">PORTFOLIO CHARACTERISTICS</div><div class="chars"><div class="char"><div class="char-label">AVG MONTHLY RETURN</div><div class="char-val">$23,785</div><div class="char-sub">Across 61 months</div></div><div class="char"><div class="char-label">PROFITABLE MONTHS</div><div class="char-val">95%</div><div class="char-sub">58 of 61 months</div></div><div class="char"><div class="char-label">BEST MONTH</div><div class="char-val">$54,204</div><div class="char-sub">September 2024</div></div><div class="char"><div class="char-label">WORST MONTH</div><div class="char-val" style="color:var(--red)">-$8,622</div><div class="char-sub">May 2021</div></div></div></div>';
+  // CTA
+  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join as an Investor</h2><p>Connect your Tradovate account and start receiving automated trade signals. Only pay when you profit.</p><button class="btn-primary" style="font-size:15px;padding:16px 52px;border-radius:12px" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">14% performance fee · High-water mark · Cancel anytime</div></div>';
+  h+='</div>';
+  h+='<div class="footer"><p>PAST PERFORMANCE IS NOT INDICATIVE OF FUTURE RESULTS. TRADING FUTURES INVOLVES SUBSTANTIAL RISK OF LOSS. BACKTEST RESULTS MARCH 2021 — MARCH 2026. RESULTS SHOWN BEFORE FEES. NOT FINANCIAL ADVICE.</p></div>';
+  document.getElementById('homePage').innerHTML=h;
+  drawEqChart();buildMonthlyBars();animateNumbers();
+}
+
+// ═══ EQUITY CHART ═══
+function drawEqChart(){
+  var c=document.getElementById('eqChart');if(!c)return;
+  var x=c.getContext('2d');var dpr=window.devicePixelRatio||1;
+  var r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=300*dpr;x.scale(dpr,dpr);
+  var W=r.width,H=300,data=D.eq;
+  var mn=Math.min.apply(null,data.concat([0])),mx=Math.max.apply(null,data),rng=mx-mn||1;
+  var pad={t:20,r:80,b:30,l:10},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  // Grid
+  x.strokeStyle='#182030';x.lineWidth=0.5;
+  for(var i=0;i<=5;i++){var y=pad.t+(ch/5)*i;x.beginPath();x.moveTo(pad.l,y);x.lineTo(W-pad.r,y);x.stroke();var v=mx-(rng/5)*i;x.fillStyle='#3d5570';x.font='10px DM Mono';x.textAlign='right';x.fillText('$'+fmt(v),W-pad.r+70,y+4);}
+  // Zero
+  var zy=pad.t+((mx-0)/rng)*ch;x.strokeStyle='#3d5570';x.setLineDash([4,4]);x.beginPath();x.moveTo(pad.l,zy);x.lineTo(W-pad.r,zy);x.stroke();x.setLineDash([]);
+  // Fill
+  x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+  x.lineTo(pad.l+cw,pad.t+ch);x.lineTo(pad.l,pad.t+ch);x.closePath();
+  var g=x.createLinearGradient(0,pad.t,0,H);g.addColorStop(0,'rgba(0,232,162,0.12)');g.addColorStop(1,'rgba(0,232,162,0)');x.fillStyle=g;x.fill();
+  // Line
+  x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+  x.strokeStyle='#00E8A2';x.lineWidth=2;x.stroke();
+  // End label
+  var last=data[data.length-1],ly=pad.t+((mx-last)/rng)*ch;
+  x.fillStyle='#00E8A2';x.font='bold 13px DM Mono';x.textAlign='right';x.fillText(fmtD(last),W-pad.r-6,ly-10);
+
+  // Hover
+  c.onmousemove=function(e){
+    var rect=c.getBoundingClientRect();var rx=e.clientX-rect.left-pad.l;
+    var idx=Math.round((rx/cw)*(data.length-1));
+    if(idx<0||idx>=data.length){document.getElementById('eqTip').style.display='none';drawEqChart();return;}
+    drawEqChart();// redraw base
+    var hx=pad.l+(idx/(data.length-1))*cw;var hy=pad.t+((mx-data[idx])/rng)*ch;
+    // Crosshair
+    x.strokeStyle='rgba(0,232,162,0.3)';x.lineWidth=1;x.setLineDash([3,3]);
+    x.beginPath();x.moveTo(hx,pad.t);x.lineTo(hx,pad.t+ch);x.stroke();x.setLineDash([]);
+    x.beginPath();x.arc(hx,hy,6,0,Math.PI*2);x.fillStyle='rgba(0,232,162,0.15)';x.fill();
+    x.beginPath();x.arc(hx,hy,3.5,0,Math.PI*2);x.fillStyle='#00E8A2';x.fill();
+    x.beginPath();x.arc(hx,hy,3.5,0,Math.PI*2);x.strokeStyle='#04080D';x.lineWidth=1.5;x.stroke();
+    // Tooltip
+    var tip=document.getElementById('eqTip');tip.style.display='block';
+    tip.style.left=Math.min(e.clientX-rect.left,rect.width-180)+'px';
+    document.getElementById('tipMonth').textContent=fmtM(idx);
+    document.getElementById('tipVal').textContent=fmtD(data[idx]);
+    document.getElementById('tipVal').style.color=data[idx]>=0?'#00E8A2':'#FF4466';
+    if(idx>0){var chg=data[idx]-data[idx-1];document.getElementById('tipChg').textContent=(chg>=0?'+':'')+fmtD(chg)+' this month';document.getElementById('tipChg').style.color=chg>=0?'#00E8A2':'#FF4466';document.getElementById('tipChg').style.display='block';}else{document.getElementById('tipChg').style.display='none';}
+  };
+  c.onmouseleave=function(){document.getElementById('eqTip').style.display='none';drawEqChart();};
+  c.ontouchmove=c.onmousemove;
+}
+
+// ═══ MONTHLY BARS ═══
+function buildMonthlyBars(){
+  var row=document.getElementById('mbRow');if(!row)return;
+  var vals=Object.values(D.monthly),keys=Object.keys(D.monthly);
+  var mx=Math.max.apply(null,vals.map(Math.abs));
+  var h='';
+  vals.forEach(function(v,i){
+    var ht=Math.abs(v)/mx*110;
+    var col=v>=0?'#00E8A2':'#FF4466';
+    h+='<div class="mb-bar" onmouseenter="showMbTip('+i+')" onmouseleave="hideMbTip()"><div class="mb-fill" style="height:'+ht+'%;min-height:2px;background:'+col+'90"></div></div>';
+  });
+  row.innerHTML=h;
+}
+function showMbTip(i){
+  var vals=Object.values(D.monthly),keys=Object.keys(D.monthly);
+  var tip=document.getElementById('mbTip');
+  tip.style.display='block';tip.style.left=(i/vals.length*100)+'%';
+  var v=vals[i];
+  tip.innerHTML='<span style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+keys[i]+' </span><span style="font-family:var(--mono);font-size:12px;font-weight:600;color:'+(v>=0?'var(--green)':'var(--red)')+'">'+(v>=0?'+':'')+fmtD(v)+'</span>';
+}
+function hideMbTip(){document.getElementById('mbTip').style.display='none';}
+
+// ═══ ANIMATE NUMBERS ═══
+function animateNumbers(){
+  var dur=1200,s=performance.now();
+  function tick(now){
+    var t=Math.min((now-s)/dur,1);var ease=1-Math.pow(1-t,3);
+    var el1=document.getElementById('animPnl');if(el1)el1.textContent='$'+Math.round(1450896*ease).toLocaleString();
+    var el2=document.getElementById('animWR');if(el2)el2.textContent=Math.round(67*ease)+'%';
+    if(t<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ═══ LOGIN PAGE ═══
+function buildLogin(){
+  var h='<div class="login-wrap"><div class="login-box">';
+  h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">INVESTOR PORTAL</div></div>';
+  h+='<div class="login-form"><div class="login-toggle"><button id="ltLogin" class="active" onclick="toggleLogin(\'login\')">LOG IN</button><button id="ltSignup" class="inactive" onclick="toggleLogin(\'signup\')">SIGN UP</button></div>';
+  h+='<div id="signupFields" style="display:none"><div class="field"><label>FULL NAME</label><input id="regName" placeholder="John Smith"></div><div class="field"><label>PHONE</label><input id="regPhone" placeholder="+1 (555) 000-0000"></div></div>';
+  h+='<div class="field"><label>EMAIL</label><input id="regEmail" type="email" placeholder="investor@email.com"></div>';
+  h+='<div class="field" style="margin-bottom:28px"><label>PASSWORD</label><input type="password" placeholder="••••••••"></div>';
+  h+='<button class="login-submit" id="loginBtn" onclick="doLogin()">Log In</button></div>';
+  h+='<div class="login-back" onclick="showPage(\'homePage\')">← Back to Homepage</div>';
+  h+='</div></div>';
+  document.getElementById('loginPage').innerHTML=h;
+}
+function toggleLogin(mode){
+  document.getElementById('ltLogin').className=mode==='login'?'active':'inactive';
+  document.getElementById('ltSignup').className=mode==='signup'?'active':'inactive';
+  document.getElementById('signupFields').style.display=mode==='signup'?'block':'none';
+  document.getElementById('loginBtn').textContent=mode==='login'?'Log In':'Create Account';
+}
+function doLogin(){
+  var email=document.getElementById('regEmail').value||'investor@email.com';
+  showPage('dashPage');buildDash(email);
+}
+
+// ═══ DASHBOARD ═══
+var dashTab='overview';var dashConn=false;
+function buildDash(email){
+  var h='';
+  h+='<nav><div class="logo"><div class="logo-dot" style="width:8px;height:8px"></div><span class="logo-text" style="font-size:16px">NQ ALPHA</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-left:6px;letter-spacing:2px">PORTAL</span></div><div style="display:flex;align-items:center;gap:16px"><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+email+'</span><button class="btn" style="font-size:10px;padding:6px 16px" onclick="showPage(\'homePage\')">LOGOUT</button></div></nav>';
+  h+='<div class="dash"><div class="dash-side" id="dashSide"></div><div class="dash-main" id="dashMain"></div></div>';
+  document.getElementById('dashPage').innerHTML=h;
+  renderDashTabs();renderDashContent(email);
+}
+function renderDashTabs(){
+  var tabs=[{id:'overview',l:'Overview'},{id:'trades',l:'Trades'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'settings',l:'Settings'}];
+  var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="dashTab=\''+t.id+'\';renderDashTabs();renderDashContent()">'+t.l+'</button>';});
+  document.getElementById('dashSide').innerHTML=h;
+}
+function renderDashContent(email){
+  var m=document.getElementById('dashMain');var h='';
+  if(dashTab==='overview'){
+    h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:4px">Welcome back</div>';
+    h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">'+(dashConn?'Account connected — copying trades live':'Connect your Tradovate account to start')+'</div>';
+    h+='<div class="dash-grid"><div class="dash-card"><div class="dc-label">YOUR P&L</div><div class="dc-val" style="color:var(--green)">+$588</div><div class="dc-sub">1 trade · March 2026</div></div><div class="dash-card"><div class="dc-label">STATUS</div><div style="display:flex;align-items:center;gap:8px;margin-top:12px"><div style="width:8px;height:8px;border-radius:50%;background:'+(dashConn?'var(--green)':'var(--gold)')+'"></div><span style="font-size:16px;font-weight:600;color:var(--white)">'+(dashConn?'Active':'Not Connected')+'</span></div></div><div class="dash-card"><div class="dc-label">NEXT INVOICE</div><div class="dc-val" style="color:var(--white);font-size:22px">$82.32</div><div class="dc-sub">14% of $588 · Due Apr 7</div></div></div>';
+    h+='<div class="dash-card"><div class="dc-label" style="margin-bottom:14px">STRATEGY PERFORMANCE (5Y BACKTEST)</div><canvas id="dashEq" style="width:100%;height:180px;display:block"></canvas></div>';
+  }
+  if(dashTab==='trades'){
+    h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:20px">Trade History</div>';
+    h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden"><table><thead><tr><th>Date</th><th>Time</th><th>Strategy</th><th>Dir</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody><tr><td style="color:var(--text)">2026-03-09</td><td style="color:var(--muted)">5:45 PM</td><td style="color:var(--cyan)">Gamma</td><td style="color:var(--green)">LONG</td><td style="color:var(--white)">$24,877.50</td><td style="color:var(--muted)">$24,927.50</td><td style="color:var(--muted)">$24,802.50</td><td><span class="badge-tp">TP</span></td><td style="color:var(--green);font-weight:600">+$588</td></tr></tbody></table></div>';
+  }
+  if(dashTab==='connect'){
+    h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Connect Tradovate</div>';
+    h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Enter your API credentials to start receiving signals</div>';
+    if(dashConn){h+='<div class="conn-ok"><div style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:8px">✓ Account Connected</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">Trades are being copied automatically.</div><button onclick="dashConn=false;renderDashContent()" style="margin-top:16px;font-family:var(--mono);font-size:11px;padding:8px 24px;background:transparent;border:1px solid rgba(255,68,102,.25);border-radius:8px;color:var(--red);cursor:pointer">Disconnect</button></div>';}
+    else{h+='<div class="conn-box"><div class="field"><label>TRADOVATE USERNAME</label><input placeholder="your_username"></div><div class="field"><label>TRADOVATE PASSWORD</label><input type="password" placeholder="••••••••"></div><div class="field"><label>APP ID</label><input placeholder="YOUR_APP_ID"></div><div class="field"><label>CLIENT ID (CID)</label><input placeholder="10609"></div><div class="field"><label>API SECRET</label><input type="password" placeholder="••••••••"></div><div class="warn-box">⚠ Credentials encrypted. Start with a DEMO account first.</div><button onclick="dashConn=true;renderDashContent()" style="width:100%;padding:13px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Connect Account</button></div>';}
+  }
+  if(dashTab==='billing'){
+    h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Invoices</div>';
+    h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">14% performance fee · Only on new profits · High-water mark</div>';
+    h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:20px"><table><thead><tr><th>Month</th><th>Profit</th><th>Fee (14%)</th><th>Status</th><th>Due</th><th></th></tr></thead><tbody><tr><td style="color:var(--white)">March 2026</td><td style="color:var(--green)">+$588</td><td style="color:var(--white);font-weight:600">$82.32</td><td><span class="badge-pending">Pending</span></td><td style="color:var(--muted)">Apr 7, 2026</td><td><button class="pay-btn">PAY NOW</button></td></tr></tbody></table></div>';
+    h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div><div class="how-item">• <strong>14% performance fee</strong> — only charged on net new profits each month</div><div class="how-item">• <strong>High-water mark</strong> — no fee charged until profits exceed previous peak</div><div class="how-item">• <strong>Invoice sent</strong> on the 1st via email and SMS</div><div class="how-item">• <strong>7-day payment window</strong> — pay via Venmo, Zelle, or wire</div><div class="how-item">• <strong>Non-payment</strong> — trade copying paused until payment received</div></div>';
+  }
+  if(dashTab==='settings'){
+    h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:20px">Settings</div>';
+    h+='<div class="conn-box"><div class="field"><label>EMAIL</label><input value="'+(email||'')+'"></div><div class="field"><label>PHONE</label><input placeholder="+1 (555) 000-0000"></div><button style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Save Changes</button></div>';
+  }
+  m.innerHTML=h;
+  if(dashTab==='overview'){setTimeout(function(){drawDashEq();},50);}
+}
+function drawDashEq(){
+  var c=document.getElementById('dashEq');if(!c)return;
+  var x=c.getContext('2d');var dpr=window.devicePixelRatio||1;
+  var r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=180*dpr;x.scale(dpr,dpr);
+  var W=r.width,H=180,data=D.eq;
+  var mn=Math.min.apply(null,data.concat([0])),mx=Math.max.apply(null,data),rng=mx-mn||1;
+  var pad={t:10,r:10,b:10,l:10},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+  x.lineTo(pad.l+cw,pad.t+ch);x.lineTo(pad.l,pad.t+ch);x.closePath();
+  var g=x.createLinearGradient(0,pad.t,0,H);g.addColorStop(0,'rgba(0,232,162,0.12)');g.addColorStop(1,'rgba(0,232,162,0)');x.fillStyle=g;x.fill();
+  x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+  x.strokeStyle='#00E8A2';x.lineWidth=2;x.stroke();
+}
+
+// Init
+buildHome();
+window.addEventListener('resize',function(){drawEqChart();});
+</script>
+</body>
+</html>
