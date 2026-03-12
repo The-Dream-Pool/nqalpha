@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NQ Alpha &mdash; Algorithmic Futures Trading</title>
+<meta name="description" content="Three proprietary mean-reversion strategies on Micro E-Mini Nasdaq futures. Fully automated. 5-year track record.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple_icon.png">
+<meta property="og:title" content="NQ Alpha — Algorithmic Futures Trading">
+<meta property="og:description" content="Three proprietary mean-reversion strategies on MNQ futures. $1.77M backtested over 5 years. 72% win rate. Fully automated.">
+<meta property="og:image" content="https://nqalpha.com/og_image.png">
+<meta property="og:url" content="https://nqalpha.com">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NQ Alpha — Algorithmic Futures Trading">
+<meta name="twitter:description" content="$1.77M backtested over 5 years. 72% win rate. Fully automated futures trading.">
+<meta name="twitter:image" content="https://nqalpha.com/og_image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+
+:root{--bg:#04080D;--sf:#0A1018;--sf2:#0E1620;--bd:#162030;--green:#00E8A2;--cyan:#00C4FF;--gold:#F0C040;--red:#FF4466;--text:#B8C8D8;--muted:#405060;--white:#F0F4F8;--font:'Outfit',sans-serif;--mono:'DM Mono',monospace;}*{box-sizing:border-box;margin:0;padding:0;}body{background:var(--bg);color:var(--text);font-family:var(--font);}::selection{background:rgba(0,232,162,.2);color:var(--white);}input::placeholder{color:var(--muted);}::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.page{display:none;}.page.active{display:block;}nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:rgba(4,8,13,.92);backdrop-filter:blur(12px);z-index:100;}.logo{display:flex;align-items:center;gap:12px;}.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(0,232,162,.4);animation:pulse 2s ease infinite;}.logo-text{font-size:18px;font-weight:800;color:var(--white);letter-spacing:-.5px;}.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-left:4px;}.btn{font-family:var(--mono);font-size:11px;padding:10px 28px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);cursor:pointer;transition:all .2s;}.btn:hover{border-color:var(--green);color:var(--green);}.btn-primary{background:var(--green);border:none;color:var(--bg);font-family:var(--font);font-weight:700;font-size:14px;padding:14px 36px;border-radius:10px;}.btn-primary:hover{transform:translateY(-2px);}.btn-ghost{font-family:var(--mono);font-size:12px;padding:14px 32px;background:transparent;border:1px solid var(--bd);border-radius:10px;color:var(--text);cursor:pointer;}.hero{text-align:center;padding:100px 40px 60px;position:relative;overflow:hidden;}.hero:before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:1000px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,232,162,.04) 0%,transparent 70%);pointer-events:none;}.hero-tag{font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:4px;margin-bottom:20px;animation:fadeUp .6s ease both;}.hero h1{font-size:60px;font-weight:900;color:var(--white);letter-spacing:-3px;line-height:1.05;margin-bottom:20px;animation:fadeUp .6s ease .1s both;}.hero h1 span{background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.hero p{font-size:17px;color:rgba(184,200,216,.8);max-width:560px;margin:0 auto 48px;line-height:1.75;animation:fadeUp .6s ease .2s both;}.hero-btns{display:flex;gap:16px;justify-content:center;animation:fadeUp .6s ease .3s both;}.main{max-width:1100px;margin:0 auto;padding:0 40px;}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px;}.grid6{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}.stat{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:22px 26px;animation:fadeUp .6s ease both;transition:border-color .3s,transform .3s;}.stat:hover{border-color:rgba(0,232,162,.25);transform:translateY(-2px);}.stat-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;}.stat-value{font-size:28px;font-weight:700;letter-spacing:-1px;}.stat-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;}.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:28px;margin-bottom:48px;}.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}.card-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;}.card-subtitle{font-size:16px;font-weight:600;color:var(--white);margin-top:6px;}.card-value{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--green);text-align:right;}.card-hint{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;text-align:right;}.yr-card{text-align:center;padding:20px;background:var(--sf2);border-radius:12px;border:1px solid var(--bd);transition:all .3s;cursor:default;}.yr-card:hover{border-color:rgba(0,232,162,.25);transform:translateY(-3px);}.yr-card .year{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:10px;}.yr-card .val{font-size:24px;font-weight:700;color:var(--green);}.yr-card .pct{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;}.strat-card{background:var(--sf);border-radius:16px;border:1px solid var(--bd);overflow:hidden;transition:all .3s;}.strat-card:hover{transform:translateY(-4px);}.strat-bar{height:3px;}.strat-body{padding:24px 24px 20px;}.strat-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}.strat-icon{font-size:18px;}.strat-name{font-size:20px;font-weight:700;color:var(--white);}.strat-tag{font-family:var(--mono);font-size:10px;letter-spacing:1px;margin-bottom:16px;}.strat-desc{font-size:13px;color:rgba(184,200,216,.8);line-height:1.7;margin-bottom:20px;min-height:80px;}.strat-stats{background:var(--sf2);border-radius:10px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}.ss-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;}.ss-val{font-size:18px;font-weight:700;color:var(--white);margin-top:2px;}.chars{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}.char{text-align:center;}.char-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}.char-val{font-size:22px;font-weight:700;}.char-sub{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}.cta{text-align:center;padding:48px 0 80px;}.cta-tag{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:16px;}.cta h2{font-size:32px;font-weight:800;color:var(--white);margin-bottom:12px;}.cta p{font-size:14px;color:var(--muted);max-width:460px;margin:0 auto 32px;}.cta .fee{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px;}.footer{border-top:1px solid var(--bd);padding:28px 40px;text-align:center;}.footer p{font-family:var(--mono);font-size:9px;color:var(--muted);line-height:2;max-width:700px;margin:0 auto;}/* Monthly bars */ .mb-wrap{position:relative;}.mb-tip{position:absolute;top:-44px;transform:translateX(-50%);background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:6px 12px;white-space:nowrap;z-index:10;box-shadow:0 4px 16px rgba(4,8,13,.8);display:none;pointer-events:none;}.mb-row{display:flex;align-items:flex-end;gap:2px;height:130px;padding:0 2px;}.mb-bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;cursor:crosshair;}.mb-fill{border-radius:2px 2px 0 0;transition:all .15s;transform-origin:bottom;}.mb-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:10px;}.mb-legend{display:flex;gap:16px;font-family:var(--mono);font-size:10px;}/* Chart tooltip */ .eq-tip{position:absolute;top:8px;pointer-events:none;z-index:10;display:none;}.eq-tip-inner{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:8px 14px;box-shadow:0 8px 24px rgba(4,8,13,.87);}.eq-tip .month{font-family:var(--mono);font-size:10px;color:var(--muted);}.eq-tip .val{font-size:18px;font-weight:700;margin-top:2px;}.eq-tip .chg{font-family:var(--mono);font-size:10px;margin-top:2px;}/* LOGIN */ .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}.login-box{width:420px;animation:fadeUp .4s ease both;}.login-logo{text-align:center;margin-bottom:36px;cursor:pointer;}.login-form{background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:36px;}.login-toggle{display:flex;gap:0;margin-bottom:32px;background:var(--sf2);border-radius:10px;padding:3px;}.login-toggle button{flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;}.login-toggle .active{background:var(--bd);color:var(--white);}.login-toggle .inactive{background:transparent;color:var(--muted);}.field{margin-bottom:16px;}.field label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;display:block;margin-bottom:6px;}.field input{width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;}.field input:focus{border-color:var(--cyan);}.login-submit{width:100%;padding:14px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);}.login-back{text-align:center;margin-top:20px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;}.login-back:hover{color:var(--cyan);}/* DASHBOARD */ .dash{display:flex;max-width:1200px;margin:0 auto;padding:24px 32px;gap:24px;}.dash-side{width:180px;flex-shrink:0;}.dash-tab{display:block;width:100%;text-align:left;padding:11px 16px;margin-bottom:4px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);font-size:13px;transition:all .15s;background:transparent;color:var(--muted);}.dash-tab.active{background:rgba(0,232,162,.06);color:var(--green);}.dash-main{flex:1;}.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}.dash-card{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;}.dc-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;}.dc-val{font-size:28px;font-weight:700;margin-top:8px;}.dc-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;}table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}th{padding:12px 14px;text-align:left;color:var(--muted);font-size:10px;letter-spacing:1px;border-bottom:1px solid var(--bd);}td{padding:12px 14px;}.badge-tp{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green);}.badge-pending{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold);}.pay-btn{font-family:var(--mono);font-size:10px;padding:6px 18px;background:var(--green);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;}.conn-box{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:28px;max-width:480px;}.conn-ok{background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.15);border-radius:14px;padding:28px;text-align:center;}.warn-box{background:rgba(240,192,64,.04);border:1px solid rgba(240,192,64,.15);border-radius:8px;padding:12px;margin-bottom:16px;font-family:var(--mono);font-size:11px;color:var(--gold);line-height:1.7;}.how-box{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;}.how-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:14px;}.how-item{font-size:13px;color:var(--text);line-height:1.9;margin-bottom:6px;}.how-item strong{color:var(--white);}.badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;animation:fadeUp .6s ease .35s both;}.badge{font-family:var(--mono);font-size:9px;padding:7px 18px;border-radius:20px;letter-spacing:1.5px;font-weight:600;border:1px solid;}.stats8{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:48px;}.stat-sm{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:18px 20px;text-align:center;transition:border-color .3s;}.stat-sm:hover{border-color:rgba(0,232,162,.2);}.stat-sm .sl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}.stat-sm .sv{font-size:22px;font-weight:700;}.stat-sm .ss{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}.tlog-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:20px 24px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;margin-bottom:48px;transition:all .2s;}.tlog-toggle:hover{border-color:rgba(0,232,162,.25);}.tlog-toggle.open{border-radius:12px 12px 0 0;margin-bottom:0;}.tlog-body{display:none;background:var(--sf);border:1px solid var(--bd);border-top:none;border-radius:0 0 12px 12px;max-height:600px;overflow-y:auto;margin-bottom:48px;}.tlog-body.open{display:block;}.tlog-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}.tlog-table th{padding:10px 12px;text-align:left;color:var(--muted);font-size:9px;letter-spacing:1px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--sf2);}.tlog-table td{padding:8px 12px;border-bottom:1px solid rgba(22,32,48,.5);}.tlog-table tr:hover{background:rgba(0,232,162,.02);}.tlog-arrow{font-size:18px;color:var(--muted);transition:transform .2s;}.tlog-arrow.open{transform:rotate(180deg);}.tlog-count{font-family:var(--mono);font-size:10px;color:var(--muted);padding:10px;text-align:center;border-top:1px solid var(--bd);}@media(max-width:768px){nav{padding:12px 16px;flex-wrap:wrap;gap:8px;}.logo-sub{display:none;}.nav-btn{font-size:9px!important;padding:6px 10px!important;}.hero{padding:60px 20px 40px;}.hero h1{font-size:36px;letter-spacing:-1.5px;}.hero p{font-size:14px;}.hero-btns{flex-direction:column;align-items:center;}.main{padding:0 16px;}.grid4,.chars{grid-template-columns:repeat(2,1fr);gap:10px;}.grid6{grid-template-columns:repeat(2,1fr)!important;gap:8px!important;}.grid3{grid-template-columns:1fr;gap:14px;}.card{padding:16px;margin-bottom:28px;}.cta h2{font-size:24px;}.footer{padding:20px 16px;}.mb-legend{display:none;}.dash{flex-direction:column;padding:16px;}.dash-side{width:100%;display:flex;flex-direction:row;overflow-x:auto;gap:4px;}.dash-tab{white-space:nowrap;}.dash-grid{grid-template-columns:1fr;}table{font-size:10px;}th,td{padding:8px 6px;}.yr-card .val{font-size:18px;}.stat-value{font-size:22px;}.badges{gap:6px;}.badge{font-size:7px;padding:5px 12px;}.stats8{grid-template-columns:repeat(2,1fr);gap:8px;}.stat-sm{padding:14px 12px;}.stat-sm .sv{font-size:18px;}.tlog-table{font-size:9px;}.tlog-table th,.tlog-table td{padding:6px 5px;}}/* Badges */ .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;animation:fadeUp .6s ease .35s both;}.badge{font-family:var(--mono);font-size:9px;padding:7px 18px;border-radius:20px;letter-spacing:1.5px;font-weight:600;border:1px solid;}/* Extended stats */ .stats8{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:48px;}.stat-sm{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:18px 20px;text-align:center;transition:border-color .3s;}.stat-sm:hover{border-color:rgba(0,232,162,.2);}.stat-sm .sl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}.stat-sm .sv{font-size:22px;font-weight:700;}.stat-sm .ss{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}/* Trade log */ .tlog-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:20px 24px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;margin-bottom:0;transition:all .2s;}.tlog-toggle:hover{border-color:rgba(0,232,162,.25);}.tlog-toggle.open{border-radius:12px 12px 0 0;margin-bottom:0;}.tlog-body{display:none;background:var(--sf);border:1px solid var(--bd);border-top:none;border-radius:0 0 12px 12px;max-height:600px;overflow-y:auto;}.tlog-body.open{display:block;}.tlog-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}.tlog-table th{padding:10px 12px;text-align:left;color:var(--muted);font-size:9px;letter-spacing:1px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--sf2);}.tlog-table td{padding:8px 12px;border-bottom:1px solid rgba(22,32,48,.5);}.tlog-table tr:hover{background:rgba(0,232,162,.02);}.tlog-arrow{font-size:18px;color:var(--muted);transition:transform .2s;}.tlog-arrow.open{transform:rotate(180deg);}.tlog-count{font-family:var(--mono);font-size:10px;color:var(--muted);padding:10px;text-align:center;border-top:1px solid var(--bd);}@media(max-width:768px){.badges{gap:6px;}.badge{font-size:7px;padding:5px 12px;}.stats8{grid-template-columns:repeat(2,1fr);gap:8px;}.stat-sm{padding:14px 12px;}.stat-sm .sv{font-size:18px;}.tlog-table{font-size:9px;}.tlog-table th,.tlog-table td{padding:6px 6px;}}
+
+</style>
+</head>
+<body style="overflow-x:hidden;touch-action:manipulation">
+<div id="homePage" class="page active"></div>
+<div id="loginPage" class="page"></div>
+<div id="dashPage" class="page"></div>
+<div id="adminPage" class="page"></div>
+
+<script>
+var D={
+  eq:[10720, 49040, 80800, 153440, 234880, 305120, 338240, 420480, 492560, 543040, 562000, 582960, 616720, 631200, 637040, 647600, 655760, 696240, 719520, 749200, 765840, 783360, 802960, 830240, 846160, 876480, 926560, 982800, 995120, 1006320, 1005600, 1036000, 1118880, 1150960, 1160800, 1200480, 1217360, 1236320, 1282960, 1332080, 1360480, 1374160, 1404480, 1432160, 1470960, 1497760, 1514320, 1506880, 1514720, 1513680, 1531600, 1578400, 1623120, 1620080, 1658320, 1693040, 1703280, 1736400],
+  monthly:{"2021-03": 10720, "2021-04": 38320, "2021-05": 31760, "2021-06": 72640, "2021-07": 81440, "2021-08": 70240, "2021-09": 33120, "2021-10": 82240, "2021-11": 72080, "2021-12": 50480, "2022-01": 18960, "2022-02": 20960, "2022-03": 33760, "2022-04": 14480, "2022-05": 5840, "2022-06": 10560, "2022-07": 8160, "2022-08": 40480, "2022-09": 23280, "2022-10": 29680, "2022-11": 16640, "2022-12": 17520, "2023-01": 19600, "2023-02": 27280, "2023-03": 15920, "2023-04": 30320, "2023-05": 50080, "2023-06": 56240, "2023-07": 12320, "2023-08": 11200, "2023-09": -720, "2023-10": 30400, "2023-11": 82880, "2023-12": 32080, "2024-01": 9840, "2024-02": 39680, "2024-03": 16880, "2024-04": 18960, "2024-05": 46640, "2024-06": 49120, "2024-07": 28400, "2024-08": 13680, "2024-09": 30320, "2024-10": 27680, "2024-11": 38800, "2024-12": 26800, "2025-01": 16560, "2025-02": -7440, "2025-03": 7840, "2025-04": -1040, "2025-05": 17920, "2025-06": 46800, "2025-07": 44720, "2025-08": -3040, "2025-09": 38240, "2025-10": 34720, "2025-11": 10240, "2025-12": 33120, "2026-01": 24640, "2026-02": -640},
+  yearly:{"2021": 543040, "2022": 240320, "2023": 367600, "2024": 346800, "2025": 238640},
+  strats:[
+    {name:"Alpha",trades:727,wr:76.5,pnl:178000,pf:2.00,desc:"Our tightest filter. Identifies extreme statistical dislocations using a proprietary volume-weighted pricing model. Trades less frequently but with the highest precision \u2014 only entering when the market reaches rare extremes.",tag:"HIGH-PRECISION ENTRIES AT EXTREME LEVELS",color:"#00C4FF",icon:"\u25c7"},
+    {name:"Beta",trades:1105,wr:77.6,pnl:292240,pf:2.14,desc:"The workhorse. Same proprietary volume-weighted model as Alpha but calibrated to capture more opportunities with a slightly wider threshold. Delivers the highest profit factor of all three strategies.",tag:"BEST RISK-ADJUSTED RETURNS",color:"#B070FF",icon:"\u25c8"},
+    {name:"Gamma",trades:8301,wr:71.2,pnl:1297440,pf:1.52,desc:"The volume engine. Runs around the clock using a proprietary rolling statistical model. Generates the most trades and the highest total profit. Designed for consistent returns across all market conditions.",tag:"24-HOUR COVERAGE, HIGHEST TOTAL RETURN",color:"#00E8A2",icon:"\u25c6"}
+  ]
+};
+var ML=Object.keys(D.monthly);
+var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
+function fmtD(n){return"$"+n.toLocaleString();}
+function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
+function showPage(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+function buildHome(){
+  var h='';
+  h+='<nav><div class="logo"><div class="logo-dot"></div><span class="logo-text">NQ ALPHA</span><span class="logo-sub">FUTURES</span></div><div style="display:flex;gap:10px"><button class="btn nav-btn" style="font-size:10px;padding:8px 16px;color:var(--muted);border-color:var(--bd)" onclick="showPage(\'adminPage\');buildAdminLogin()">ADMIN</button><button class="btn nav-btn" onclick="showPage(\'loginPage\');buildLogin()">INVESTOR LOGIN</button></div></nav>';
+  h+='<div class="hero"><div class="hero-tag">ALGORITHMIC FUTURES TRADING</div><h1>Systematic Edge.<br><span>Consistent Returns.</span></h1><p>Three proprietary mean-reversion strategies on Micro E-Mini Nasdaq futures. Fully automated execution. Backtested across 5 years and 10,000+ trades.</p><div class="hero-btns"><button class="btn-primary" onclick="showPage(\'loginPage\');buildLogin()">Start Investing</button><button class="btn-ghost" onclick="document.getElementById(\'perf\').scrollIntoView({behavior:\'smooth\'})">View Performance \u2193</button></div></div>';
+  h+='<div class="main" id="perf">';
+  h+='<div class="badges"><span class="badge" style="border-color:rgba(0,232,162,.4);color:var(--green)">3 PROPRIETARY ENGINES</span><span class="badge" style="border-color:rgba(0,196,255,.4);color:var(--cyan)">FULLY AUTOMATED 24/5</span><span class="badge" style="border-color:rgba(255,68,102,.4);color:var(--red)">INSTITUTIONAL RISK CONTROLS</span><span class="badge" style="border-color:rgba(0,232,162,.4);color:var(--green)">72% WIN RATE</span><span class="badge" style="border-color:rgba(240,192,64,.4);color:var(--gold)">92% MONTHS PROFITABLE</span></div>';
+  h+='<div class="grid4"><div class="stat" style="animation-delay:.1s"><div class="stat-label">5-YEAR RETURN</div><div class="stat-value" style="color:var(--green)" id="animPnl">$0</div><div class="stat-sub">March 2021 \u2014 February 2026</div></div><div class="stat" style="animation-delay:.2s"><div class="stat-label">WIN RATE</div><div class="stat-value" id="animWR">0%</div><div class="stat-sub">10,133 total trades</div></div><div class="stat" style="animation-delay:.3s"><div class="stat-label">PROFIT FACTOR</div><div class="stat-value">1.61</div><div class="stat-sub">Gross profit / gross loss</div></div><div class="stat" style="animation-delay:.4s"><div class="stat-label">MAX DRAWDOWN</div><div class="stat-value" style="color:var(--gold)">$26.2K</div><div class="stat-sub">1.5% of peak equity</div></div></div>';
+  h+='<div class="stats8"><div class="stat-sm"><div class="sl">ANNUALIZED RETURN</div><div class="sv" style="color:var(--green)">$+353,536</div><div class="ss">average per year</div></div><div class="stat-sm"><div class="sl">MONTHLY AVERAGE</div><div class="sv" style="color:var(--green)">$+29,340</div><div class="ss">across 60 months</div></div><div class="stat-sm"><div class="sl">PROFITABLE MONTHS</div><div class="sv">55/60</div><div class="ss">92% consistency rate</div></div><div class="stat-sm"><div class="sl">EXPECTANCY</div><div class="sv" style="color:var(--green)">$+174</div><div class="ss">expected value per trade</div></div><div class="stat-sm"><div class="sl">AVG WINNER</div><div class="sv" style="color:var(--green)">$+640</div><div class="ss">mean profitable trade</div></div><div class="stat-sm"><div class="sl">AVG LOSER</div><div class="sv" style="color:var(--red)">$-1,040</div><div class="ss">mean losing trade</div></div><div class="stat-sm"><div class="sl">RISK CONTROLS</div><div class="sv" style="color:var(--green)">ACTIVE</div><div class="ss">automated circuit breakers</div></div><div class="stat-sm"><div class="sl">GREEN / RED DAYS</div><div class="sv"><span style="color:var(--green)">782</span> / <span style="color:var(--red)">634</span></div><div class="ss">55% profitable days</div></div></div>';
+  h+='<div class="card"><div class="card-header"><div><div class="card-title">GROWTH OF PORTFOLIO</div><div class="card-subtitle">Cumulative P&L \u2014 60 Months</div></div><div><div class="card-value">$1,736,400</div><div class="card-hint">HOVER TO EXPLORE</div></div></div><div style="position:relative"><canvas id="eqChart" style="width:100%;height:300px;cursor:crosshair;display:block"></canvas><div class="eq-tip" id="eqTip"><div class="eq-tip-inner"><div class="month" id="tipMonth"></div><div class="val" id="tipVal"></div><div class="chg" id="tipChg"></div></div></div></div><div style="display:flex;justify-content:space-between;padding:8px 10px 0;font-family:var(--mono);font-size:9px;color:var(--muted)"><span>Mar 2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>Feb 2026</span></div></div>';
+  h+='<div class="card"><div class="card-header"><div><div class="card-title">MONTHLY RETURNS</div><div class="card-subtitle">55 of 60 months profitable</div></div><div class="mb-legend"><span style="color:var(--green)">\u25cf Profit</span><span style="color:var(--red)">\u25cf Loss</span><span style="color:var(--muted)">AVG $29,340/mo</span></div></div><div class="mb-wrap"><div class="mb-tip" id="mbTip"></div><div class="mb-row" id="mbRow"></div></div><div class="mb-labels"><span>MAR 2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>FEB 2026</span></div></div>';
+  h+='<div class="card"><div class="card-title" style="margin-bottom:20px">ANNUAL PERFORMANCE</div><div class="grid6">';
+  Object.keys(D.yearly).forEach(function(y){var p=D.yearly[y];h+='<div class="yr-card"><div class="year">'+y+'</div><div class="val">$'+Math.round(p/1000)+"K"+'</div><div class="pct">+'+Math.round(p/1767680*100)+'% of total</div></div>';});
+  h+='</div></div>';
+  h+='<div style="text-align:center;margin-bottom:32px"><div class="card-title" style="margin-bottom:8px">STRATEGY BREAKDOWN</div><div style="font-size:24px;font-weight:700;color:var(--white)">Three Strategies. One Portfolio.</div><div style="font-size:14px;color:var(--muted);margin-top:8px;max-width:600px;margin-left:auto;margin-right:auto">Each strategy targets a different market condition, ensuring consistent performance whether markets are trending, ranging, or volatile.</div></div>';
+  h+='<div class="grid3" style="margin-bottom:48px">';
+  D.strats.forEach(function(s){
+    h+='<div class="strat-card" onmouseover="this.style.borderColor=\''+s.color+'50\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
+    h+='<div class="strat-bar" style="background:linear-gradient(90deg,'+s.color+','+s.color+'40)"></div>';
+    h+='<div class="strat-body"><div class="strat-head"><span class="strat-icon" style="color:'+s.color+'">'+s.icon+'</span><span class="strat-name">Strategy '+s.name+'</span></div>';
+    h+='<div class="strat-tag" style="color:'+s.color+'">'+s.tag+'</div>';
+    h+='<div class="strat-desc">'+s.desc+'</div>';
+    h+='<div class="strat-stats"><div><div class="ss-label">TRADES</div><div class="ss-val">'+s.trades.toLocaleString()+'</div></div><div><div class="ss-label">WIN RATE</div><div class="ss-val">'+s.wr+'%</div></div><div><div class="ss-label">TOTAL P&L</div><div class="ss-val" style="color:var(--green)">$'+Math.round(s.pnl/1000)+'K</div></div><div><div class="ss-label">PROFIT FACTOR</div><div class="ss-val">'+s.pf+'</div></div></div>';
+    h+='</div></div>';
+  });
+  h+='</div>';
+  h+='<div class="card"><div class="card-title" style="margin-bottom:20px">PORTFOLIO CHARACTERISTICS</div><div class="chars"><div class="char"><div class="char-label">AVG MONTHLY RETURN</div><div class="char-val">$29,340</div><div class="char-sub">Across 60 months</div></div><div class="char"><div class="char-label">PROFITABLE MONTHS</div><div class="char-val">92%</div><div class="char-sub">55 of 60 months</div></div><div class="char"><div class="char-label">BEST MONTH</div><div class="char-val">$82,880</div><div class="char-sub">November 2023</div></div><div class="char"><div class="char-label">WORST MONTH</div><div class="char-val" style="color:var(--red)">-$7,440</div><div class="char-sub">February 2025</div></div></div></div>';
+  h+='<div style="margin-bottom:48px"><div class="tlog-toggle" id="tlogToggle" onclick="toggleTradeLog()"><div><div class="card-title">INDEPENDENTLY VERIFIABLE TRADE LOG</div><div style="font-size:13px;color:var(--text);margin-top:6px">Every trade timestamped and verifiable on MNQ futures charts \u00b7 All times CST</div></div><span class="tlog-arrow" id="tlogArrow">\u25bc</span></div><div class="tlog-body" id="tlogBody"><table class="tlog-table"><thead><tr><th>DATE</th><th>ENTRY</th><th>STRATEGY</th><th>DIR</th><th>ENTRY $</th><th>TP</th><th>SL</th><th>RESULT</th><th>P&L</th><th>EXIT</th></tr></thead><tbody id="tlogRows"></tbody></table><div class="tlog-count" id="tlogCount"></div></div></div>';
+  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join as an Investor</h2><p>Connect your Tradovate account and start receiving automated trade signals. Only pay when you profit.</p><button class="btn-primary" style="font-size:15px;padding:16px 52px;border-radius:12px" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">18% performance fee \u00b7 High-water mark \u00b7 Cancel anytime</div></div>';
+  h+='</div>';
+  h+='<div class="footer"><p>PAST PERFORMANCE IS NOT INDICATIVE OF FUTURE RESULTS. TRADING FUTURES INVOLVES SUBSTANTIAL RISK OF LOSS. BACKTEST RESULTS MARCH 2021 \u2014 FEBRUARY 2026. RESULTS SHOWN BEFORE FEES. NOT FINANCIAL ADVICE.</p></div>';
+  document.getElementById('homePage').innerHTML=h;
+  buildMonthlyBars();animateNumbers();
+  requestAnimationFrame(function(){setTimeout(drawEqChart,100);});
+}
+
+function drawEqChart(){
+  var c=document.getElementById('eqChart');if(!c)return;
+  var x=c.getContext('2d');var dpr=window.devicePixelRatio||1;
+  var r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=300*dpr;x.scale(dpr,dpr);
+  var W=r.width,H=300,data=D.eq;
+  var mn=Math.min.apply(null,data.concat([0])),mx=Math.max.apply(null,data),rng=mx-mn||1;
+  var pad={t:20,r:80,b:30,l:10},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  x.strokeStyle='#182030';x.lineWidth=0.5;
+  for(var i=0;i<=5;i++){var y=pad.t+(ch/5)*i;x.beginPath();x.moveTo(pad.l,y);x.lineTo(W-pad.r,y);x.stroke();var v=mx-(rng/5)*i;x.fillStyle='#3d5570';x.font='10px DM Mono';x.textAlign='right';x.fillText('$'+fmt(v),W-pad.r+70,y+4);}
+  var zy=pad.t+((mx-0)/rng)*ch;x.strokeStyle='#3d5570';x.setLineDash([4,4]);x.beginPath();x.moveTo(pad.l,zy);x.lineTo(W-pad.r,zy);x.stroke();x.setLineDash([]);
+  x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+  x.lineTo(pad.l+cw,pad.t+ch);x.lineTo(pad.l,pad.t+ch);x.closePath();
+  var g=x.createLinearGradient(0,pad.t,0,H);g.addColorStop(0,'rgba(0,232,162,0.12)');g.addColorStop(1,'rgba(0,232,162,0)');x.fillStyle=g;x.fill();
+  x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+  x.strokeStyle='#00E8A2';x.lineWidth=2;x.stroke();
+  var last=data[data.length-1],ly=pad.t+((mx-last)/rng)*ch;
+  x.fillStyle='#00E8A2';x.font='bold 13px DM Mono';x.textAlign='right';x.fillText(fmtD(last),W-pad.r-6,ly-10);
+  c.onmousemove=function(e){
+    var rect=c.getBoundingClientRect();var rx=e.clientX-rect.left-pad.l;
+    var idx=Math.round((rx/cw)*(data.length-1));
+    if(idx<0||idx>=data.length){document.getElementById('eqTip').style.display='none';drawEqChart();return;}
+    drawEqChart();
+    var hx=pad.l+(idx/(data.length-1))*cw;var hy=pad.t+((mx-data[idx])/rng)*ch;
+    x.strokeStyle='rgba(0,232,162,0.3)';x.lineWidth=1;x.setLineDash([3,3]);
+    x.beginPath();x.moveTo(hx,pad.t);x.lineTo(hx,pad.t+ch);x.stroke();x.setLineDash([]);
+    x.beginPath();x.arc(hx,hy,6,0,Math.PI*2);x.fillStyle='rgba(0,232,162,0.15)';x.fill();
+    x.beginPath();x.arc(hx,hy,3.5,0,Math.PI*2);x.fillStyle='#00E8A2';x.fill();
+    x.beginPath();x.arc(hx,hy,3.5,0,Math.PI*2);x.strokeStyle='#04080D';x.lineWidth=1.5;x.stroke();
+    var tip=document.getElementById('eqTip');tip.style.display='block';
+    tip.style.left=Math.min(e.clientX-rect.left,rect.width-180)+'px';
+    document.getElementById('tipMonth').textContent=fmtM(idx);
+    document.getElementById('tipVal').textContent=fmtD(data[idx]);
+    document.getElementById('tipVal').style.color=data[idx]>=0?'#00E8A2':'#FF4466';
+    if(idx>0){var chg=data[idx]-data[idx-1];document.getElementById('tipChg').textContent=(chg>=0?'+':'')+fmtD(chg)+' this month';document.getElementById('tipChg').style.color=chg>=0?'#00E8A2':'#FF4466';document.getElementById('tipChg').style.display='block';}else{document.getElementById('tipChg').style.display='none';}
+  };
+  c.onmouseleave=function(){document.getElementById('eqTip').style.display='none';drawEqChart();};
+  c.ontouchmove=c.onmousemove;
+}
+
+function buildMonthlyBars(){
+  var row=document.getElementById('mbRow');if(!row)return;
+  var vals=Object.values(D.monthly),keys=Object.keys(D.monthly);
+  var mx=Math.max.apply(null,vals.map(Math.abs));
+  var h='';
+  vals.forEach(function(v,i){
+    var ht=Math.abs(v)/mx*110;var col=v>=0?'#00E8A2':'#FF4466';
+    h+='<div class="mb-bar" onmouseenter="showMbTip('+i+')" onmouseleave="hideMbTip()"><div class="mb-fill" style="height:'+ht+'%;min-height:2px;background:'+col+'90"></div></div>';
+  });
+  row.innerHTML=h;
+}
+function showMbTip(i){
+  var vals=Object.values(D.monthly),keys=Object.keys(D.monthly);
+  var tip=document.getElementById('mbTip');tip.style.display='block';tip.style.left=(i/vals.length*100)+'%';
+  var v=vals[i];
+  tip.innerHTML='<span style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+keys[i]+' </span><span style="font-family:var(--mono);font-size:12px;font-weight:600;color:'+(v>=0?'var(--green)':'var(--red)')+'">'+(v>=0?'+':'')+fmtD(v)+'</span>';
+}
+function hideMbTip(){document.getElementById('mbTip').style.display='none';}
+
+function animateNumbers(){
+  var dur=1200,s=performance.now();
+  function tick(now){
+    var t=Math.min((now-s)/dur,1);var ease=1-Math.pow(1-t,3);
+    var el1=document.getElementById('animPnl');if(el1)el1.textContent='$'+Math.round(1767680*ease).toLocaleString();
+    var el2=document.getElementById('animWR');if(el2)el2.textContent=Math.round(72*ease)+'%';
+    if(t<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+var TRADES=[{"d":"2026-01-28","t":"03:00 PM","s":"Alpha","e":26059.5,"tp":26099.5,"sl":25994.5,"r":"TP","p":640,"x":"03:05 PM"},{"d":"2026-01-28","t":"03:00 PM","s":"Beta","e":26065.75,"tp":26105.75,"sl":26000.75,"r":"TP","p":640,"x":"03:05 PM"},{"d":"2026-01-28","t":"03:00 PM","s":"Gamma","e":26076.75,"tp":26116.75,"sl":26011.75,"r":"TP","p":640,"x":"03:05 PM"},{"d":"2026-01-28","t":"06:00 PM","s":"Gamma","e":26118.25,"tp":26158.25,"sl":26053.25,"r":"TP","p":640,"x":"06:10 PM"},{"d":"2026-01-28","t":"07:25 PM","s":"Gamma","e":26089.5,"tp":26129.5,"sl":26024.5,"r":"TP","p":640,"x":"07:55 PM"},{"d":"2026-01-29","t":"03:50 AM","s":"Gamma","e":26227.0,"tp":26267.0,"sl":26162.0,"r":"SL","p":-1040,"x":"06:40 AM"},{"d":"2026-01-29","t":"06:35 AM","s":"Gamma","e":26169.0,"tp":26209.0,"sl":26104.0,"r":"SL","p":-1040,"x":"08:30 AM"},{"d":"2026-01-29","t":"08:30 AM","s":"Gamma","e":26109.5,"tp":26149.5,"sl":26044.5,"r":"SL","p":-1040,"x":"08:35 AM"},{"d":"2026-01-29","t":"08:35 AM","s":"Alpha","e":26009.0,"tp":26049.0,"sl":25944.0,"r":"SL","p":-1040,"x":"08:45 AM"},{"d":"2026-01-29","t":"08:35 AM","s":"Beta","e":26019.5,"tp":26059.5,"sl":25954.5,"r":"SL","p":-1040,"x":"08:40 AM"},{"d":"2026-01-29","t":"07:35 PM","s":"Gamma","e":25840.25,"tp":25880.25,"sl":25775.25,"r":"SL","p":-1040,"x":"08:20 PM"},{"d":"2026-01-30","t":"12:00 AM","s":"Gamma","e":25818.25,"tp":25858.25,"sl":25753.25,"r":"SL","p":-1040,"x":"12:55 AM"},{"d":"2026-02-01","t":"05:00 PM","s":"Gamma","e":25538.25,"tp":25578.25,"sl":25473.25,"r":"SL","p":-1040,"x":"05:05 PM"},{"d":"2026-02-01","t":"09:10 PM","s":"Gamma","e":25330.25,"tp":25370.25,"sl":25265.25,"r":"SL","p":-1040,"x":"09:55 PM"},{"d":"2026-02-02","t":"01:40 PM","s":"Gamma","e":25893.75,"tp":25933.75,"sl":25828.75,"r":"SL","p":-1040,"x":"02:00 PM"},{"d":"2026-02-02","t":"08:10 PM","s":"Gamma","e":25924.25,"tp":25964.25,"sl":25859.25,"r":"TP","p":640,"x":"09:45 PM"},{"d":"2026-02-03","t":"01:25 AM","s":"Gamma","e":25975.25,"tp":26015.25,"sl":25910.25,"r":"TP","p":640,"x":"01:45 AM"},{"d":"2026-02-03","t":"04:40 AM","s":"Gamma","e":25946.0,"tp":25986.0,"sl":25881.0,"r":"TP","p":640,"x":"06:25 AM"},{"d":"2026-02-03","t":"06:00 AM","s":"Gamma","e":25930.75,"tp":25970.75,"sl":25865.75,"r":"TP","p":640,"x":"06:15 AM"},{"d":"2026-02-03","t":"07:55 AM","s":"Gamma","e":25963.5,"tp":26003.5,"sl":25898.5,"r":"SL","p":-1040,"x":"08:30 AM"},{"d":"2026-02-03","t":"08:15 AM","s":"Gamma","e":25943.25,"tp":25983.25,"sl":25878.25,"r":"SL","p":-1040,"x":"08:30 AM"},{"d":"2026-02-03","t":"08:30 AM","s":"Gamma","e":25898.5,"tp":25938.5,"sl":25833.5,"r":"SL","p":-1040,"x":"08:35 AM"},{"d":"2026-02-03","t":"08:40 AM","s":"Alpha","e":25732.25,"tp":25772.25,"sl":25667.25,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-03","t":"08:40 AM","s":"Beta","e":25744.0,"tp":25784.0,"sl":25679.0,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-03","t":"08:45 AM","s":"Gamma","e":25767.25,"tp":25807.25,"sl":25702.25,"r":"SL","p":-1040,"x":"08:55 AM"},{"d":"2026-02-03","t":"08:55 AM","s":"Alpha","e":25635.75,"tp":25675.75,"sl":25570.75,"r":"SL","p":-1040,"x":"09:00 AM"},{"d":"2026-02-03","t":"08:55 AM","s":"Beta","e":25652.25,"tp":25692.25,"sl":25587.25,"r":"SL","p":-1040,"x":"09:00 AM"},{"d":"2026-02-03","t":"08:50 PM","s":"Gamma","e":25401.0,"tp":25441.0,"sl":25336.0,"r":"TP","p":640,"x":"09:30 PM"},{"d":"2026-02-03","t":"11:30 PM","s":"Gamma","e":25416.0,"tp":25456.0,"sl":25351.0,"r":"TP","p":640,"x":"12:05 AM"},{"d":"2026-02-04","t":"02:20 AM","s":"Gamma","e":25445.5,"tp":25485.5,"sl":25380.5,"r":"SL","p":-1040,"x":"03:15 AM"},{"d":"2026-02-04","t":"06:25 AM","s":"Gamma","e":25429.25,"tp":25469.25,"sl":25364.25,"r":"SL","p":-1040,"x":"07:45 AM"},{"d":"2026-02-04","t":"06:40 AM","s":"Gamma","e":25408.5,"tp":25448.5,"sl":25343.5,"r":"SL","p":-1040,"x":"07:50 AM"},{"d":"2026-02-04","t":"08:30 AM","s":"Gamma","e":25297.0,"tp":25337.0,"sl":25232.0,"r":"TP","p":640,"x":"08:35 AM"},{"d":"2026-02-04","t":"08:45 AM","s":"Gamma","e":25291.75,"tp":25331.75,"sl":25226.75,"r":"TP","p":640,"x":"08:50 AM"},{"d":"2026-02-04","t":"09:00 AM","s":"Alpha","e":25120.5,"tp":25160.5,"sl":25055.5,"r":"TP","p":640,"x":"09:05 AM"},{"d":"2026-02-04","t":"09:00 AM","s":"Beta","e":25135.5,"tp":25175.5,"sl":25070.5,"r":"TP","p":640,"x":"09:05 AM"},{"d":"2026-02-04","t":"09:00 AM","s":"Gamma","e":25182.75,"tp":25222.75,"sl":25117.75,"r":"TP","p":640,"x":"09:05 AM"},{"d":"2026-02-04","t":"10:45 AM","s":"Beta","e":24952.75,"tp":24992.75,"sl":24887.75,"r":"TP","p":640,"x":"10:55 AM"},{"d":"2026-02-04","t":"11:25 AM","s":"Alpha","e":24898.25,"tp":24938.25,"sl":24833.25,"r":"TP","p":640,"x":"11:30 AM"},{"d":"2026-02-04","t":"11:25 AM","s":"Gamma","e":24891.75,"tp":24931.75,"sl":24826.75,"r":"TP","p":640,"x":"11:30 AM"},{"d":"2026-02-04","t":"03:00 PM","s":"Gamma","e":24923.0,"tp":24963.0,"sl":24858.0,"r":"TP","p":640,"x":"03:05 PM"},{"d":"2026-02-04","t":"08:05 PM","s":"Gamma","e":25078.75,"tp":25118.75,"sl":25013.75,"r":"SL","p":-1040,"x":"08:10 PM"},{"d":"2026-02-05","t":"02:50 AM","s":"Gamma","e":25026.5,"tp":25066.5,"sl":24961.5,"r":"TP","p":640,"x":"03:25 AM"},{"d":"2026-02-05","t":"03:05 AM","s":"Gamma","e":24982.25,"tp":25022.25,"sl":24917.25,"r":"TP","p":640,"x":"03:20 AM"},{"d":"2026-02-05","t":"06:15 AM","s":"Gamma","e":24982.5,"tp":25022.5,"sl":24917.5,"r":"SL","p":-1040,"x":"06:20 AM"},{"d":"2026-02-05","t":"06:30 AM","s":"Gamma","e":24865.75,"tp":24905.75,"sl":24800.75,"r":"SL","p":-1040,"x":"06:40 AM"},{"d":"2026-02-05","t":"06:45 AM","s":"Alpha","e":24715.5,"tp":24755.5,"sl":24650.5,"r":"TP","p":640,"x":"06:50 AM"},{"d":"2026-02-05","t":"06:45 AM","s":"Beta","e":24733.75,"tp":24773.75,"sl":24668.75,"r":"TP","p":640,"x":"06:50 AM"},{"d":"2026-02-05","t":"06:45 AM","s":"Gamma","e":24730.25,"tp":24770.25,"sl":24665.25,"r":"TP","p":640,"x":"06:50 AM"},{"d":"2026-02-05","t":"08:30 AM","s":"Gamma","e":24733.75,"tp":24773.75,"sl":24668.75,"r":"TP","p":640,"x":"08:35 AM"},{"d":"2026-02-05","t":"09:05 AM","s":"Gamma","e":24645.75,"tp":24685.75,"sl":24580.75,"r":"SL","p":-1040,"x":"09:10 AM"},{"d":"2026-02-05","t":"03:30 PM","s":"Beta","e":24492.5,"tp":24532.5,"sl":24427.5,"r":"SL","p":-1040,"x":"03:55 PM"},{"d":"2026-02-05","t":"03:35 PM","s":"Alpha","e":24465.0,"tp":24505.0,"sl":24400.0,"r":"SL","p":-1040,"x":"05:00 PM"},{"d":"2026-02-05","t":"06:00 PM","s":"Alpha","e":24284.0,"tp":24324.0,"sl":24219.0,"r":"TP","p":640,"x":"06:20 PM"},{"d":"2026-02-05","t":"06:00 PM","s":"Beta","e":24308.5,"tp":24348.5,"sl":24243.5,"r":"SL","p":-1040,"x":"06:15 PM"},{"d":"2026-02-05","t":"06:15 PM","s":"Beta","e":24258.75,"tp":24298.75,"sl":24193.75,"r":"TP","p":640,"x":"06:20 PM"},{"d":"2026-02-05","t":"09:40 PM","s":"Gamma","e":24490.25,"tp":24530.25,"sl":24425.25,"r":"TP","p":640,"x":"09:50 PM"},{"d":"2026-02-05","t":"10:35 PM","s":"Gamma","e":24453.25,"tp":24493.25,"sl":24388.25,"r":"TP","p":640,"x":"11:30 PM"},{"d":"2026-02-05","t":"10:55 PM","s":"Gamma","e":24428.5,"tp":24468.5,"sl":24363.5,"r":"TP","p":640,"x":"11:00 PM"},{"d":"2026-02-06","t":"02:00 AM","s":"Gamma","e":24499.75,"tp":24539.75,"sl":24434.75,"r":"TP","p":640,"x":"02:05 AM"},{"d":"2026-02-06","t":"08:30 AM","s":"Gamma","e":24744.0,"tp":24784.0,"sl":24679.0,"r":"TP","p":640,"x":"08:35 AM"},{"d":"2026-02-06","t":"02:00 PM","s":"Alpha","e":25063.0,"tp":25103.0,"sl":24998.0,"r":"TP","p":640,"x":"02:05 PM"},{"d":"2026-02-06","t":"02:00 PM","s":"Beta","e":25065.0,"tp":25105.0,"sl":25000.0,"r":"TP","p":640,"x":"02:15 PM"},{"d":"2026-02-06","t":"02:00 PM","s":"Gamma","e":25065.25,"tp":25105.25,"sl":25000.25,"r":"TP","p":640,"x":"02:15 PM"},{"d":"2026-02-08","t":"09:35 PM","s":"Gamma","e":25197.25,"tp":25237.25,"sl":25132.25,"r":"SL","p":-1040,"x":"01:25 AM"},{"d":"2026-02-08","t":"10:50 PM","s":"Gamma","e":25181.25,"tp":25221.25,"sl":25116.25,"r":"TP","p":640,"x":"11:20 PM"},{"d":"2026-02-09","t":"12:00 AM","s":"Gamma","e":25171.75,"tp":25211.75,"sl":25106.75,"r":"TP","p":640,"x":"02:05 AM"},{"d":"2026-02-09","t":"12:15 AM","s":"Gamma","e":25164.0,"tp":25204.0,"sl":25099.0,"r":"TP","p":640,"x":"02:05 AM"},{"d":"2026-02-09","t":"01:30 AM","s":"Gamma","e":25121.0,"tp":25161.0,"sl":25056.0,"r":"TP","p":640,"x":"01:45 AM"},{"d":"2026-02-09","t":"03:35 AM","s":"Gamma","e":25126.0,"tp":25166.0,"sl":25061.0,"r":"SL","p":-1040,"x":"04:00 AM"},{"d":"2026-02-09","t":"03:55 AM","s":"Gamma","e":25088.5,"tp":25128.5,"sl":25023.5,"r":"SL","p":-1040,"x":"04:30 AM"},{"d":"2026-02-09","t":"04:00 AM","s":"Beta","e":25063.25,"tp":25103.25,"sl":24998.25,"r":"SL","p":-1040,"x":"04:30 AM"},{"d":"2026-02-09","t":"04:15 AM","s":"Beta","e":25043.5,"tp":25083.5,"sl":24978.5,"r":"SL","p":-1040,"x":"04:40 AM"},{"d":"2026-02-09","t":"07:35 PM","s":"Gamma","e":25301.25,"tp":25341.25,"sl":25236.25,"r":"TP","p":640,"x":"07:45 PM"},{"d":"2026-02-09","t":"08:35 PM","s":"Beta","e":25291.75,"tp":25331.75,"sl":25226.75,"r":"TP","p":640,"x":"10:45 PM"},{"d":"2026-02-09","t":"08:35 PM","s":"Gamma","e":25295.0,"tp":25335.0,"sl":25230.0,"r":"TP","p":640,"x":"10:45 PM"},{"d":"2026-02-09","t":"09:05 PM","s":"Beta","e":25287.0,"tp":25327.0,"sl":25222.0,"r":"TP","p":640,"x":"10:35 PM"},{"d":"2026-02-09","t":"09:15 PM","s":"Alpha","e":25279.25,"tp":25319.25,"sl":25214.25,"r":"TP","p":640,"x":"10:10 PM"},{"d":"2026-02-10","t":"07:05 AM","s":"Gamma","e":25305.75,"tp":25345.75,"sl":25240.75,"r":"TP","p":640,"x":"07:30 AM"},{"d":"2026-02-10","t":"08:40 AM","s":"Alpha","e":25267.25,"tp":25307.25,"sl":25202.25,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-10","t":"08:40 AM","s":"Beta","e":25273.0,"tp":25313.0,"sl":25208.0,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-10","t":"08:40 AM","s":"Gamma","e":25284.75,"tp":25324.75,"sl":25219.75,"r":"TP","p":640,"x":"08:50 AM"},{"d":"2026-02-10","t":"10:30 AM","s":"Gamma","e":25327.75,"tp":25367.75,"sl":25262.75,"r":"TP","p":640,"x":"11:10 AM"},{"d":"2026-02-10","t":"12:30 PM","s":"Gamma","e":25277.0,"tp":25317.0,"sl":25212.0,"r":"TP","p":640,"x":"12:55 PM"},{"d":"2026-02-10","t":"02:00 PM","s":"Gamma","e":25268.0,"tp":25308.0,"sl":25203.0,"r":"SL","p":-1040,"x":"02:55 PM"},{"d":"2026-02-10","t":"02:15 PM","s":"Gamma","e":25252.0,"tp":25292.0,"sl":25187.0,"r":"TP","p":640,"x":"06:45 PM"},{"d":"2026-02-10","t":"02:55 PM","s":"Gamma","e":25206.0,"tp":25246.0,"sl":25141.0,"r":"TP","p":640,"x":"03:45 PM"},{"d":"2026-02-10","t":"09:20 PM","s":"Gamma","e":25303.5,"tp":25343.5,"sl":25238.5,"r":"TP","p":640,"x":"09:55 PM"},{"d":"2026-02-10","t":"11:45 PM","s":"Gamma","e":25280.25,"tp":25320.25,"sl":25215.25,"r":"SL","p":-1040,"x":"02:15 AM"},{"d":"2026-02-11","t":"02:05 AM","s":"Gamma","e":25247.0,"tp":25287.0,"sl":25182.0,"r":"SL","p":-1040,"x":"04:00 AM"},{"d":"2026-02-11","t":"02:20 AM","s":"Gamma","e":25212.0,"tp":25252.0,"sl":25147.0,"r":"TP","p":640,"x":"02:30 AM"},{"d":"2026-02-11","t":"04:00 AM","s":"Alpha","e":25164.25,"tp":25204.25,"sl":25099.25,"r":"TP","p":640,"x":"04:55 AM"},{"d":"2026-02-11","t":"04:00 AM","s":"Beta","e":25172.0,"tp":25212.0,"sl":25107.0,"r":"TP","p":640,"x":"05:00 AM"},{"d":"2026-02-11","t":"04:00 AM","s":"Gamma","e":25172.5,"tp":25212.5,"sl":25107.5,"r":"TP","p":640,"x":"05:00 AM"},{"d":"2026-02-11","t":"04:15 AM","s":"Beta","e":25164.0,"tp":25204.0,"sl":25099.0,"r":"TP","p":640,"x":"04:55 AM"},{"d":"2026-02-11","t":"09:05 AM","s":"Gamma","e":25244.75,"tp":25284.75,"sl":25179.75,"r":"SL","p":-1040,"x":"09:10 AM"},{"d":"2026-02-11","t":"09:20 AM","s":"Beta","e":25070.5,"tp":25110.5,"sl":25005.5,"r":"TP","p":640,"x":"09:25 AM"},{"d":"2026-02-11","t":"09:20 AM","s":"Gamma","e":25083.75,"tp":25123.75,"sl":25018.75,"r":"TP","p":640,"x":"09:30 AM"},{"d":"2026-02-11","t":"05:30 PM","s":"Gamma","e":25228.5,"tp":25268.5,"sl":25163.5,"r":"TP","p":640,"x":"06:40 PM"},{"d":"2026-02-12","t":"12:20 AM","s":"Gamma","e":25315.25,"tp":25355.25,"sl":25250.25,"r":"TP","p":640,"x":"01:25 AM"},{"d":"2026-02-12","t":"12:35 AM","s":"Gamma","e":25303.5,"tp":25343.5,"sl":25238.5,"r":"TP","p":640,"x":"01:20 AM"},{"d":"2026-02-12","t":"07:05 AM","s":"Gamma","e":25335.75,"tp":25375.75,"sl":25270.75,"r":"TP","p":640,"x":"07:35 AM"},{"d":"2026-02-12","t":"08:45 AM","s":"Gamma","e":25269.25,"tp":25309.25,"sl":25204.25,"r":"SL","p":-1040,"x":"08:55 AM"},{"d":"2026-02-12","t":"09:00 AM","s":"Gamma","e":25191.0,"tp":25231.0,"sl":25126.0,"r":"TP","p":640,"x":"09:05 AM"},{"d":"2026-02-12","t":"09:40 AM","s":"Alpha","e":25088.0,"tp":25128.0,"sl":25023.0,"r":"SL","p":-1040,"x":"09:55 AM"},{"d":"2026-02-12","t":"09:40 AM","s":"Beta","e":25100.75,"tp":25140.75,"sl":25035.75,"r":"SL","p":-1040,"x":"09:55 AM"},{"d":"2026-02-12","t":"09:55 AM","s":"Alpha","e":25018.0,"tp":25058.0,"sl":24953.0,"r":"SL","p":-1040,"x":"10:05 AM"},{"d":"2026-02-12","t":"09:55 AM","s":"Beta","e":25034.5,"tp":25074.5,"sl":24969.5,"r":"SL","p":-1040,"x":"10:05 AM"},{"d":"2026-02-12","t":"06:45 PM","s":"Gamma","e":24718.25,"tp":24758.25,"sl":24653.25,"r":"TP","p":640,"x":"07:00 PM"},{"d":"2026-02-12","t":"09:20 PM","s":"Gamma","e":24773.75,"tp":24813.75,"sl":24708.75,"r":"SL","p":-1040,"x":"11:25 PM"},{"d":"2026-02-12","t":"09:50 PM","s":"Gamma","e":24751.75,"tp":24791.75,"sl":24686.75,"r":"TP","p":640,"x":"10:15 PM"},{"d":"2026-02-12","t":"11:20 PM","s":"Gamma","e":24723.25,"tp":24763.25,"sl":24658.25,"r":"SL","p":-1040,"x":"12:35 AM"},{"d":"2026-02-13","t":"12:30 AM","s":"Beta","e":24667.5,"tp":24707.5,"sl":24602.5,"r":"TP","p":640,"x":"12:50 AM"},{"d":"2026-02-13","t":"12:35 AM","s":"Alpha","e":24652.0,"tp":24692.0,"sl":24587.0,"r":"TP","p":640,"x":"12:50 AM"},{"d":"2026-02-13","t":"12:35 AM","s":"Gamma","e":24649.75,"tp":24689.75,"sl":24584.75,"r":"TP","p":640,"x":"12:50 AM"},{"d":"2026-02-13","t":"12:45 AM","s":"Beta","e":24659.5,"tp":24699.5,"sl":24594.5,"r":"TP","p":640,"x":"12:50 AM"},{"d":"2026-02-13","t":"04:50 AM","s":"Gamma","e":24742.25,"tp":24782.25,"sl":24677.25,"r":"SL","p":-1040,"x":"05:10 AM"},{"d":"2026-02-13","t":"05:05 AM","s":"Gamma","e":24693.75,"tp":24733.75,"sl":24628.75,"r":"SL","p":-1040,"x":"05:30 AM"},{"d":"2026-02-13","t":"05:30 AM","s":"Beta","e":24628.75,"tp":24668.75,"sl":24563.75,"r":"TP","p":640,"x":"05:35 AM"},{"d":"2026-02-13","t":"07:05 AM","s":"Gamma","e":24650.25,"tp":24690.25,"sl":24585.25,"r":"TP","p":640,"x":"07:20 AM"},{"d":"2026-02-13","t":"08:40 AM","s":"Beta","e":24584.0,"tp":24624.0,"sl":24519.0,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-13","t":"08:40 AM","s":"Gamma","e":24607.0,"tp":24647.0,"sl":24542.0,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-13","t":"01:40 PM","s":"Gamma","e":24898.25,"tp":24938.25,"sl":24833.25,"r":"SL","p":-1040,"x":"02:10 PM"},{"d":"2026-02-13","t":"01:55 PM","s":"Alpha","e":24863.5,"tp":24903.5,"sl":24798.5,"r":"SL","p":-1040,"x":"02:25 PM"},{"d":"2026-02-13","t":"01:55 PM","s":"Beta","e":24868.5,"tp":24908.5,"sl":24803.5,"r":"SL","p":-1040,"x":"02:25 PM"},{"d":"2026-02-13","t":"01:55 PM","s":"Gamma","e":24864.25,"tp":24904.25,"sl":24799.25,"r":"SL","p":-1040,"x":"02:25 PM"},{"d":"2026-02-13","t":"02:10 PM","s":"Alpha","e":24828.5,"tp":24868.5,"sl":24763.5,"r":"SL","p":-1040,"x":"02:25 PM"},{"d":"2026-02-13","t":"02:10 PM","s":"Beta","e":24835.25,"tp":24875.25,"sl":24770.25,"r":"SL","p":-1040,"x":"02:25 PM"},{"d":"2026-02-13","t":"02:10 PM","s":"Gamma","e":24826.5,"tp":24866.5,"sl":24761.5,"r":"SL","p":-1040,"x":"02:25 PM"},{"d":"2026-02-15","t":"07:40 PM","s":"Gamma","e":24828.0,"tp":24868.0,"sl":24763.0,"r":"TP","p":640,"x":"07:55 PM"},{"d":"2026-02-15","t":"11:35 PM","s":"Gamma","e":24810.75,"tp":24850.75,"sl":24745.75,"r":"TP","p":640,"x":"01:05 AM"},{"d":"2026-02-16","t":"04:30 AM","s":"Gamma","e":24875.25,"tp":24915.25,"sl":24810.25,"r":"SL","p":-1040,"x":"08:10 AM"},{"d":"2026-02-16","t":"05:10 AM","s":"Gamma","e":24845.75,"tp":24885.75,"sl":24780.75,"r":"SL","p":-1040,"x":"08:15 AM"},{"d":"2026-02-16","t":"07:45 AM","s":"Gamma","e":24847.25,"tp":24887.25,"sl":24782.25,"r":"SL","p":-1040,"x":"08:15 AM"},{"d":"2026-02-16","t":"08:00 AM","s":"Gamma","e":24832.25,"tp":24872.25,"sl":24767.25,"r":"SL","p":-1040,"x":"08:20 AM"},{"d":"2026-02-16","t":"07:25 PM","s":"Gamma","e":24777.5,"tp":24817.5,"sl":24712.5,"r":"SL","p":-1040,"x":"07:50 PM"},{"d":"2026-02-16","t":"07:40 PM","s":"Gamma","e":24764.5,"tp":24804.5,"sl":24699.5,"r":"SL","p":-1040,"x":"07:50 PM"},{"d":"2026-02-18","t":"12:10 AM","s":"Gamma","e":24815.0,"tp":24855.0,"sl":24750.0,"r":"TP","p":640,"x":"02:00 AM"},{"d":"2026-02-18","t":"05:05 AM","s":"Gamma","e":24907.0,"tp":24947.0,"sl":24842.0,"r":"TP","p":640,"x":"06:05 AM"},{"d":"2026-02-18","t":"05:30 AM","s":"Gamma","e":24891.75,"tp":24931.75,"sl":24826.75,"r":"TP","p":640,"x":"06:00 AM"},{"d":"2026-02-18","t":"06:30 AM","s":"Gamma","e":24853.5,"tp":24893.5,"sl":24788.5,"r":"TP","p":640,"x":"06:55 AM"},{"d":"2026-02-18","t":"08:00 AM","s":"Gamma","e":24809.5,"tp":24849.5,"sl":24744.5,"r":"TP","p":640,"x":"08:40 AM"},{"d":"2026-02-18","t":"08:30 AM","s":"Gamma","e":24769.0,"tp":24809.0,"sl":24704.0,"r":"TP","p":640,"x":"08:35 AM"},{"d":"2026-02-18","t":"12:25 PM","s":"Gamma","e":25054.5,"tp":25094.5,"sl":24989.5,"r":"SL","p":-1040,"x":"12:50 PM"},{"d":"2026-02-18","t":"12:40 PM","s":"Gamma","e":25032.5,"tp":25072.5,"sl":24967.5,"r":"SL","p":-1040,"x":"01:30 PM"},{"d":"2026-02-18","t":"01:35 PM","s":"Gamma","e":24925.0,"tp":24965.0,"sl":24860.0,"r":"SL","p":-1040,"x":"02:15 PM"},{"d":"2026-02-18","t":"10:45 PM","s":"Gamma","e":24961.5,"tp":25001.5,"sl":24896.5,"r":"TP","p":640,"x":"11:45 PM"},{"d":"2026-02-18","t":"11:05 PM","s":"Gamma","e":24945.5,"tp":24985.5,"sl":24880.5,"r":"TP","p":640,"x":"11:35 PM"},{"d":"2026-02-19","t":"02:40 AM","s":"Gamma","e":25006.5,"tp":25046.5,"sl":24941.5,"r":"SL","p":-1040,"x":"03:05 AM"},{"d":"2026-02-19","t":"02:55 AM","s":"Gamma","e":24962.5,"tp":25002.5,"sl":24897.5,"r":"SL","p":-1040,"x":"03:40 AM"},{"d":"2026-02-19","t":"06:00 AM","s":"Gamma","e":24830.5,"tp":24870.5,"sl":24765.5,"r":"TP","p":640,"x":"06:20 AM"},{"d":"2026-02-19","t":"07:15 AM","s":"Gamma","e":24831.0,"tp":24871.0,"sl":24766.0,"r":"TP","p":640,"x":"07:35 AM"},{"d":"2026-02-19","t":"07:30 AM","s":"Gamma","e":24810.75,"tp":24850.75,"sl":24745.75,"r":"TP","p":640,"x":"07:35 AM"},{"d":"2026-02-19","t":"08:35 AM","s":"Gamma","e":24805.25,"tp":24845.25,"sl":24740.25,"r":"TP","p":640,"x":"08:40 AM"},{"d":"2026-02-19","t":"10:45 AM","s":"Gamma","e":24821.0,"tp":24861.0,"sl":24756.0,"r":"TP","p":640,"x":"10:50 AM"},{"d":"2026-02-19","t":"12:00 PM","s":"Gamma","e":24781.25,"tp":24821.25,"sl":24716.25,"r":"TP","p":640,"x":"12:10 PM"},{"d":"2026-02-20","t":"01:40 AM","s":"Gamma","e":24928.5,"tp":24968.5,"sl":24863.5,"r":"TP","p":640,"x":"03:15 AM"},{"d":"2026-02-20","t":"01:55 AM","s":"Gamma","e":24913.75,"tp":24953.75,"sl":24848.75,"r":"TP","p":640,"x":"03:05 AM"},{"d":"2026-02-20","t":"02:20 AM","s":"Gamma","e":24896.5,"tp":24936.5,"sl":24831.5,"r":"TP","p":640,"x":"02:50 AM"},{"d":"2026-02-20","t":"05:00 AM","s":"Gamma","e":24870.5,"tp":24910.5,"sl":24805.5,"r":"SL","p":-1040,"x":"06:00 AM"},{"d":"2026-02-20","t":"07:30 AM","s":"Gamma","e":24775.75,"tp":24815.75,"sl":24710.75,"r":"SL","p":-1040,"x":"08:15 AM"},{"d":"2026-02-20","t":"07:45 AM","s":"Gamma","e":24729.75,"tp":24769.75,"sl":24664.75,"r":"TP","p":640,"x":"07:55 AM"},{"d":"2026-02-20","t":"11:15 AM","s":"Gamma","e":24920.75,"tp":24960.75,"sl":24855.75,"r":"TP","p":640,"x":"11:30 AM"},{"d":"2026-02-20","t":"12:20 PM","s":"Gamma","e":24930.5,"tp":24970.5,"sl":24865.5,"r":"TP","p":640,"x":"12:25 PM"},{"d":"2026-02-22","t":"05:00 PM","s":"Gamma","e":25019.25,"tp":25059.25,"sl":24954.25,"r":"SL","p":-1040,"x":"05:40 PM"},{"d":"2026-02-22","t":"05:20 PM","s":"Gamma","e":25013.25,"tp":25053.25,"sl":24948.25,"r":"SL","p":-1040,"x":"05:40 PM"},{"d":"2026-02-22","t":"08:10 PM","s":"Gamma","e":24820.25,"tp":24860.25,"sl":24755.25,"r":"TP","p":640,"x":"09:05 PM"},{"d":"2026-02-22","t":"11:15 PM","s":"Gamma","e":24809.25,"tp":24849.25,"sl":24744.25,"r":"TP","p":640,"x":"12:10 AM"},{"d":"2026-02-23","t":"02:40 AM","s":"Gamma","e":24880.5,"tp":24920.5,"sl":24815.5,"r":"TP","p":640,"x":"02:45 AM"},{"d":"2026-02-23","t":"05:35 AM","s":"Gamma","e":24949.0,"tp":24989.0,"sl":24884.0,"r":"SL","p":-1040,"x":"06:30 AM"},{"d":"2026-02-23","t":"05:50 AM","s":"Gamma","e":24923.0,"tp":24963.0,"sl":24858.0,"r":"TP","p":640,"x":"08:25 AM"},{"d":"2026-02-23","t":"08:45 AM","s":"Gamma","e":24865.5,"tp":24905.5,"sl":24800.5,"r":"TP","p":640,"x":"08:50 AM"},{"d":"2026-02-23","t":"10:00 AM","s":"Alpha","e":24695.25,"tp":24735.25,"sl":24630.25,"r":"TP","p":640,"x":"10:20 AM"},{"d":"2026-02-23","t":"10:00 AM","s":"Beta","e":24708.5,"tp":24748.5,"sl":24643.5,"r":"TP","p":640,"x":"10:25 AM"},{"d":"2026-02-23","t":"10:35 PM","s":"Gamma","e":24868.25,"tp":24908.25,"sl":24803.25,"r":"SL","p":-1040,"x":"02:00 AM"},{"d":"2026-02-23","t":"11:15 PM","s":"Gamma","e":24861.25,"tp":24901.25,"sl":24796.25,"r":"SL","p":-1040,"x":"02:00 AM"},{"d":"2026-02-24","t":"09:05 PM","s":"Gamma","e":25081.5,"tp":25121.5,"sl":25016.5,"r":"SL","p":-1040,"x":"09:30 PM"},{"d":"2026-02-24","t":"09:20 PM","s":"Gamma","e":25065.0,"tp":25105.0,"sl":25000.0,"r":"SL","p":-1040,"x":"09:30 PM"},{"d":"2026-02-25","t":"07:05 PM","s":"Gamma","e":25289.25,"tp":25329.25,"sl":25224.25,"r":"TP","p":640,"x":"12:10 AM"},{"d":"2026-02-25","t":"07:25 PM","s":"Gamma","e":25278.0,"tp":25318.0,"sl":25213.0,"r":"TP","p":640,"x":"07:55 PM"},{"d":"2026-02-25","t":"11:00 PM","s":"Gamma","e":25289.0,"tp":25329.0,"sl":25224.0,"r":"TP","p":640,"x":"12:10 AM"},{"d":"2026-02-25","t":"11:15 PM","s":"Gamma","e":25284.0,"tp":25324.0,"sl":25219.0,"r":"TP","p":640,"x":"12:05 AM"},{"d":"2026-02-26","t":"05:45 AM","s":"Gamma","e":25344.0,"tp":25384.0,"sl":25279.0,"r":"TP","p":640,"x":"06:00 AM"},{"d":"2026-02-26","t":"08:25 AM","s":"Gamma","e":25345.0,"tp":25385.0,"sl":25280.0,"r":"SL","p":-1040,"x":"08:30 AM"},{"d":"2026-02-26","t":"08:40 AM","s":"Gamma","e":25260.5,"tp":25300.5,"sl":25195.5,"r":"SL","p":-1040,"x":"08:50 AM"},{"d":"2026-02-26","t":"09:00 AM","s":"Gamma","e":25138.25,"tp":25178.25,"sl":25073.25,"r":"SL","p":-1040,"x":"09:10 AM"},{"d":"2026-02-26","t":"09:10 AM","s":"Beta","e":25065.0,"tp":25105.0,"sl":25000.0,"r":"SL","p":-1040,"x":"09:15 AM"},{"d":"2026-02-26","t":"09:15 AM","s":"Alpha","e":24958.75,"tp":24998.75,"sl":24893.75,"r":"SL","p":-1040,"x":"09:25 AM"},{"d":"2026-02-26","t":"09:15 AM","s":"Gamma","e":24973.5,"tp":25013.5,"sl":24908.5,"r":"SL","p":-1040,"x":"09:20 AM"},{"d":"2026-02-26","t":"06:45 PM","s":"Gamma","e":24956.25,"tp":24996.25,"sl":24891.25,"r":"TP","p":640,"x":"06:50 PM"},{"d":"2026-02-27","t":"12:15 AM","s":"Gamma","e":25003.75,"tp":25043.75,"sl":24938.75,"r":"TP","p":640,"x":"01:00 AM"},{"d":"2026-02-27","t":"03:45 AM","s":"Gamma","e":25025.25,"tp":25065.25,"sl":24960.25,"r":"SL","p":-1040,"x":"05:35 AM"},{"d":"2026-02-27","t":"04:00 AM","s":"Gamma","e":25000.25,"tp":25040.25,"sl":24935.25,"r":"TP","p":640,"x":"04:30 AM"},{"d":"2026-02-27","t":"05:35 AM","s":"Gamma","e":24961.75,"tp":25001.75,"sl":24896.75,"r":"SL","p":-1040,"x":"07:15 AM"},{"d":"2026-02-27","t":"07:30 AM","s":"Alpha","e":24837.0,"tp":24877.0,"sl":24772.0,"r":"TP","p":640,"x":"07:55 AM"},{"d":"2026-02-27","t":"07:30 AM","s":"Beta","e":24848.5,"tp":24888.5,"sl":24783.5,"r":"TP","p":640,"x":"08:30 AM"},{"d":"2026-02-27","t":"07:30 AM","s":"Gamma","e":24839.25,"tp":24879.25,"sl":24774.25,"r":"TP","p":640,"x":"07:55 AM"},{"d":"2026-02-27","t":"08:40 AM","s":"Gamma","e":24782.25,"tp":24822.25,"sl":24717.25,"r":"TP","p":640,"x":"08:45 AM"},{"d":"2026-02-27","t":"11:20 AM","s":"Gamma","e":24923.25,"tp":24963.25,"sl":24858.25,"r":"TP","p":640,"x":"11:25 AM"},{"d":"2026-02-27","t":"01:40 PM","s":"Gamma","e":24879.75,"tp":24919.75,"sl":24814.75,"r":"TP","p":640,"x":"02:05 PM"}];
+function toggleTradeLog(){
+
+  var body=document.getElementById('tlogBody');
+  var arrow=document.getElementById('tlogArrow');
+  var toggle=document.getElementById('tlogToggle');
+  if(body.classList.contains('open')){
+    body.classList.remove('open');arrow.classList.remove('open');toggle.classList.remove('open');
+  }else{
+    body.classList.add('open');arrow.classList.add('open');toggle.classList.add('open');
+    var rows=document.getElementById('tlogRows');
+    if(!rows.innerHTML){
+      var h='';
+      for(var i=TRADES.length-1;i>=0;i--){
+        var t=TRADES[i];
+        var pc=t.p>0?'var(--green)':'var(--red)';
+        var rc=t.r==='TP'?'background:rgba(0,232,162,.08);color:var(--green)':'background:rgba(255,68,102,.08);color:var(--red)';
+        h+='<tr><td style="color:var(--text)">'+t.d+'</td><td style="color:var(--muted)">'+t.t+'</td><td style="color:var(--cyan)">'+t.s+'</td><td style="color:var(--green)">LONG</td><td style="color:var(--white)">$'+t.e.toFixed(2)+'</td><td style="color:var(--muted)">$'+t.tp.toFixed(2)+'</td><td style="color:var(--muted)">$'+t.sl.toFixed(2)+'</td><td><span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;'+rc+'">'+t.r+'</span></td><td style="color:'+pc+';font-weight:600">'+(t.p>0?'+':'')+t.p+'</td><td style="color:var(--muted)">'+t.x+'</td></tr>';
+      }
+      rows.innerHTML=h;
+      document.getElementById('tlogCount').textContent='Showing '+TRADES.length+' most recent trades (Jan-Feb 2026) \u00b7 Full history available upon request';
+    }
+  }
+}
+
+// ─── API CONFIG ───────────────────────────────────────────────────────────
+var API = 'http://68.183.97.227:8000'; // Your Droplet IP
+var SESSION = {token: null, investor: null};
+
+function getToken(){return localStorage.getItem('nq_token');}
+function setToken(t){localStorage.setItem('nq_token',t);}
+function clearToken(){localStorage.removeItem('nq_token');SESSION.token=null;SESSION.investor=null;}
+
+async function apiCall(method, path, body){
+  var opts = {method: method, headers: {'Content-Type':'application/json'}};
+  var token = getToken();
+  if(token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if(body) opts.body = JSON.stringify(body);
+  var res = await fetch(API + path, opts);
+  var data = await res.json();
+  if(!res.ok) throw new Error(data.detail || 'Request failed');
+  return data;
+}
+
+function showError(msg){
+  var el = document.getElementById('loginError');
+  if(el){el.textContent=msg;el.style.display='block';}
+}
+function hideError(){
+  var el = document.getElementById('loginError');
+  if(el) el.style.display='none';
+}
+
+function buildLogin(){
+var h='<div class="login-wrap"><div class="login-box">';
+h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">INVESTOR PORTAL</div></div>';
+h+='<div class="login-form"><div class="login-toggle"><button id="ltLogin" class="active" onclick="toggleLogin(\'login\')">LOG IN</button><button id="ltSignup" class="inactive" onclick="toggleLogin(\'signup\')">SIGN UP</button></div>';
+h+='<div id="signupFields" style="display:none"><div class="field"><label>FULL NAME</label><input id="regName" placeholder="John Smith"></div><div class="field"><label>PHONE</label><input id="regPhone" placeholder="+1 (555) 000-0000"></div></div>';
+h+='<div class="field"><label>EMAIL</label><input id="regEmail" type="email" placeholder="investor@email.com"></div>';
+h+='<div class="field" style="margin-bottom:8px"><label>PASSWORD</label><input id="regPassword" type="password" placeholder="••••••••"></div>';
+h+='<div id="loginError" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;background:rgba(255,68,102,.08);border-radius:6px;border:1px solid rgba(255,68,102,.2)"></div>';
+h+='<button class="login-submit" id="loginBtn" onclick="doLogin()">Log In</button></div>';
+h+='<div class="login-back" onclick="showPage(\'homePage\')">← Back to Homepage</div>';
+h+='</div></div>';
+document.getElementById('loginPage').innerHTML=h;
+
+// Auto-login if token exists
+var token = getToken();
+if(token){
+  apiCall('GET','/investor/profile').then(function(data){
+    SESSION.investor = data;
+    showPage('dashPage'); buildDash(data.email);
+  }).catch(function(){clearToken();});
+}
+}
+
+function toggleLogin(mode){
+document.getElementById('ltLogin').className=mode==='login'?'active':'inactive';
+document.getElementById('ltSignup').className=mode==='signup'?'active':'inactive';
+document.getElementById('signupFields').style.display=mode==='signup'?'block':'none';
+document.getElementById('loginBtn').textContent=mode==='login'?'Log In':'Create Account';
+hideError();
+}
+
+async function doLogin(){
+var btn = document.getElementById('loginBtn');
+var mode = btn.textContent === 'Log In' ? 'login' : 'signup';
+var email = (document.getElementById('regEmail').value||'').trim();
+var password = document.getElementById('regPassword').value||'';
+hideError();
+
+if(!email || !password){showError('Please enter your email and password.');return;}
+btn.textContent = 'Please wait...'; btn.disabled = true;
+
+try {
+  var data;
+  if(mode === 'login'){
+    data = await apiCall('POST','/auth/login',{email:email,password:password});
+  } else {
+    var name = (document.getElementById('regName')||{}).value||'';
+    var phone = (document.getElementById('regPhone')||{}).value||'';
+    data = await apiCall('POST','/auth/signup',{email:email,password:password,name:name,phone:phone});
+  }
+  setToken(data.token);
+  var profile = await apiCall('GET','/investor/profile');
+  SESSION.investor = profile;
+  showPage('dashPage'); buildDash(profile.email);
+} catch(e){
+  showError(e.message||'Something went wrong. Please try again.');
+  btn.textContent = mode==='login'?'Log In':'Create Account';
+  btn.disabled = false;
+}
+}
+// ─── API CONFIG ───────────────────────────────────────────────────────────
+var API='https://api.nqalpha.com';
+var SESSION={token:null,investor:null};
+function getToken(){return localStorage.getItem('nq_token');}
+function setToken(t){localStorage.setItem('nq_token',t);}
+function clearToken(){localStorage.removeItem('nq_token');SESSION.token=null;SESSION.investor=null;}
+async function apiCall(method,path,body){
+  var opts={method:method,headers:{'Content-Type':'application/json'}};
+  var token=getToken();
+  if(token)opts.headers['Authorization']='Bearer '+token;
+  if(body)opts.body=JSON.stringify(body);
+  var res=await fetch(API+path,opts);
+  var data=await res.json();
+  if(!res.ok)throw new Error(data.detail||'Request failed');
+  return data;
+}
+function showLoginError(msg){var el=document.getElementById('loginError');if(el){el.textContent=msg;el.style.display='block';}}
+function hideLoginError(){var el=document.getElementById('loginError');if(el)el.style.display='none';}
+function calcEffective(pos){if(!pos||!pos.mode)return '—';if(pos.mode==='fixed')return pos.fixed_contracts+' contracts';return Math.max(1,Math.round(8*(pos.multiplier||0.25)))+' contracts ('+(Math.round((pos.multiplier||0.25)*100))+'%)';}
+
+function buildLogin(){
+var h='<div class="login-wrap"><div class="login-box">';
+h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">INVESTOR PORTAL</div></div>';
+h+='<div class="login-form"><div class="login-toggle"><button id="ltLogin" class="active" onclick="toggleLogin(\'login\')">LOG IN</button><button id="ltSignup" class="inactive" onclick="toggleLogin(\'signup\')">SIGN UP</button></div>';
+h+='<div id="signupFields" style="display:none"><div class="field"><label>FULL NAME</label><input id="regName" placeholder="John Smith"></div><div class="field"><label>PHONE</label><input id="regPhone" placeholder="+1 (555) 000-0000"></div></div>';
+h+='<div class="field"><label>EMAIL</label><input id="regEmail" type="email" placeholder="investor@email.com"></div>';
+h+='<div class="field" style="margin-bottom:8px"><label>PASSWORD</label><input id="regPassword" type="password" placeholder="••••••••"></div>';
+h+='<div id="loginError" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;background:rgba(255,68,102,.08);border-radius:6px;border:1px solid rgba(255,68,102,.2)"></div>';
+h+='<button class="login-submit" id="loginBtn" onclick="doLogin()">Log In</button></div>';
+h+='<div class="login-back" onclick="showPage(\'homePage\')">← Back to Homepage</div>';
+h+='</div></div>';
+document.getElementById('loginPage').innerHTML=h;
+var token=getToken();
+if(token){apiCall('GET','/investor/profile').then(function(data){SESSION.investor=data;showPage('dashPage');buildDash(data.email);}).catch(function(){clearToken();});}
+}
+function toggleLogin(mode){
+document.getElementById('ltLogin').className=mode==='login'?'active':'inactive';
+document.getElementById('ltSignup').className=mode==='signup'?'active':'inactive';
+document.getElementById('signupFields').style.display=mode==='signup'?'block':'none';
+document.getElementById('loginBtn').textContent=mode==='login'?'Log In':'Create Account';
+hideLoginError();
+}
+async function doLogin(){
+var btn=document.getElementById('loginBtn');
+var isSignup=btn.textContent==='Create Account';
+var email=(document.getElementById('regEmail').value||'').trim();
+var password=document.getElementById('regPassword').value||'';
+hideLoginError();
+if(!email||!password){showLoginError('Please enter your email and password.');return;}
+btn.textContent='Please wait...';btn.disabled=true;
+try{
+  var data;
+  if(isSignup){var name=(document.getElementById('regName')||{}).value||'';var phone=(document.getElementById('regPhone')||{}).value||'';data=await apiCall('POST','/auth/signup',{email:email,password:password,name:name,phone:phone});}
+  else{data=await apiCall('POST','/auth/login',{email:email,password:password});}
+  setToken(data.token);
+  var profile=await apiCall('GET','/investor/profile');
+  SESSION.investor=profile;
+  showPage('dashPage');buildDash(profile.email);
+}catch(e){showLoginError(e.message||'Something went wrong.');btn.textContent=isSignup?'Create Account':'Log In';btn.disabled=false;}
+}
+
+var dashTab='overview';
+async function buildDash(email){
+var inv=SESSION.investor||{};
+var h='';
+h+='<nav><div class="logo"><div class="logo-dot" style="width:8px;height:8px"></div><span class="logo-text" style="font-size:16px">NQ ALPHA</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-left:6px;letter-spacing:2px">PORTAL</span></div><div style="display:flex;align-items:center;gap:16px"><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(inv.email||email)+'</span><button class="btn" style="font-size:10px;padding:6px 16px" onclick="doLogout()">LOGOUT</button></div></nav>';
+h+='<div class="dash"><div class="dash-side" id="dashSide"></div><div class="dash-main" id="dashMain"></div></div>';
+document.getElementById('dashPage').innerHTML=h;
+dashTab='overview';renderDashTabs();await renderDashContent();
+}
+async function doLogout(){try{await apiCall('POST','/auth/logout');}catch(e){}clearToken();showPage('homePage');}
+function renderDashTabs(){
+var tabs=[{id:'overview',l:'Overview'},{id:'trades',l:'Trades'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'settings',l:'Settings'}];
+var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
+document.getElementById('dashSide').innerHTML=h;
+}
+async function switchTab(tab){dashTab=tab;renderDashTabs();await renderDashContent();}
+async function renderDashContent(){
+var m=document.getElementById('dashMain');
+m.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">Loading...</div>';
+try{
+var profile=await apiCall('GET','/investor/profile');SESSION.investor=profile;
+var stats=profile.stats||{};var conn=profile.connection||{};var pos=profile.position_settings||{};
+var h='';
+if(dashTab==='overview'){
+var mp=stats.month_pnl||0;
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:4px">Welcome back'+(profile.name?' '+profile.name.split(' ')[0]:'')+'</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">'+(conn.connected?'Account connected — copying trades live':'Connect your Tradovate account to start')+'</div>';
+if(!profile.is_approved)h+='<div style="background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:10px;padding:16px 20px;margin-bottom:24px;font-family:var(--mono);font-size:12px;color:var(--gold)">⏳ Your account is pending approval. You\'ll receive an email once activated.</div>';
+h+='<div class="dash-grid"><div class="dash-card"><div class="dc-label">YOUR P&L THIS MONTH</div><div class="dc-val" style="color:'+(mp>=0?'var(--green)':'var(--red)')+'">'+(mp>=0?'+':'')+fmtD(mp)+'</div><div class="dc-sub">'+(stats.total_trades||0)+' total trades · '+stats.win_rate+'% win rate</div></div>';
+h+='<div class="dash-card"><div class="dc-label">STATUS</div><div style="display:flex;align-items:center;gap:8px;margin-top:12px"><div style="width:8px;height:8px;border-radius:50%;background:'+(conn.connected?'var(--green)':'var(--gold)')+'"></div><span style="font-size:16px;font-weight:600;color:var(--white)">'+(conn.connected?'Active':'Not Connected')+'</span></div><div class="dc-sub" style="margin-top:8px">'+calcEffective(pos)+'</div></div>';
+h+='<div class="dash-card"><div class="dc-label">PERFORMANCE FEE DUE</div><div class="dc-val" style="color:var(--white);font-size:22px">'+fmtD(stats.performance_fee||0)+'</div><div class="dc-sub">18% of $'+Math.max(0,mp).toFixed(0)+' this month</div></div></div>';
+h+='<div class="dash-card"><div class="dc-label" style="margin-bottom:14px">STRATEGY PERFORMANCE (5Y BACKTEST)</div><canvas id="dashEq" style="width:100%;height:180px;display:block"></canvas></div>';
+}
+if(dashTab==='trades'){
+var trades=(await apiCall('GET','/investor/trades')).trades||[];
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:20px">Trade History</div>';
+if(!trades.length){h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No trades yet. Connect your account to start copying trades.</div>';}
+else{h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden"><table><thead><tr><th>Date</th><th>Strategy</th><th>Contracts</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody>';
+trades.forEach(function(t){var pc=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--muted)';var rc=t.result==='TP'?'background:rgba(0,232,162,.08);color:var(--green)':t.result==='SL'?'background:rgba(255,68,102,.08);color:var(--red)':'background:rgba(240,192,64,.08);color:var(--gold)';h+='<tr><td style="color:var(--text)">'+(t.entry_time||'').split('T')[0]+'</td><td style="color:var(--cyan)">'+t.strategy+'</td><td>'+t.contracts+'</td><td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td><td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td><td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td><td><span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;'+rc+'">'+t.result+'</span></td><td style="color:'+pc+';font-weight:600">'+(t.pnl>=0?'+':'')+fmtD(t.pnl)+'</td></tr>';});
+h+='</tbody></table></div>';}
+}
+if(dashTab==='connect'){
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Connect Tradovate</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Enter your Tradovate API credentials to start receiving signals</div>';
+if(conn.connected){h+='<div class="conn-ok"><div style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:8px">✓ Account Connected</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:4px">Username: '+conn.username+'</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">Connected: '+conn.connected_at+'</div><button onclick="doDisconnect()" style="margin-top:16px;font-family:var(--mono);font-size:11px;padding:8px 24px;background:transparent;border:1px solid rgba(255,68,102,.25);border-radius:8px;color:var(--red);cursor:pointer">Disconnect</button></div>';}
+else{h+='<div class="conn-box"><div class="field"><label>TRADOVATE USERNAME</label><input id="cUser" placeholder="your_username"></div><div class="field"><label>TRADOVATE PASSWORD</label><input id="cPass" type="password" placeholder="••••••••"></div><div class="field"><label>APP ID</label><input id="cApp" placeholder="YOUR_APP_ID"></div><div class="field"><label>CLIENT ID (CID)</label><input id="cCid" placeholder="10609"></div><div class="field"><label>API SECRET</label><input id="cSec" type="password" placeholder="••••••••"></div><div class="warn-box">⚠ Credentials are encrypted and stored securely. Start with a DEMO account first.</div><div id="connErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div><button id="connBtn" onclick="doConnect()" style="width:100%;padding:13px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Connect Account</button></div>';}
+h+='<div style="margin-top:24px"><div style="font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px">Position Sizing</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Master trades 8 contracts. Choose how many you want to copy.</div>';
+h+='<div class="conn-box"><div class="field"><label>MODE</label><select id="posMode" onchange="updatePosPreview()" style="width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none"><option value="multiplier"'+(pos.mode==='multiplier'?' selected':'')+'>Multiplier (% of master)</option><option value="fixed"'+(pos.mode==='fixed'?' selected':'')+'>Fixed Contracts</option></select></div>';
+h+='<div id="mField" class="field" style="'+(pos.mode==='fixed'?'display:none':'')+'"><label>MULTIPLIER (0.25 = 2 contracts, 0.5 = 4, 1.0 = 8)</label><input id="posMult" type="number" step="0.05" min="0.05" max="5" value="'+(pos.multiplier||0.25)+'" oninput="updatePosPreview()"></div>';
+h+='<div id="fField" class="field" style="'+(pos.mode==='multiplier'?'display:none':'')+'"><label>FIXED CONTRACTS (1–50)</label><input id="posFixed" type="number" min="1" max="50" value="'+(pos.fixed_contracts||2)+'" oninput="updatePosPreview()"></div>';
+h+='<div id="posPreview" style="font-family:var(--mono);font-size:12px;color:var(--green);margin-bottom:16px;padding:10px 14px;background:rgba(0,232,162,.06);border-radius:8px;border:1px solid rgba(0,232,162,.15)"></div>';
+h+='<div id="posErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div>';
+h+='<button id="posBtn" onclick="savePosSettings()" style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Save Position Settings</button></div></div>';
+}
+if(dashTab==='billing'){
+var mp=stats.month_pnl||0;var fee=stats.performance_fee||0;
+var hasCard=profile.stripe_card_last4||false;var cardBrand=(profile.stripe_card_brand||'').toUpperCase();var cardLast4=profile.stripe_card_last4||'';
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Invoices</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">18% performance fee · Only on new profits · High-water mark · Charged automatically</div>';
+
+// ── PAYMENT METHOD CARD ──
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px">';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="card-title">PAYMENT METHOD</div>';
+if(hasCard){h+='<div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div><span style="font-family:var(--mono);font-size:10px;color:var(--green)">ACTIVE</span></div>';}
+else{h+='<div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div><span style="font-family:var(--mono);font-size:10px;color:var(--gold)">NOT SET UP</span></div>';}
+h+='</div>';
+
+if(hasCard){
+h+='<div style="display:flex;align-items:center;gap:16px">';
+h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;flex:1;display:flex;align-items:center;gap:14px">';
+h+='<div style="background:linear-gradient(135deg,#1a1f3c,#2d3561);border-radius:6px;padding:8px 12px;min-width:52px;text-align:center"><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px">'+cardBrand+'</span></div>';
+h+='<div><div style="font-family:var(--mono);font-size:14px;color:var(--white);letter-spacing:2px">•••• •••• •••• '+cardLast4+'</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">Auto-charged on the 1st of each month</div></div></div>';
+h+='<button onclick="setupPaymentMethod()" style="padding:10px 20px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'">Update Card</button>';
+h+='</div>';
+} else {
+h+='<div style="background:rgba(240,192,64,.04);border:1px solid rgba(240,192,64,.15);border-radius:10px;padding:20px;text-align:center">';
+h+='<div style="font-size:28px;margin-bottom:10px">💳</div>';
+h+='<div style="font-size:14px;color:var(--white);font-weight:600;margin-bottom:6px">Add a Payment Method</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Add your card to enable automatic billing.<br>You will only be charged when you profit.</div>';
+h+='<button onclick="setupPaymentMethod()" style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .2s" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">Add Card</button>';
+h+='</div>';
+}
+h+='</div>';
+
+// ── CURRENT MONTH ──
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:20px"><table><thead><tr><th>Month</th><th>Profit</th><th>Fee (18%)</th><th>Status</th></tr></thead><tbody>';
+if(mp>0){
+var feeStatus=hasCard?'<span class="badge-tp">Auto-Pay</span>':'<span class="badge-pending">Add Card</span>';
+h+='<tr><td style="color:var(--white)">'+new Date().toLocaleString('default',{month:'long',year:'numeric'})+'</td><td style="color:var(--green)">+'+fmtD(mp)+'</td><td style="color:var(--white);font-weight:600">'+fmtD(fee)+'</td><td>'+feeStatus+'</td></tr>';
+} else {
+h+='<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:20px">No billable activity yet this month</td></tr>';
+}
+h+='</tbody></table></div>';
+
+// ── INVOICE HISTORY ──
+var invoices=profile.invoices||[];
+if(invoices.length>0){
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:20px">';
+h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">INVOICE HISTORY</div></div>';
+h+='<table><thead><tr><th>Date</th><th>Period</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
+invoices.forEach(function(inv){
+var statusBadge=inv.status==='paid'?'<span class="badge-tp">Paid</span>':inv.status==='pending'?'<span class="badge-pending">Pending</span>':'<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">Failed</span>';
+h+='<tr><td style="color:var(--white)">'+inv.date+'</td><td style="color:var(--muted)">'+inv.period+'</td><td style="color:var(--white);font-weight:600">'+fmtD(inv.amount)+'</td><td>'+statusBadge+'</td></tr>';
+});
+h+='</tbody></table></div>';
+}
+
+// ── HOW IT WORKS ──
+h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div>';
+h+='<div class="how-item">• <strong>18% performance fee</strong> — only charged on net new profits each month</div>';
+h+='<div class="how-item">• <strong>High-water mark</strong> — no fee charged until profits exceed previous peak</div>';
+h+='<div class="how-item">• <strong>Automatic billing</strong> — your card is charged on the 1st of each month</div>';
+h+='<div class="how-item">• <strong>No profits = no charge</strong> — losing months cost you nothing</div>';
+h+='<div class="how-item">• <strong>Secure payments</strong> — all card data handled by Stripe (PCI compliant)</div>';
+h+='<div class="how-item">• <strong>Receipts</strong> — emailed automatically after each charge</div>';
+h+='</div>';
+}
+if(dashTab==='settings'){
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:20px">Settings</div>';
+h+='<div class="conn-box"><div class="field"><label>FULL NAME</label><input id="setName" value="'+(profile.name||'')+'"></div><div class="field"><label>EMAIL</label><input value="'+(profile.email||'')+'" disabled style="opacity:0.5"></div><div class="field"><label>PHONE</label><input id="setPhone" value="'+(profile.phone||'')+'" placeholder="+1 (555) 000-0000"></div><div id="setMsg" style="display:none;font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;border-radius:6px"></div><button onclick="saveSettings()" style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Save Changes</button></div>';
+}
+m.innerHTML=h;
+if(dashTab==='overview')setTimeout(function(){drawDashEq();},50);
+if(dashTab==='connect')updatePosPreview();
+}catch(e){m.innerHTML='<div style="padding:40px;text-align:center;color:var(--red);font-family:var(--mono);font-size:12px">'+e.message+'</div>';}
+}
+function updatePosPreview(){
+var mode=(document.getElementById('posMode')||{}).value||'multiplier';
+var mf=document.getElementById('mField');var ff=document.getElementById('fField');
+if(mf)mf.style.display=mode==='multiplier'?'':'none';
+if(ff)ff.style.display=mode==='fixed'?'':'none';
+var p=document.getElementById('posPreview');if(!p)return;
+if(mode==='multiplier'){var m=parseFloat((document.getElementById('posMult')||{}).value||0.25);var q=Math.max(1,Math.round(8*m));p.textContent='→ You will trade '+q+' contract'+(q!==1?'s':'')+' per signal ('+(Math.round(m*100))+'% of master)';}
+else{var f=parseInt((document.getElementById('posFixed')||{}).value||2);p.textContent='→ You will always trade '+f+' contract'+(f!==1?'s':'')+' per signal';}
+}
+async function doConnect(){
+var btn=document.getElementById('connBtn');var err=document.getElementById('connErr');err.style.display='none';
+btn.textContent='Connecting...';btn.disabled=true;
+try{await apiCall('POST','/investor/connect',{username:document.getElementById('cUser').value,password:document.getElementById('cPass').value,app_id:document.getElementById('cApp').value,cid:document.getElementById('cCid').value,api_secret:document.getElementById('cSec').value,use_live:false});await renderDashContent();}
+catch(e){err.textContent=e.message;err.style.display='block';btn.textContent='Connect Account';btn.disabled=false;}
+}
+async function doDisconnect(){if(!confirm('Disconnect your Tradovate account? Trade copying will stop.'))return;await apiCall('POST','/investor/disconnect');await renderDashContent();}
+async function savePosSettings(){
+var btn=document.getElementById('posBtn');var err=document.getElementById('posErr');err.style.display='none';
+btn.textContent='Saving...';btn.disabled=true;
+try{var mode=document.getElementById('posMode').value;var body={mode:mode};if(mode==='multiplier')body.multiplier=parseFloat(document.getElementById('posMult').value);else body.fixed_contracts=parseInt(document.getElementById('posFixed').value);
+await apiCall('PUT','/investor/position-settings',body);btn.textContent='✓ Saved!';setTimeout(function(){btn.textContent='Save Position Settings';btn.disabled=false;},2000);}
+catch(e){err.textContent=e.message;err.style.display='block';btn.textContent='Save Position Settings';btn.disabled=false;}
+}
+async function saveSettings(){
+var btn=event.target;var msg=document.getElementById('setMsg');btn.textContent='Saving...';btn.disabled=true;
+try{await apiCall('PUT','/investor/profile',{name:document.getElementById('setName').value,phone:document.getElementById('setPhone').value});
+msg.textContent='✓ Saved successfully';msg.style.cssText='display:block;color:var(--green);background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.15);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;border-radius:6px';}
+catch(e){msg.textContent=e.message;msg.style.cssText='display:block;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;border-radius:6px';}
+btn.textContent='Save Changes';btn.disabled=false;
+}
+// ─── STRIPE PAYMENT METHOD SETUP ──────────────────────────────────────────
+async function setupPaymentMethod(){
+try{
+  var data = await apiCall('POST','/billing/setup-payment');
+  if(data.url){
+    window.location.href = data.url;
+  } else {
+    alert('Unable to set up payment. Please try again.');
+  }
+}catch(e){
+  alert('Error: ' + e.message);
+}
+}
+
+function drawDashEq(){
+var c=document.getElementById('dashEq');if(!c)return;
+var x=c.getContext('2d');var dpr=window.devicePixelRatio||1;
+var r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=180*dpr;x.scale(dpr,dpr);
+var W=r.width,H=180,data=D.eq;
+var mn=Math.min.apply(null,data.concat([0])),mx=Math.max.apply(null,data),rng=mx-mn||1;
+var pad={t:10,r:10,b:10,l:10},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+x.lineTo(pad.l+cw,pad.t+ch);x.lineTo(pad.l,pad.t+ch);x.closePath();
+var g=x.createLinearGradient(0,pad.t,0,H);g.addColorStop(0,'rgba(0,232,162,0.12)');g.addColorStop(1,'rgba(0,232,162,0)');x.fillStyle=g;x.fill();
+x.beginPath();for(var i=0;i<data.length;i++){var px=pad.l+(i/(data.length-1))*cw;var py=pad.t+((mx-data[i])/rng)*ch;if(i===0)x.moveTo(px,py);else x.lineTo(px,py);}
+x.strokeStyle='#00E8A2';x.lineWidth=2;x.stroke();
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────
+var ADMIN_KEY_STORED = null;
+
+function buildAdminLogin(){
+  var h='<div class="login-wrap"><div class="login-box">';
+  h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot" style="background:var(--gold);box-shadow:0 0 14px rgba(240,192,64,.4)"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">ADMIN PORTAL</div></div>';
+  h+='<div class="login-form">';
+  h+='<div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:20px;text-align:center">ADMINISTRATOR ACCESS</div>';
+  h+='<div class="field"><label>ADMIN PASSWORD</label><input id="adminPass" type="password" placeholder="••••••••" onkeydown="if(event.key===\'Enter\')doAdminLogin()"></div>';
+  h+='<div id="adminLoginErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;background:rgba(255,68,102,.08);border-radius:6px"></div>';
+  h+='<button onclick="doAdminLogin()" style="width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;color:#04080D;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font)">Sign In as Admin</button>';
+  h+='</div>';
+  h+='<div class="login-back" onclick="showPage(\'homePage\')">← Back to Homepage</div>';
+  h+='</div></div>';
+  document.getElementById('adminPage').innerHTML=h;
+}
+
+async function doAdminLogin(){
+  var pass=document.getElementById('adminPass').value;
+  var err=document.getElementById('adminLoginErr');
+  err.style.display='none';
+  if(!pass){err.textContent='Enter your admin password.';err.style.display='block';return;}
+  var btn=event.target||document.querySelector('#adminPage button');
+  btn.textContent='Signing in...';btn.disabled=true;
+  try{
+    var data=await fetch(API+'/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pass})}).then(r=>r.json());
+    if(data.token){
+      ADMIN_KEY_STORED=data.token;
+      localStorage.setItem('nq_admin_token',data.token);
+      await buildAdminDash();
+    } else {
+      err.textContent='Invalid password.';err.style.display='block';
+    }
+  }catch(e){err.textContent='Invalid password.';err.style.display='block';}
+  btn.textContent='Sign In as Admin';btn.disabled=false;
+}
+
+async function adminApi(method,path,body){
+  var token=ADMIN_KEY_STORED||localStorage.getItem('nq_admin_token');
+  var opts={method:method,headers:{'Content-Type':'application/json','x-admin-key':token}};
+  if(body)opts.body=JSON.stringify(body);
+  var res=await fetch(API+path,opts);
+  var data=await res.json();
+  if(!res.ok)throw new Error(data.detail||'Request failed');
+  return data;
+}
+
+var adminTab='investors';
+async function buildAdminDash(){
+  showPage('adminPage');
+  var h='<nav><div class="logo"><div class="logo-dot" style="background:var(--gold);box-shadow:0 0 14px rgba(240,192,64,.4);width:8px;height:8px"></div><span class="logo-text" style="font-size:16px">NQ ALPHA</span><span style="font-family:var(--mono);font-size:9px;color:var(--gold);margin-left:6px;letter-spacing:2px">ADMIN</span></div><button class="btn" style="font-size:10px;padding:6px 16px;border-color:rgba(240,192,64,.3);color:var(--gold)" onclick="adminLogout()">LOGOUT</button></nav>';
+  h+='<div class="dash"><div class="dash-side" id="adminSide"></div><div class="dash-main" id="adminMain"></div></div>';
+  document.getElementById('adminPage').innerHTML=h;
+  adminTab='investors';
+  renderAdminTabs();
+  await renderAdminContent();
+}
+
+function adminLogout(){
+  ADMIN_KEY_STORED=null;localStorage.removeItem('nq_admin_token');
+  showPage('homePage');
+}
+
+function renderAdminTabs(){
+  var tabs=[{id:'investors',l:'Investors'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'},{id:'overview',l:'Overview'}];
+  var h='';
+  tabs.forEach(function(t){
+    h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
+  });
+  document.getElementById('adminSide').innerHTML=h;
+}
+
+async function switchAdminTab(tab){adminTab=tab;renderAdminTabs();await renderAdminContent();}
+
+async function renderAdminContent(){
+  var m=document.getElementById('adminMain');
+  m.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">Loading...</div>';
+  try{
+    var stats=await adminApi('GET','/admin/stats');
+    var inv=await adminApi('GET','/admin/investors');
+    var investors=inv.investors||[];
+    var h='';
+
+    if(adminTab==='overview'){
+      h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:24px">Overview</div>';
+      h+='<div class="dash-grid" style="grid-template-columns:repeat(4,1fr)">';
+      h+='<div class="dash-card"><div class="dc-label">TOTAL INVESTORS</div><div class="dc-val" style="color:var(--white)">'+stats.total+'</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">APPROVED</div><div class="dc-val" style="color:var(--green)">'+stats.approved+'</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">PENDING</div><div class="dc-val" style="color:var(--gold)">'+stats.pending+'</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">CONNECTED</div><div class="dc-val" style="color:var(--cyan)">'+stats.connected+'</div></div>';
+      h+='</div>';
+      h+=renderInvestorTable(investors,'all');
+    }
+
+    if(adminTab==='investors'){
+      h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">All Investors</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:20px">'+investors.length+' total · '+stats.approved+' approved · '+stats.pending+' pending</div>';
+      h+=renderInvestorTable(investors,'all');
+    }
+
+    if(adminTab==='pending'){
+      var pending=investors.filter(function(i){return !i.is_approved;});
+      h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Pending Approval</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:20px">'+pending.length+' investor'+(pending.length!==1?'s':'')+' waiting for approval</div>';
+      if(pending.length===0){
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">✅ No pending investors</div>';
+      } else {
+        h+=renderInvestorTable(pending,'pending');
+      }
+    }
+
+    if(adminTab==='billing'){
+      h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Payments</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Payment status for all active investors</div>';
+
+      // Summary cards
+      var noCard=investors.filter(function(i){return i.is_approved && !i.stripe_card_last4;});
+      var hasCard=investors.filter(function(i){return i.is_approved && i.stripe_card_last4;});
+      var oweFee=investors.filter(function(i){return i.is_approved && i.stats && i.stats.performance_fee>0;});
+      var latePayments=investors.filter(function(i){return i.is_approved && i.stats && i.stats.performance_fee>0 && !i.stripe_card_last4;});
+
+      h+='<div class="dash-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">';
+      h+='<div class="dash-card"><div class="dc-label">CARDS ON FILE</div><div class="dc-val" style="color:var(--green)">'+hasCard.length+'</div><div class="dc-sub">auto-pay enabled</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">NO CARD</div><div class="dc-val" style="color:var(--gold)">'+noCard.length+'</div><div class="dc-sub">can\'t be billed</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">FEES OWED</div><div class="dc-val" style="color:var(--cyan)">'+oweFee.length+'</div><div class="dc-sub">this month</div></div>';
+      h+='<div class="dash-card"><div class="dc-label" style="color:var(--red)">⚠ NEEDS ATTENTION</div><div class="dc-val" style="color:var(--red)">'+latePayments.length+'</div><div class="dc-sub">owe fee but no card</div></div>';
+      h+='</div>';
+
+      // Late / needs attention section
+      if(latePayments.length>0){
+        h+='<div style="background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.2);border-radius:14px;padding:24px;margin-bottom:24px">';
+        h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:20px">⚠️</span><div><div style="font-size:16px;font-weight:700;color:var(--red)">Action Required — Investors Owe Fees But Have No Card</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">These investors owe a performance fee but haven\'t added a payment method</div></div></div>';
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
+        h+='<table><thead><tr><th>Investor</th><th>Email</th><th>Phone</th><th>Fee Owed</th><th>Monthly P&L</th><th>Action</th></tr></thead><tbody>';
+        latePayments.forEach(function(inv){
+          var fee=inv.stats?inv.stats.performance_fee:0;
+          var pnl=inv.stats?inv.stats.month_pnl:0;
+          h+='<tr>';
+          h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
+          h+='<td style="color:var(--text)"><a href="mailto:'+inv.email+'" style="color:var(--cyan)">'+inv.email+'</a></td>';
+          h+='<td style="color:var(--text);font-family:var(--mono);font-size:11px">'+(inv.phone||'—')+'</td>';
+          h+='<td style="color:var(--red);font-weight:700">'+fmtD(fee)+'</td>';
+          h+='<td style="color:var(--green)">+'+fmtD(pnl)+'</td>';
+          h+='<td><a href="mailto:'+inv.email+'?subject=NQ%20Alpha%20-%20Payment%20Method%20Needed&body=Hi%20'+(inv.name||'').split(' ')[0]+',%0A%0AYou%20have%20a%20performance%20fee%20of%20'+encodeURIComponent(fmtD(fee))+'%20due%20this%20month.%20Please%20log%20into%20your%20NQ%20Alpha%20dashboard%20and%20add%20a%20payment%20method%20in%20the%20Billing%20tab.%0A%0Ahttps://nqalpha.com%0A%0AThanks,%0ANQ%20Alpha" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:var(--gold);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:none;display:inline-block">EMAIL</a></td>';
+          h+='</tr>';
+        });
+        h+='</tbody></table></div></div>';
+      }
+
+      // No card section
+      if(noCard.length>0 && latePayments.length!==noCard.length){
+        var noCardNoFee=noCard.filter(function(i){return !i.stats || !i.stats.performance_fee || i.stats.performance_fee<=0;});
+        if(noCardNoFee.length>0){
+          h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:24px">';
+          h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:16px">💳</span><div style="font-size:14px;font-weight:600;color:var(--gold)">No Payment Method Yet</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px">No fee owed currently — just need to set up card</div></div>';
+          h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+          noCardNoFee.forEach(function(inv){
+            h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">';
+            h+='<span style="font-size:12px;color:var(--white);font-weight:600">'+(inv.name||inv.email)+'</span>';
+            h+='<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">no card</span>';
+            h+='</div>';
+          });
+          h+='</div></div>';
+        }
+      }
+
+      // All investors billing table
+      h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
+      h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">ALL INVESTOR BILLING STATUS</div></div>';
+      h+='<table><thead><tr><th>Investor</th><th>Email</th><th>Card</th><th>Monthly P&L</th><th>Fee (18%)</th><th>HWM</th><th>Status</th></tr></thead><tbody>';
+      investors.filter(function(i){return i.is_approved;}).forEach(function(inv){
+        var pnl=inv.stats?inv.stats.month_pnl:0;
+        var fee=inv.stats?inv.stats.performance_fee:0;
+        var hwm=inv.high_water_mark||0;
+        var hasC=!!inv.stripe_card_last4;
+        var cardStr=hasC?(inv.stripe_card_brand||'CARD')+' ••'+inv.stripe_card_last4:'—';
+        var status='';
+        if(fee>0 && hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">AUTO-PAY</span>';
+        else if(fee>0 && !hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">NO CARD ⚠</span>';
+        else if(pnl<=0) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(64,80,96,.15);color:var(--muted)">NO FEE</span>';
+        else if(hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">OK</span>';
+        else status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">NO CARD</span>';
+
+        h+='<tr>';
+        h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
+        h+='<td style="color:var(--text);font-size:11px">'+inv.email+'</td>';
+        h+='<td style="font-family:var(--mono);font-size:10px;color:'+(hasC?'var(--text)':'var(--muted)')+'">'+cardStr+'</td>';
+        h+='<td style="color:'+(pnl>=0?'var(--green)':'var(--red)')+';font-weight:600">'+(pnl>=0?'+':'')+fmtD(pnl)+'</td>';
+        h+='<td style="color:var(--white);font-weight:600">'+(fee>0?fmtD(fee):'—')+'</td>';
+        h+='<td style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+fmtD(hwm)+'</td>';
+        h+='<td>'+status+'</td>';
+        h+='</tr>';
+      });
+      h+='</tbody></table></div>';
+    }
+
+    m.innerHTML=h;
+  }catch(e){
+    m.innerHTML='<div style="padding:40px;text-align:center;color:var(--red);font-family:var(--mono);font-size:12px">'+e.message+' — <span style="cursor:pointer;text-decoration:underline" onclick="buildAdminLogin();showPage(\'adminPage\')">Log in again</span></div>';
+  }
+}
+
+function renderInvestorTable(investors, mode){
+  if(!investors.length) return '<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No investors yet</div>';
+  var h='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
+  h+='<table><thead><tr>';
+  h+='<th>ID</th><th>Name</th><th>Email</th><th>Joined</th><th>Status</th><th>Tradovate</th><th>Position</th><th>P&L</th><th>Actions</th>';
+  h+='</tr></thead><tbody>';
+  investors.forEach(function(inv){
+    var joined=(inv.created_at||'').split('T')[0];
+    var approved=inv.is_approved;
+    var connected=inv.is_connected;
+    var pnl=inv.stats?inv.stats.total_pnl:0;
+    var pos=inv.mode==='fixed'?inv.fixed_contracts+'ct fixed':Math.max(1,Math.round(8*(inv.multiplier||0.25)))+'ct ('+(Math.round((inv.multiplier||0.25)*100))+'%)';
+    h+='<tr>';
+    h+='<td style="color:var(--muted)">#'+inv.id+'</td>';
+    h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
+    h+='<td style="color:var(--text)">'+inv.email+'</td>';
+    h+='<td style="color:var(--muted)">'+joined+'</td>';
+    h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(approved?'background:rgba(0,232,162,.08);color:var(--green)':'background:rgba(240,192,64,.08);color:var(--gold)')+'">'+( approved?'APPROVED':'PENDING')+'</span></td>';
+    h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(connected?'background:rgba(0,196,255,.08);color:var(--cyan)':'background:rgba(64,80,96,.15);color:var(--muted)')+'">'+( connected?'CONNECTED':'NOT CONNECTED')+'</span></td>';
+    h+='<td style="color:var(--text);font-family:var(--mono);font-size:11px">'+pos+'</td>';
+    h+='<td style="color:'+(pnl>=0?'var(--green)':'var(--red)')+';font-weight:600">'+(pnl>=0?'+':'')+fmtD(pnl)+'</td>';
+    h+='<td><div style="display:flex;gap:6px">';
+    if(!approved){
+      h+='<button onclick="adminAction(\'approve\','+inv.id+')" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:var(--green);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer">APPROVE</button>';
+    } else {
+      h+='<button onclick="adminAction(\'revoke\','+inv.id+')" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:transparent;border:1px solid rgba(255,68,102,.25);border-radius:6px;color:var(--red);cursor:pointer">REVOKE</button>';
+    }
+    h+='<button onclick="adminAction(\'delete\','+inv.id+')" style="font-family:var(--mono);font-size:10px;padding:5px 10px;background:transparent;border:1px solid var(--bd);border-radius:6px;color:var(--muted);cursor:pointer">✕</button>';
+    h+='</div></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+  return h;
+}
+
+async function adminAction(action, investorId){
+  if(action==='delete' && !confirm('Permanently delete this investor? This cannot be undone.')) return;
+  if(action==='revoke' && !confirm('Revoke this investor\'s access?')) return;
+  try{
+    if(action==='approve') await adminApi('POST','/admin/approve/'+investorId);
+    else if(action==='revoke') await adminApi('POST','/admin/revoke/'+investorId);
+    else if(action==='delete') await adminApi('DELETE','/admin/investor/'+investorId);
+    await renderAdminContent();
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// Auto-restore admin session
+function checkAdminSession(){
+  var token=localStorage.getItem('nq_admin_token');
+  if(token){ADMIN_KEY_STORED=token;}
+}
+checkAdminSession();
+
+// ─── Init
+buildHome();
+window.addEventListener('resize',function(){drawEqChart();});
+</script>
+</body>
+</html>
