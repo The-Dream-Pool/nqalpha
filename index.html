@@ -7,6 +7,10 @@
 <meta name="description" content="Three proprietary mean-reversion strategies on Micro E-Mini Nasdaq futures. Fully automated. 5-year track record.">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple_icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#04080D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:title" content="NQ Alpha — Algorithmic Futures Trading">
 <meta property="og:description" content="Three proprietary mean-reversion strategies on MNQ futures. $1.77M backtested over 5 years. 72% win rate. Fully automated.">
 <meta property="og:image" content="https://nqalpha.com/og_image.png">
@@ -2434,6 +2438,9 @@ if(window.location.search.includes('card=added')){
   buildHome();
 }
 window.addEventListener('resize',function(){drawEqChart();if(dashTab==='pnl'){drawLiveEqChart();drawDailyPnlChart();}});
+</script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
 </script>
 </body>
 </html>
