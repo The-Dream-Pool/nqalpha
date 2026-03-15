@@ -115,7 +115,7 @@ var D={
   strats:[
     {name:"Alpha",trades:727,wr:76.5,pnl:178000,pf:2.00,desc:"Our tightest filter. Identifies extreme statistical dislocations using a proprietary volume-weighted pricing model. Trades less frequently but with the highest precision \u2014 only entering when the market reaches rare extremes.",tag:"HIGH-PRECISION ENTRIES AT EXTREME LEVELS",color:"#00C4FF",icon:"\u25c7"},
     {name:"Beta",trades:1105,wr:77.6,pnl:292240,pf:2.14,desc:"The workhorse. Same proprietary volume-weighted model as Alpha but calibrated to capture more opportunities with a slightly wider threshold. Delivers the highest profit factor of all three strategies.",tag:"BEST RISK-ADJUSTED RETURNS",color:"#B070FF",icon:"\u25c8"},
-    {name:"Gamma",trades:8301,wr:71.2,pnl:1297440,pf:1.52,desc:"The volume engine. Runs around the clock using a proprietary rolling statistical model. Generates the most trades and the highest total profit. Designed for consistent returns across all market conditions.",tag:"24-HOUR COVERAGE, HIGHEST TOTAL RETURN",color:"#00E8A2",icon:"\u25c6"}
+    {name:"Gamma",trades:8301,wr:71.2,pnl:1297440,pf:1.52,desc:"The volume engine. Runs around the clock using a proprietary rolling statistical model. Generates the most trades and the highest total profit. Designed for consistent returns across all market conditions.",tag:"24-HOUR COVERAGE, HIGHEST TOTAL RETURN",color:"#F0C040",icon:"\u25c6"}
   ]
 };
 var ML=Object.keys(D.monthly);
@@ -802,7 +802,7 @@ var tabs;
 if(!inv.is_approved){
   tabs=[{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 } else {
-  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'billing',l:'Billing'},{id:'connect',l:'Connect'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 }
 var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
 document.getElementById('dashSide').innerHTML=h;
@@ -941,8 +941,8 @@ var mp=stats.month_pnl||0;
 // ── ONBOARDING WALKTHROUGH ──
 var ob1=true; // Account created (always true if they're here)
 var ob2=!!profile.is_approved;
-var ob3=!!(conn&&conn.connected);
-var ob4=!!(profile.stripe_card_last4);
+var ob3=!!(profile.stripe_card_last4);
+var ob4=!!(conn&&conn.connected);
 var obDone=ob1&&ob2&&ob3&&ob4;
 var obCount=(ob1?1:0)+(ob2?1:0)+(ob3?1:0)+(ob4?1:0);
 var obPct=Math.round(obCount/4*100);
@@ -995,38 +995,38 @@ h+='<div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-s
 h+='</div>';
 }
 
-// Step 3 — Connect Tradovate
+// Step 3 — Add Payment Method
 if(ob3){
 h+='<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;padding:14px 16px;border-radius:10px;background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.1)">';
-h+='<div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#04080D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
-h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--green)">Tradovate Connected</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">Linked as <span style="color:var(--cyan)">'+(conn.username||'')+'</span></div></div>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;padding:4px 10px;background:rgba(0,232,162,.08);border-radius:5px;margin-top:4px">DONE</div>';
-h+='</div>';
-} else {
-var s3disabled=!ob2;
-h+='<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;padding:14px 16px;border-radius:10px;background:'+(s3disabled?'rgba(22,32,48,.3)':'var(--sf)')+';border:1px solid var(--bd);'+(s3disabled?'opacity:.5;':'cursor:pointer;')+'" '+(s3disabled?'':'onclick="switchTab(\'connect\')"')+' '+(s3disabled?'':'onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'"')+'>';
-h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(0,196,255,.08);border:2px solid '+(s3disabled?'var(--muted)':'var(--cyan)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(s3disabled?'var(--muted)':'var(--cyan)')+'">3</span></div>';
-h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s3disabled?'var(--muted)':'var(--white)')+'">Connect Tradovate</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s3disabled?'Complete step 2 first':'Link your Tradovate account to start copying trades →')+'</div></div>';
-if(!s3disabled)h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:1px;padding:4px 10px;background:rgba(0,196,255,.08);border-radius:5px;margin-top:4px">SET UP →</div>';
-h+='</div>';
-}
-
-// Step 4 — Add Payment Method
-if(ob4){
-h+='<div style="display:flex;gap:16px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.1)">';
 h+='<div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#04080D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
 h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--green)">Payment Method Added</div>';
 h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(profile.stripe_card_brand||'CARD')+' ending in '+(profile.stripe_card_last4||'')+'</div></div>';
 h+='<div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;padding:4px 10px;background:rgba(0,232,162,.08);border-radius:5px;margin-top:4px">DONE</div>';
 h+='</div>';
 } else {
+var s3disabled=!ob2;
+h+='<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;padding:14px 16px;border-radius:10px;background:'+(s3disabled?'rgba(22,32,48,.3)':'var(--sf)')+';border:1px solid var(--bd);'+(s3disabled?'opacity:.5;':'cursor:pointer;')+'" '+(s3disabled?'':'onclick="switchTab(\'billing\')"')+' '+(s3disabled?'':'onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'"')+'>';
+h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(0,196,255,.08);border:2px solid '+(s3disabled?'var(--muted)':'var(--cyan)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(s3disabled?'var(--muted)':'var(--cyan)')+'">3</span></div>';
+h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s3disabled?'var(--muted)':'var(--white)')+'">Add Payment Method</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s3disabled?'Complete step 2 first':'Add a card before connecting your Tradovate account →')+'</div></div>';
+if(!s3disabled)h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:1px;padding:4px 10px;background:rgba(0,196,255,.08);border-radius:5px;margin-top:4px">SET UP →</div>';
+h+='</div>';
+}
+
+// Step 4 — Connect Tradovate
+if(ob4){
+h+='<div style="display:flex;gap:16px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.1)">';
+h+='<div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#04080D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--green)">Tradovate Connected</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">Linked as <span style="color:var(--cyan)">'+(conn.username||'')+'</span></div></div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;padding:4px 10px;background:rgba(0,232,162,.08);border-radius:5px;margin-top:4px">DONE</div>';
+h+='</div>';
+} else {
 var s4disabled=!ob3;
-h+='<div style="display:flex;gap:16px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:'+(s4disabled?'rgba(22,32,48,.3)':'var(--sf)')+';border:1px solid var(--bd);'+(s4disabled?'opacity:.5;':'cursor:pointer;')+'" '+(s4disabled?'':'onclick="switchTab(\'billing\')"')+' '+(s4disabled?'':'onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'"')+'>';
+h+='<div style="display:flex;gap:16px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:'+(s4disabled?'rgba(22,32,48,.3)':'var(--sf)')+';border:1px solid var(--bd);'+(s4disabled?'opacity:.5;':'cursor:pointer;')+'" '+(s4disabled?'':'onclick="switchTab(\'connect\')"')+' '+(s4disabled?'':'onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'"')+'>';
 h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(0,196,255,.08);border:2px solid '+(s4disabled?'var(--muted)':'var(--cyan)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(s4disabled?'var(--muted)':'var(--cyan)')+'">4</span></div>';
-h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s4disabled?'var(--muted)':'var(--white)')+'">Add Payment Method</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s4disabled?'Complete step 3 first':'Add a card for automatic subscription billing →')+'</div></div>';
+h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s4disabled?'var(--muted)':'var(--white)')+'">Connect Tradovate</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s4disabled?'Add a payment method first':'Link your Tradovate account to start copying trades →')+'</div></div>';
 if(!s4disabled)h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:1px;padding:4px 10px;background:rgba(0,196,255,.08);border-radius:5px;margin-top:4px">SET UP →</div>';
 h+='</div>';
 }
