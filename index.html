@@ -2116,7 +2116,7 @@ function adminLogout(){
 }
 
 function renderAdminTabs(){
-  var tabs=[{id:'health',l:'System Health'},{id:'overview',l:'Overview'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'overview',l:'Overview'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
@@ -2134,6 +2134,139 @@ async function renderAdminContent(){
     var inv=await adminApi('GET','/admin/investors');
     var investors=inv.investors||[];
     var h='';
+
+    if(adminTab==='master'){
+      var mt;
+      try{ mt = await adminApi('GET','/admin/master-trades'); }
+      catch(e){ mt = null; }
+
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+      h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Trades</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live trade log from the master account</div></div>';
+      h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='</div>';
+
+      if(!mt){
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">Failed to load master trades</div>';
+      } else {
+        var ms=mt.stats||{};
+        var openPos=mt.open||[];
+        var trades=mt.trades||[];
+        var strats=ms.strategies||[];
+
+        // Stats cards
+        var todayCol=(ms.today_pnl||0)>=0?'var(--green)':'var(--red)';
+        var totalCol=(ms.total_pnl||0)>=0?'var(--green)':'var(--red)';
+
+        h+='<div class="admin-grid-4" style="margin-bottom:20px">';
+        h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+todayCol+'"></div>';
+        h+='<div class="dc-label">TODAY P&L</div><div class="dc-val" style="color:'+todayCol+'">'+(ms.today_pnl>=0?'+':'')+fmtD(ms.today_pnl||0)+'</div></div>';
+
+        h+='<div class="dash-card"><div class="dc-label">TOTAL P&L</div>';
+        h+='<div class="dc-val" style="color:'+totalCol+'">'+(ms.total_pnl>=0?'+':'')+fmtD(ms.total_pnl||0)+'</div></div>';
+
+        h+='<div class="dash-card"><div class="dc-label">WIN RATE</div>';
+        h+='<div class="dc-val" style="color:var(--white)">'+(ms.win_rate||0)+'%</div>';
+        h+='<div class="dc-sub">'+(ms.wins||0)+'W / '+(ms.losses||0)+'L</div></div>';
+
+        h+='<div class="dash-card"><div class="dc-label">OPEN POSITIONS</div>';
+        h+='<div class="dc-val" style="color:'+(ms.open_positions>0?'var(--cyan)':'var(--muted)')+'">'+(ms.open_positions||0)+'</div>';
+        h+='<div class="dc-sub">'+(ms.total_trades||0)+' total trades</div></div>';
+        h+='</div>';
+
+        // Strategy breakdown
+        if(strats.length>0){
+          h+='<div style="display:grid;grid-template-columns:repeat('+Math.min(strats.length,4)+',1fr);gap:12px;margin-bottom:20px">';
+          strats.forEach(function(s){
+            var sClosed=(s.trades||0)-(s.open_count||0);
+            var sWR=sClosed>0?Math.round((s.wins||0)/sClosed*100):0;
+            var sPnlCol=(s.pnl||0)>=0?'var(--green)':'var(--red)';
+            var stratColor='var(--cyan)';
+            if(s.strategy==='VWAP30') stratColor='#00C4FF';
+            else if(s.strategy==='VWAP28') stratColor='#B070FF';
+            else if(s.strategy==='SMA25') stratColor='var(--green)';
+            else if(s.strategy==='VWAP25') stratColor='var(--gold)';
+
+            h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:18px;position:relative;overflow:hidden">';
+            h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+stratColor+'"></div>';
+            h+='<div style="font-family:var(--mono);font-size:10px;color:'+stratColor+';letter-spacing:1px;margin-bottom:10px">'+(s.strategy||'UNKNOWN')+'</div>';
+            h+='<div style="font-size:20px;font-weight:700;color:'+sPnlCol+';margin-bottom:6px">'+(s.pnl>=0?'+':'')+fmtD(Math.round(s.pnl||0))+'</div>';
+            h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+(s.trades||0)+' trades · '+sWR+'% WR</div>';
+            if(s.open_count>0) h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-top:4px">'+(s.open_count)+' open</div>';
+            h+='</div>';
+          });
+          h+='</div>';
+        }
+
+        // Open positions
+        if(openPos.length>0){
+          h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:20px">';
+          h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">';
+          h+='<div class="card-title">OPEN POSITIONS</div>';
+          h+='<div style="display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite"></div><span style="font-family:var(--mono);font-size:9px;color:var(--green)">LIVE</span></div>';
+          h+='</div>';
+          h+='<div class="table-wrap"><table><thead><tr><th>Time</th><th>Strategy</th><th>Direction</th><th>Contracts</th><th>Entry</th><th>TP</th><th>SL</th></tr></thead><tbody>';
+          openPos.forEach(function(t){
+            var stratColor='var(--cyan)';
+            if(t.strategy==='VWAP30') stratColor='#00C4FF';
+            else if(t.strategy==='VWAP28') stratColor='#B070FF';
+            else if(t.strategy==='SMA25') stratColor='var(--green)';
+            else if(t.strategy==='VWAP25') stratColor='var(--gold)';
+            h+='<tr>';
+            h+='<td style="color:var(--text);font-family:var(--mono);font-size:10px">'+(t.entry_time||'').replace('T',' ')+'</td>';
+            h+='<td style="color:'+stratColor+';font-weight:600">'+(t.strategy||'—')+'</td>';
+            h+='<td style="color:var(--green);font-weight:600">'+(t.direction||'').toUpperCase()+'</td>';
+            h+='<td style="color:var(--white)">'+t.contracts+'</td>';
+            h+='<td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td>';
+            h+='<td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td>';
+            h+='<td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td>';
+            h+='</tr>';
+          });
+          h+='</tbody></table></div></div>';
+        }
+
+        // Trade log
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden">';
+        h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">';
+        h+='<div class="card-title">TRADE LOG</div>';
+        h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+(trades.length)+' trades</div>';
+        h+='</div>';
+        if(trades.length===0){
+          h+='<div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No master trades recorded yet. Trades will appear once the copier detects entries.</div>';
+        } else {
+          h+='<div class="table-wrap"><table><thead><tr><th>Entry Time</th><th>Exit Time</th><th>Strategy</th><th>Dir</th><th>Qty</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody>';
+          trades.forEach(function(t){
+            var stratColor='var(--cyan)';
+            if(t.strategy==='VWAP30') stratColor='#00C4FF';
+            else if(t.strategy==='VWAP28') stratColor='#B070FF';
+            else if(t.strategy==='SMA25') stratColor='var(--green)';
+            else if(t.strategy==='VWAP25') stratColor='var(--gold)';
+
+            var resultBadge='';
+            if(t.result==='TP') resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">TP</span>';
+            else if(t.result==='SL') resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">SL</span>';
+            else resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(0,196,255,.08);color:var(--cyan)">OPEN</span>';
+
+            var pnlCol=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--muted)';
+
+            h+='<tr>';
+            h+='<td style="color:var(--text);font-family:var(--mono);font-size:10px">'+(t.entry_time||'').replace('T',' ')+'</td>';
+            h+='<td style="color:var(--muted);font-family:var(--mono);font-size:10px">'+(t.exit_time?(t.exit_time||'').replace('T',' '):'—')+'</td>';
+            h+='<td style="color:'+stratColor+';font-weight:600">'+(t.strategy||'—')+'</td>';
+            h+='<td style="color:var(--green)">'+(t.direction||'').toUpperCase()+'</td>';
+            h+='<td style="color:var(--white)">'+t.contracts+'</td>';
+            h+='<td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td>';
+            h+='<td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td>';
+            h+='<td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td>';
+            h+='<td>'+resultBadge+'</td>';
+            h+='<td style="color:'+pnlCol+';font-weight:600">'+(t.result==='open'?'—':(t.pnl>=0?'+':'')+fmtD(Math.round(t.pnl)))+'</td>';
+            h+='</tr>';
+          });
+          h+='</tbody></table></div>';
+        }
+        h+='</div>';
+      }
+    }
 
     if(adminTab==='overview'){
       h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:24px">Overview</div>';
