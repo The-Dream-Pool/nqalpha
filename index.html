@@ -1604,6 +1604,50 @@ h+='<div style="background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.
 h+='</div></div>';
 h+='</div>';
 
+// Step 5 — Import NQ Alpha Template
+h+='<div style="margin-bottom:8px">';
+h+='<div onclick="toggleGuideStep(5)" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'rgba(0,232,162,.25)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
+h+='<div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(0,232,162,.08);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--green)">5</span></div><div><div style="font-size:15px;font-weight:600;color:var(--white)">Import NQ Alpha Chart Template</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px">Optional — see what the bot sees on your charts</div></div></div>';
+h+='<span class="guide-arrow" id="guideArrow5" style="font-size:16px;color:var(--muted);transition:transform .2s">▼</span>';
+h+='</div>';
+h+='<div id="guideBody5" style="display:none;background:var(--sf);border:1px solid var(--bd);border-top:none;border-radius:0 0 12px 12px;padding:20px 24px;margin-top:-8px">';
+h+='<div style="font-size:13px;color:var(--text);line-height:1.8">';
+h+='<p style="margin-bottom:12px">We\'ve created a custom Tradovate workspace template that sets up your charts with the same indicators and layout our bot uses. This is <span style="color:var(--gold);font-weight:600">optional</span> but helpful if you want to visually monitor the strategies in real time.</p>';
+
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">STEP 1 — DOWNLOAD THE TEMPLATE:</div>';
+h+='<div style="margin-bottom:16px;padding-left:16px;border-left:2px solid var(--bd)">';
+h+='<p style="margin-bottom:12px">Click the button below to download the NQ Alpha workspace file:</p>';
+h+='<a href="NQAlpha.json" download="NQAlpha.json" style="display:inline-block;padding:12px 24px;background:var(--green);color:var(--bg);font-size:13px;font-weight:700;border-radius:8px;text-decoration:none;font-family:var(--font);transition:opacity .2s" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">⬇ Download NQAlpha.json</a>';
+h+='</div>';
+
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">STEP 2 — OPEN TRADOVATE:</div>';
+h+='<div style="margin-bottom:16px;padding-left:16px;border-left:2px solid var(--bd)">';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
+h+='<p style="margin-bottom:0"><span style="color:var(--white);font-weight:600">2.</span> Make sure you\'re on the main trading screen with your chart visible</p>';
+h+='</div>';
+
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">STEP 3 — IMPORT THE WORKSPACE:</div>';
+h+='<div style="margin-bottom:16px;padding-left:16px;border-left:2px solid var(--bd)">';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Click the <span style="color:var(--white);font-weight:600">menu icon</span> (☰) in the <span style="color:var(--white);font-weight:600">top-left corner</span> of Tradovate</p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">2.</span> Select <span style="color:var(--white);font-weight:600">"Workspaces"</span> from the dropdown</p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">3.</span> Click the <span style="color:var(--white);font-weight:600">"Import"</span> button (folder icon with an arrow)</p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">4.</span> Select the <span style="color:var(--cyan);font-weight:600">NQAlpha.json</span> file you just downloaded</p>';
+h+='<p style="margin-bottom:0"><span style="color:var(--white);font-weight:600">5.</span> The workspace will appear in your workspace list — click it to activate</p>';
+h+='</div>';
+
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">WHAT\'S INCLUDED:</div>';
+h+='<div style="margin-bottom:8px;padding-left:16px;border-left:2px solid var(--bd)">';
+h+='<p style="margin-bottom:8px"><span style="color:var(--cyan);font-weight:600">5-Minute MNQ Chart</span> — The same timeframe the bot trades on</p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--cyan);font-weight:600">VWAP Bands Indicator</span> — Shows the statistical deviation bands the strategies monitor</p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--cyan);font-weight:600">RSI Indicator</span> — Relative Strength Index for additional context</p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--cyan);font-weight:600">Volume Panel</span> — See real-time trading volume</p>';
+h+='<p style="margin-bottom:0"><span style="color:var(--cyan);font-weight:600">Pre-configured bracket orders</span> — TP and SL levels are already set in the order entry panel</p>';
+h+='</div>';
+
+h+='<div style="background:rgba(0,196,255,.04);border:1px solid rgba(0,196,255,.12);border-radius:8px;padding:12px 16px;margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--cyan);line-height:1.6">💡 This template is for monitoring only — the bot handles all trading automatically. You don\'t need to place any trades manually. It\'s just nice to see what the bot is looking at in real time.</div>';
+h+='</div></div>';
+h+='</div>';
+
 h+='</div>'; // close guide container
 }
 if(dashTab==='billing'){
