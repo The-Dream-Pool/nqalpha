@@ -491,6 +491,124 @@ function generateShareCard(monthPnl,winRate){
   showShareModal(dataUrl);
 }
 
+function generateMasterDailyCard(todayPnl,winRate,totalTrades,openPositions,strats){
+  var canvas=document.createElement('canvas');
+  canvas.width=1080;canvas.height=1080;
+  var ctx=canvas.getContext('2d');
+
+  ctx.fillStyle='#04080D';ctx.fillRect(0,0,1080,1080);
+
+  var bg=ctx.createRadialGradient(540,350,0,540,350,600);
+  bg.addColorStop(0,todayPnl>=0?'rgba(0,232,162,0.06)':'rgba(255,68,102,0.06)');
+  bg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1080);
+
+  ctx.strokeStyle='#162030';ctx.lineWidth=2;ctx.strokeRect(40,40,1000,1000);
+
+  var topGrad=ctx.createLinearGradient(40,42,1040,42);
+  topGrad.addColorStop(0,'rgba(0,232,162,0)');topGrad.addColorStop(0.3,'#00E8A2');
+  topGrad.addColorStop(0.7,'#00C4FF');topGrad.addColorStop(1,'rgba(0,196,255,0)');
+  ctx.strokeStyle=topGrad;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,42);ctx.lineTo(1040,42);ctx.stroke();
+
+  ctx.beginPath();ctx.arc(100,130,8,0,Math.PI*2);ctx.fillStyle='#00E8A2';ctx.fill();
+  ctx.beginPath();ctx.arc(100,130,14,0,Math.PI*2);ctx.fillStyle='rgba(0,232,162,0.15)';ctx.fill();
+
+  ctx.font='800 28px Outfit, sans-serif';ctx.fillStyle='#F0F4F8';ctx.textAlign='left';
+  ctx.fillText('NQ ALPHA',124,140);
+  ctx.font='500 11px "DM Mono", monospace';ctx.fillStyle='#405060';
+  ctx.fillText('ALGORITHMIC FUTURES TRADING',124,162);
+
+  var now=new Date();
+  var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dateStr=dayNames[now.getDay()]+', '+monthNames[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear();
+
+  ctx.font='500 13px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText('DAILY PERFORMANCE REPORT',540,250);
+  ctx.font='600 18px Outfit, sans-serif';ctx.fillStyle='#B8C8D8';
+  ctx.fillText(dateStr,540,280);
+
+  var divGrad=ctx.createLinearGradient(200,310,880,310);
+  divGrad.addColorStop(0,'rgba(22,32,48,0)');divGrad.addColorStop(0.5,'#162030');divGrad.addColorStop(1,'rgba(22,32,48,0)');
+  ctx.strokeStyle=divGrad;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(200,310);ctx.lineTo(880,310);ctx.stroke();
+
+  var pnlColor=todayPnl>=0?'#00E8A2':'#FF4466';
+  var pnlStr=(todayPnl>=0?'+':'')+fmtD(Math.round(todayPnl));
+
+  ctx.font='500 14px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText("TODAY'S P&L",540,370);
+
+  ctx.font='900 72px Outfit, sans-serif';ctx.fillStyle=pnlColor;
+  ctx.fillText(pnlStr,540,460);
+  ctx.shadowColor=pnlColor;ctx.shadowBlur=40;ctx.fillText(pnlStr,540,460);ctx.shadowBlur=0;
+
+  var statsY=530;
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText('WIN RATE',300,statsY);
+  ctx.font='800 36px Outfit, sans-serif';ctx.fillStyle='#F0F4F8';
+  ctx.fillText(winRate+'%',300,statsY+40);
+
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';
+  ctx.fillText('TRADES',540,statsY);
+  ctx.font='800 36px Outfit, sans-serif';ctx.fillStyle='#F0F4F8';
+  ctx.fillText(totalTrades.toString(),540,statsY+40);
+
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';
+  ctx.fillText('OPEN',780,statsY);
+  ctx.font='800 36px Outfit, sans-serif';ctx.fillStyle=openPositions>0?'#00C4FF':'#F0F4F8';
+  ctx.fillText(openPositions.toString(),780,statsY+40);
+
+  ctx.strokeStyle=divGrad;ctx.beginPath();ctx.moveTo(200,620);ctx.lineTo(880,620);ctx.stroke();
+
+  if(strats&&strats.length>0){
+    ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+    ctx.fillText('STRATEGY BREAKDOWN',540,660);
+
+    var stratColors={'VWAP30':'#00C4FF','VWAP28':'#B070FF','SMA25':'#00E8A2','VWAP25':'#F0C040'};
+    var stratAlias={'VWAP30':'ALPHA','VWAP28':'BETA','SMA25':'GAMMA','VWAP25':'DELTA'};
+    var visibleStrats=strats.filter(function(s){return s.trades>0;});
+    var sw=200;var sx=(1080-visibleStrats.length*sw)/2+sw/2;
+
+    for(var i=0;i<visibleStrats.length&&i<4;i++){
+      var s=visibleStrats[i];
+      var col=stratColors[s.strategy]||'#00C4FF';
+      var displayName=stratAlias[s.strategy]||('STRATEGY '+(i+1));
+      var cx=sx+i*sw;
+
+      ctx.font='600 12px "DM Mono", monospace';ctx.fillStyle=col;ctx.textAlign='center';
+      ctx.fillText(displayName,cx,700);
+
+      var sPnl=s.pnl||0;
+      var sPnlStr=(sPnl>=0?'+':'')+fmtD(Math.round(sPnl));
+      ctx.font='700 22px Outfit, sans-serif';
+      ctx.fillStyle=sPnl>=0?'#00E8A2':'#FF4466';
+      ctx.fillText(sPnlStr,cx,730);
+
+      var sClosed=(s.trades||0)-(s.open_count||0);
+      var sWr=sClosed>0?Math.round((s.wins||0)/sClosed*100):0;
+      ctx.font='400 11px "DM Mono", monospace';ctx.fillStyle='#405060';
+      ctx.fillText((s.trades||0)+' trades · '+sWr+'%',cx,755);
+    }
+  }
+
+  ctx.strokeStyle=divGrad;ctx.beginPath();ctx.moveTo(200,790);ctx.lineTo(880,790);ctx.stroke();
+
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText('Powered by proprietary mean-reversion strategies',540,840);
+  ctx.fillText('on Micro E-Mini Nasdaq futures',540,860);
+
+  ctx.font='700 16px Outfit, sans-serif';ctx.fillStyle='#00E8A2';
+  ctx.fillText('nqalpha.com',540,920);
+
+  ctx.font='400 9px "DM Mono", monospace';ctx.fillStyle='#2a3545';
+  ctx.fillText('Past performance is not indicative of future results. Trading futures involves substantial risk of loss.',540,960);
+  ctx.fillText('Not financial advice. Results shown before fees.',540,976);
+
+  showShareModal(canvas.toDataURL('image/png'));
+}
+
 function generateMilestoneCard(icon,title,desc,date,color){
   var canvas=document.createElement('canvas');
   canvas.width=1080;canvas.height=1080;
@@ -2143,7 +2261,10 @@ async function renderAdminContent(){
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
       h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Trades</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live trade log from the master account</div></div>';
+      h+='<div style="display:flex;gap:8px">';
+      h+='<button onclick="generateMasterDailyCard('+(ms.today_pnl||0)+','+(ms.win_rate||0)+','+(ms.total_trades||0)+','+(ms.open_positions||0)+','+JSON.stringify(strats)+')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share Daily</button>';
       h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='</div>';
       h+='</div>';
 
       if(!mt){
