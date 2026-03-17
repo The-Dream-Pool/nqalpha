@@ -2261,8 +2261,7 @@ async function renderAdminContent(){
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
       h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Trades</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live trade log from the master account</div></div>';
-      h+='<div style="display:flex;gap:8px">';
-      h+='<button onclick="generateMasterDailyCard('+(ms.today_pnl||0)+','+(ms.win_rate||0)+','+(ms.total_trades||0)+','+(ms.open_positions||0)+','+JSON.stringify(strats)+')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share Daily</button>';
+      h+='<div style="display:flex;gap:8px" id="masterBtnRow">';
       h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
       h+='</div>';
       h+='</div>';
@@ -2274,6 +2273,12 @@ async function renderAdminContent(){
         var openPos=mt.open||[];
         var trades=mt.trades||[];
         var strats=ms.strategies||[];
+
+        // Store stats globally for share button
+        window._masterStats={todayPnl:ms.today_pnl||0,winRate:ms.win_rate||0,totalTrades:ms.total_trades||0,openPositions:ms.open_positions||0,strats:strats};
+
+        // Inject share button now that data is available
+        h+='<script>document.getElementById("masterBtnRow").insertAdjacentHTML("afterbegin","<button onclick=\\"generateMasterDailyCard(window._masterStats.todayPnl,window._masterStats.winRate,window._masterStats.totalTrades,window._masterStats.openPositions,window._masterStats.strats)\\" style=\\"font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s\\" onmouseover=\\"this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'\\" onmouseout=\\"this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'\\">↗ Share Daily</button>");<\/script>';
 
         // Stats cards
         var todayCol=(ms.today_pnl||0)>=0?'var(--green)':'var(--red)';
