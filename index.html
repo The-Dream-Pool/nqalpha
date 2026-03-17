@@ -2233,8 +2233,37 @@ function adminLogout(){
   showPage('homePage');
 }
 
+function confirmFlattenAll(){
+  var overlay=document.createElement('div');
+  overlay.id='flattenModal';
+  overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999';
+  var box='<div style="background:var(--sf);border:1px solid rgba(255,68,102,.3);border-radius:16px;max-width:420px;width:90%;overflow:hidden">';
+  box+='<div style="padding:24px;text-align:center">';
+  box+='<div style="font-size:48px;margin-bottom:16px">⚠️</div>';
+  box+='<div style="font-size:20px;font-weight:700;color:var(--red);margin-bottom:8px">Flatten All Positions</div>';
+  box+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:24px">This will immediately close ALL open positions on the master account AND all follower accounts at market price. This action cannot be undone.</div>';
+  box+='<div style="display:flex;gap:12px">';
+  box+='<button onclick="document.getElementById(\'flattenModal\').remove()" style="flex:1;padding:14px;background:transparent;border:1px solid var(--bd);border-radius:10px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">Cancel</button>';
+  box+='<button onclick="doFlattenAll()" style="flex:1;padding:14px;background:var(--red);border:none;border-radius:10px;color:var(--white);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">FLATTEN ALL</button>';
+  box+='</div></div></div>';
+  overlay.innerHTML=box;
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+  document.body.appendChild(overlay);
+}
+
+async function doFlattenAll(){
+  var modal=document.getElementById('flattenModal');
+  if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">⏳</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">Flattening all positions...</div></div></div>';
+  try{
+    var result=await adminApi('POST','/admin/flatten-all');
+    if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid rgba(0,232,162,.2);border-radius:16px;padding:40px;text-align:center;cursor:pointer" onclick="document.getElementById(\'flattenModal\').remove();switchAdminTab(\'master\')"><div style="font-size:32px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:8px">All Positions Flattened</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(result.message||'Done')+' — tap to close</div></div></div>';
+  }catch(e){
+    if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid rgba(255,68,102,.2);border-radius:16px;padding:40px;text-align:center;cursor:pointer" onclick="document.getElementById(\'flattenModal\').remove()"><div style="font-size:32px;margin-bottom:12px">❌</div><div style="font-size:16px;font-weight:700;color:var(--red);margin-bottom:8px">Flatten Failed</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(e.message||'Unknown error')+' — tap to close</div></div></div>';
+  }
+}
+
 function renderAdminTabs(){
-  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'overview',l:'Overview'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'investors',l:'Investors'},{id:'daily',l:'Daily P&L'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
@@ -2397,8 +2426,11 @@ async function renderAdminContent(){
       }
     }
 
-    if(adminTab==='overview'){
-      h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:24px">Overview</div>';
+    if(adminTab==='investors'){
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+      h+='<div style="font-size:24px;font-weight:700;color:var(--white)">Investors</div>';
+      h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:10px;padding:10px 20px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(255,68,102,.15)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
+      h+='</div>';
       h+='<div class="admin-grid-4">';
       h+='<div class="dash-card"><div class="dc-label">TOTAL INVESTORS</div><div class="dc-val" style="color:var(--white)">'+stats.total+'</div></div>';
       h+='<div class="dash-card"><div class="dc-label">APPROVED</div><div class="dc-val" style="color:var(--green)">'+stats.approved+'</div></div>';
@@ -2406,6 +2438,128 @@ async function renderAdminContent(){
       h+='<div class="dash-card"><div class="dc-label">CONNECTED</div><div class="dc-val" style="color:var(--cyan)">'+stats.connected+'</div></div>';
       h+='</div>';
       h+=renderInvestorTable(investors,'all');
+    }
+
+    if(adminTab==='daily'){
+      var dp;
+      try{ dp = await adminApi('GET','/admin/daily-pnl'); }
+      catch(e){ dp = null; }
+
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+      h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Daily P&L Calendar</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Historical daily performance from master account</div></div>';
+      h+='<button onclick="switchAdminTab(\'daily\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='</div>';
+
+      if(!dp || !dp.days || dp.days.length===0){
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No daily P&L data yet. Trades will populate this calendar as they close.</div>';
+      } else {
+        var days=dp.days;
+        var totalPnl=0,totalTrades=0,totalWins=0,greenDays=0,redDays=0,bestDay=0,worstDay=0;
+        days.forEach(function(d){
+          totalPnl+=d.pnl;totalTrades+=d.trades;totalWins+=d.wins;
+          if(d.pnl>0)greenDays++;if(d.pnl<0)redDays++;
+          if(d.pnl>bestDay)bestDay=d.pnl;if(d.pnl<worstDay)worstDay=d.pnl;
+        });
+        var avgDay=days.length>0?totalPnl/days.length:0;
+
+        // Summary cards
+        h+='<div class="admin-grid-4" style="margin-bottom:24px">';
+        h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+(totalPnl>=0?'var(--green)':'var(--red)')+'"></div>';
+        h+='<div class="dc-label">TOTAL P&L</div><div class="dc-val" style="color:'+(totalPnl>=0?'var(--green)':'var(--red)')+'">'+(totalPnl>=0?'+':'')+fmtD(Math.round(totalPnl))+'</div></div>';
+        h+='<div class="dash-card"><div class="dc-label">GREEN / RED DAYS</div><div class="dc-val" style="color:var(--white)"><span style="color:var(--green)">'+greenDays+'</span> / <span style="color:var(--red)">'+redDays+'</span></div>';
+        h+='<div class="dc-sub">'+(greenDays+redDays)+' trading days</div></div>';
+        h+='<div class="dash-card"><div class="dc-label">BEST DAY</div><div class="dc-val" style="color:var(--green)">+'+fmtD(Math.round(bestDay))+'</div></div>';
+        h+='<div class="dash-card"><div class="dc-label">AVG DAY</div><div class="dc-val" style="color:'+(avgDay>=0?'var(--green)':'var(--red)')+'">'+(avgDay>=0?'+':'')+fmtD(Math.round(avgDay))+'</div></div>';
+        h+='</div>';
+
+        // Build lookup by date
+        var dayMap={};
+        days.forEach(function(d){ dayMap[d.day]=d; });
+
+        // Get month range
+        var months={};
+        days.forEach(function(d){
+          var m=d.day.substring(0,7);
+          if(!months[m])months[m]={pnl:0,trades:0,wins:0,losses:0,days:0};
+          months[m].pnl+=d.pnl;months[m].trades+=d.trades;months[m].wins+=d.wins;months[m].losses+=d.losses;months[m].days++;
+        });
+
+        var monthKeys=Object.keys(months).sort().reverse();
+        var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var dayLabels=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+        monthKeys.forEach(function(mk){
+          var mm=months[mk];
+          var parts=mk.split('-');
+          var yr=parseInt(parts[0]),mo=parseInt(parts[1]);
+          var mLabel=monthNames[mo-1]+' '+yr;
+          var mPnlCol=mm.pnl>=0?'var(--green)':'var(--red)';
+          var mWr=mm.trades>0?Math.round(mm.wins/mm.trades*100):0;
+
+          h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px">';
+
+          // Month header
+          h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">';
+          h+='<div style="display:flex;align-items:center;gap:12px">';
+          h+='<div style="font-size:16px;font-weight:700;color:var(--white)">'+mLabel+'</div>';
+          h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+mm.days+' days · '+mm.trades+' trades · '+mWr+'% WR</div>';
+          h+='</div>';
+          h+='<div style="font-size:18px;font-weight:800;color:'+mPnlCol+'">'+(mm.pnl>=0?'+':'')+fmtD(Math.round(mm.pnl))+'</div>';
+          h+='</div>';
+
+          // Calendar grid
+          h+='<div style="padding:16px 20px">';
+
+          // Day labels
+          h+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px">';
+          dayLabels.forEach(function(dl){
+            h+='<div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--muted);padding:4px 0">'+dl+'</div>';
+          });
+          h+='</div>';
+
+          // Calendar days
+          h+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
+
+          // First day offset
+          var firstDay=new Date(yr,mo-1,1).getDay();
+          for(var e=0;e<firstDay;e++){
+            h+='<div></div>';
+          }
+
+          var daysInMonth=new Date(yr,mo,0).getDate();
+          for(var d=1;d<=daysInMonth;d++){
+            var dateStr=mk+'-'+(d<10?'0':'')+d;
+            var dd=dayMap[dateStr];
+            var bgCol='var(--sf2)';
+            var textCol='var(--muted)';
+            var pnlText='';
+            var border='1px solid var(--bd)';
+
+            if(dd){
+              if(dd.pnl>0){
+                bgCol='rgba(0,232,162,.08)';textCol='var(--green)';border='1px solid rgba(0,232,162,.2)';
+                pnlText='+'+fmtD(Math.round(dd.pnl));
+              } else if(dd.pnl<0){
+                bgCol='rgba(255,68,102,.08)';textCol='var(--red)';border='1px solid rgba(255,68,102,.2)';
+                pnlText=fmtD(Math.round(dd.pnl));
+              } else {
+                bgCol='rgba(0,196,255,.05)';textCol='var(--cyan)';border='1px solid rgba(0,196,255,.15)';
+                pnlText='$0';
+              }
+            }
+
+            h+='<div style="background:'+bgCol+';border:'+border+';border-radius:8px;padding:6px 4px;min-height:52px;position:relative">';
+            h+='<div style="font-family:var(--mono);font-size:10px;color:'+(dd?'var(--white)':'var(--muted)')+';margin-bottom:2px">'+d+'</div>';
+            if(dd){
+              h+='<div style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+textCol+'">'+pnlText+'</div>';
+              h+='<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:1px">'+dd.trades+'T · '+dd.wins+'W</div>';
+            }
+            h+='</div>';
+          }
+          h+='</div></div></div>';
+        });
+      }
     }
 
     if(adminTab==='pending'){
