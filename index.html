@@ -609,6 +609,158 @@ function generateMasterDailyCard(todayPnl,winRate,totalTrades,openPositions,stra
   showShareModal(canvas.toDataURL('image/png'));
 }
 
+function generateDailyCalendarCard(){
+  var d=window._dailyPnlData;
+  if(!d)return;
+
+  var canvas=document.createElement('canvas');
+  canvas.width=1080;canvas.height=1080;
+  var ctx=canvas.getContext('2d');
+
+  ctx.fillStyle='#04080D';ctx.fillRect(0,0,1080,1080);
+
+  var bg=ctx.createRadialGradient(540,350,0,540,350,600);
+  bg.addColorStop(0,d.totalPnl>=0?'rgba(0,232,162,0.06)':'rgba(255,68,102,0.06)');
+  bg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1080);
+
+  ctx.strokeStyle='#162030';ctx.lineWidth=2;ctx.strokeRect(40,40,1000,1000);
+
+  var topGrad=ctx.createLinearGradient(40,42,1040,42);
+  topGrad.addColorStop(0,'rgba(0,232,162,0)');topGrad.addColorStop(0.3,'#00E8A2');
+  topGrad.addColorStop(0.7,'#00C4FF');topGrad.addColorStop(1,'rgba(0,196,255,0)');
+  ctx.strokeStyle=topGrad;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(40,42);ctx.lineTo(1040,42);ctx.stroke();
+
+  // Logo
+  ctx.beginPath();ctx.arc(100,120,8,0,Math.PI*2);ctx.fillStyle='#00E8A2';ctx.fill();
+  ctx.beginPath();ctx.arc(100,120,14,0,Math.PI*2);ctx.fillStyle='rgba(0,232,162,0.15)';ctx.fill();
+  ctx.font='800 28px Outfit, sans-serif';ctx.fillStyle='#F0F4F8';ctx.textAlign='left';
+  ctx.fillText('NQ ALPHA',124,130);
+  ctx.font='500 11px "DM Mono", monospace';ctx.fillStyle='#405060';
+  ctx.fillText('ALGORITHMIC FUTURES TRADING',124,152);
+
+  // Title
+  ctx.font='500 13px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText('DAILY P&L CALENDAR',540,210);
+
+  // Get current month for display
+  var now=new Date();
+  var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  ctx.font='600 18px Outfit, sans-serif';ctx.fillStyle='#B8C8D8';
+  ctx.fillText(monthNames[now.getMonth()]+' '+now.getFullYear(),540,240);
+
+  // Divider
+  var divGrad=ctx.createLinearGradient(200,265,880,265);
+  divGrad.addColorStop(0,'rgba(22,32,48,0)');divGrad.addColorStop(0.5,'#162030');divGrad.addColorStop(1,'rgba(22,32,48,0)');
+  ctx.strokeStyle=divGrad;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(200,265);ctx.lineTo(880,265);ctx.stroke();
+
+  // Stats row
+  var pnlCol=d.totalPnl>=0?'#00E8A2':'#FF4466';
+  var pnlStr=(d.totalPnl>=0?'+':'')+fmtD(Math.round(d.totalPnl));
+
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText('TOTAL P&L',270,310);
+  ctx.font='800 32px Outfit, sans-serif';ctx.fillStyle=pnlCol;
+  ctx.fillText(pnlStr,270,350);
+
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';
+  ctx.fillText('GREEN / RED',540,310);
+  ctx.font='800 32px Outfit, sans-serif';ctx.fillStyle='#F0F4F8';
+  ctx.fillText(d.greenDays+' / '+d.redDays,540,350);
+
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';
+  ctx.fillText('AVG DAY',810,310);
+  ctx.font='800 32px Outfit, sans-serif';
+  ctx.fillStyle=d.avgDay>=0?'#00E8A2':'#FF4466';
+  ctx.fillText((d.avgDay>=0?'+':'')+fmtD(Math.round(d.avgDay)),810,350);
+
+  // Divider
+  ctx.strokeStyle=divGrad;ctx.beginPath();ctx.moveTo(200,385);ctx.lineTo(880,385);ctx.stroke();
+
+  // Calendar grid for current month
+  var yr=now.getFullYear(),mo=now.getMonth();
+  var firstDay=new Date(yr,mo,1).getDay();
+  var daysInMonth=new Date(yr,mo+1,0).getDate();
+  var dayLabels=['S','M','T','W','T','F','S'];
+
+  // Build lookup from this month's data
+  var monthStr=yr+'-'+(mo<9?'0':'')+(mo+1);
+  var dayMap={};
+  d.days.forEach(function(dd){
+    if(dd.day.substring(0,7)===monthStr) dayMap[parseInt(dd.day.substring(8,10))]=dd;
+  });
+
+  var gridX=100,gridY=420,cellW=126,cellH=80,gap=6;
+
+  // Day labels
+  ctx.font='600 12px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  for(var i=0;i<7;i++){
+    ctx.fillText(dayLabels[i],gridX+i*(cellW+gap)+cellW/2,gridY-10);
+  }
+
+  // Calendar cells
+  var row=0,col=firstDay;
+  for(var day=1;day<=daysInMonth;day++){
+    var cx=gridX+col*(cellW+gap);
+    var cy=gridY+row*(cellH+gap);
+    var dd=dayMap[day];
+
+    // Cell background
+    if(dd){
+      if(dd.pnl>0){
+        ctx.fillStyle='rgba(0,232,162,0.1)';ctx.strokeStyle='rgba(0,232,162,0.25)';
+      } else if(dd.pnl<0){
+        ctx.fillStyle='rgba(255,68,102,0.1)';ctx.strokeStyle='rgba(255,68,102,0.25)';
+      } else {
+        ctx.fillStyle='rgba(0,196,255,0.05)';ctx.strokeStyle='rgba(0,196,255,0.15)';
+      }
+    } else {
+      ctx.fillStyle='#0C1118';ctx.strokeStyle='#1A2335';
+    }
+
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(cx,cy,cellW,cellH,6);ctx.fill();ctx.stroke();
+
+    // Day number
+    ctx.font='600 11px "DM Mono", monospace';
+    ctx.fillStyle=dd?'#F0F4F8':'#2a3545';ctx.textAlign='left';
+    ctx.fillText(day.toString(),cx+8,cy+18);
+
+    // P&L
+    if(dd){
+      var pStr=dd.pnl>0?'+'+fmtD(Math.round(dd.pnl)):fmtD(Math.round(dd.pnl));
+      ctx.font='700 13px Outfit, sans-serif';
+      ctx.fillStyle=dd.pnl>0?'#00E8A2':dd.pnl<0?'#FF4466':'#00C4FF';
+      ctx.textAlign='center';
+      ctx.fillText(pStr,cx+cellW/2,cy+45);
+
+      ctx.font='400 9px "DM Mono", monospace';ctx.fillStyle='#405060';
+      ctx.fillText(dd.trades+'T · '+dd.wins+'W',cx+cellW/2,cy+62);
+    }
+
+    col++;
+    if(col>=7){col=0;row++;}
+  }
+
+  // Divider
+  var bottomY=gridY+((row+(col>0?1:0))*(cellH+gap))+20;
+  ctx.strokeStyle=divGrad;ctx.beginPath();ctx.moveTo(200,bottomY);ctx.lineTo(880,bottomY);ctx.stroke();
+
+  // Branding
+  ctx.font='500 12px "DM Mono", monospace';ctx.fillStyle='#405060';ctx.textAlign='center';
+  ctx.fillText('Powered by proprietary mean-reversion strategies',540,bottomY+40);
+  ctx.fillText('on Micro E-Mini Nasdaq futures',540,bottomY+58);
+  ctx.font='700 16px Outfit, sans-serif';ctx.fillStyle='#00E8A2';
+  ctx.fillText('nqalpha.com',540,bottomY+95);
+  ctx.font='400 9px "DM Mono", monospace';ctx.fillStyle='#2a3545';
+  ctx.fillText('Past performance is not indicative of future results. Trading futures involves substantial risk of loss.',540,bottomY+130);
+  ctx.fillText('Not financial advice. Results shown before fees.',540,bottomY+146);
+
+  showShareModal(canvas.toDataURL('image/png'));
+}
+
 function generateMilestoneCard(icon,title,desc,date,color){
   var canvas=document.createElement('canvas');
   canvas.width=1080;canvas.height=1080;
@@ -2445,13 +2597,12 @@ async function renderAdminContent(){
       try{ dp = await adminApi('GET','/admin/daily-pnl'); }
       catch(e){ dp = null; }
 
-      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
-      h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Daily P&L Calendar</div>';
-      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Historical daily performance from master account</div></div>';
-      h+='<button onclick="switchAdminTab(\'daily\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
-      h+='</div>';
-
       if(!dp || !dp.days || dp.days.length===0){
+        h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+        h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Daily P&L Calendar</div>';
+        h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Historical daily performance from master account</div></div>';
+        h+='<button onclick="switchAdminTab(\'daily\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+        h+='</div>';
         h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No daily P&L data yet. Trades will populate this calendar as they close.</div>';
       } else {
         var days=dp.days;
@@ -2462,6 +2613,18 @@ async function renderAdminContent(){
           if(d.pnl>bestDay)bestDay=d.pnl;if(d.pnl<worstDay)worstDay=d.pnl;
         });
         var avgDay=days.length>0?totalPnl/days.length:0;
+
+        // Store for share
+        window._dailyPnlData={totalPnl:totalPnl,greenDays:greenDays,redDays:redDays,bestDay:bestDay,avgDay:avgDay,totalTrades:totalTrades,totalWins:totalWins,days:days};
+
+        h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+        h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Daily P&L Calendar</div>';
+        h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Historical daily performance from master account</div></div>';
+        h+='<div style="display:flex;gap:8px">';
+        h+='<button onclick="generateDailyCalendarCard()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share</button>';
+        h+='<button onclick="switchAdminTab(\'daily\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+        h+='</div>';
+        h+='</div>';
 
         // Summary cards
         h+='<div class="admin-grid-4" style="margin-bottom:24px">';
