@@ -1919,12 +1919,32 @@ h+='</div></div>';
 h+='</div>';
 
 h+='</div>'; // close guide container
+
+// ── MES UPSELL TEASER ──
+h+='<div style="margin-top:32px;background:linear-gradient(135deg,rgba(176,112,255,.04),rgba(0,196,255,.04));border:1px solid rgba(176,112,255,.2);border-radius:16px;overflow:hidden;position:relative">';
+h+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#B070FF,#00C4FF)"></div>';
+h+='<div style="padding:28px 24px">';
+h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">';
+h+='<div style="width:40px;height:40px;border-radius:10px;background:rgba(176,112,255,.1);border:1px solid rgba(176,112,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px">🔒</div>';
+h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">Micro E-Mini S&P 500 (MES)</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:#B070FF;letter-spacing:1px;margin-top:2px">PREMIUM ADD-ON</div></div></div>';
+h+='<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:20px">Unlock our S&P 500 strategy — the same proven VWAP mean-reversion system, optimized for MES futures. Runs alongside your MNQ bot for true index diversification across two major indices.</div>';
+h+='<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">';
+h+='<div style="margin-left:auto"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;text-align:center">ONE-TIME ACCESS FEE</div>';
+h+='<div style="font-size:28px;font-weight:900;color:var(--white);text-align:center">$2,500</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:2px">or payment plan available</div></div>';
+h+='</div>';
+h+='<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(176,112,255,.12);display:flex;align-items:center;gap:12px">';
+h+='<button style="padding:12px 32px;background:rgba(176,112,255,.1);border:1px solid rgba(176,112,255,.3);border-radius:10px;color:#B070FF;font-size:13px;font-weight:700;cursor:not-allowed;font-family:var(--font);opacity:.7" disabled>Coming Soon</button>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">MES trading launches soon. Your MNQ subscription is included free.</div>';
+h+='</div>';
+h+='</div></div>';
 }
 if(dashTab==='billing'){
 var mp=stats.month_pnl||0;var fee=stats.performance_fee||0;
 var hasCard=profile.stripe_card_last4||false;var cardBrand=(profile.stripe_card_brand||'').toUpperCase();var cardLast4=profile.stripe_card_last4||'';
-h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Invoices</div>';
-h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Monthly subscription fee · Charged automatically · Cancel anytime</div>';
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Subscription</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">$1,000/month flat subscription · 30-day free trial on live · No charge when bot isn\'t profitable</div>';
 
 // Subscription fee bar
 h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">';
@@ -1982,7 +2002,7 @@ h+='</tbody></table></div>';
 
 // ── HOW IT WORKS ──
 h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div>';
-h+='<div class="how-item">• <strong>Monthly subscription fee</strong> — billed monthly based on your account activity</div>';
+h+='<div class="how-item">• <strong>$1,000/month flat subscription</strong> — 30-day free trial on live, no charge if the bot isn\'t profitable</div>';
 h+='<div class="how-item">• <strong>Transparent pricing</strong> — no hidden charges or surprise costs</div>';
 h+='<div class="how-item">• <strong>Automatic billing</strong> — your card is charged on the 1st of each month</div>';
 h+='<div class="how-item">• <strong>Cancel anytime</strong> — no lock-in contracts or cancellation fees</div>';
@@ -2024,9 +2044,9 @@ var faqs=[
 {q:'Do I need a funded Tradovate account?',a:'For <strong>Demo mode</strong>, no — Tradovate provides a simulated account with paper money. For <strong>Live mode</strong>, yes — you\'ll need a funded account with enough margin to cover your position size. Check with Tradovate for their current margin requirements on MNQ contracts.'},
 ]},
 {cat:'Billing & Fees',color:'var(--cyan)',items:[
-{q:'How does billing work?',a:'NQ Alpha charges an <strong>18% performance fee</strong> on monthly profits above your high water mark. If you don\'t make money in a given month, you don\'t pay anything. The fee is calculated at the end of each billing cycle and charged to your card on file.'},
-{q:'What is a high water mark?',a:'The high water mark is the highest cumulative profit your account has reached. You only pay performance fees on <em>new</em> profits above this mark. For example, if you made $5,000 one month, lost $2,000 the next, and then made $3,000, you\'d only pay fees on the $1,000 above your previous peak — not the full $3,000.'},
-{q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account and stop trade copying at any time from the Connect tab. If you have profits in the current billing period, a final performance fee will be calculated and charged. There are no cancellation fees or lock-in contracts.'},
+{q:'How does billing work?',a:'NQ Alpha charges a <strong>flat $1,000/month subscription fee</strong> for access to the MNQ trade-copying service. Your first 30 days after switching to a live Tradovate account are free. After the trial, billing occurs monthly. If the bot has zero or negative profit in a given month, you won\'t be charged for that month.'},
+{q:'What if the bot loses money?',a:'If the bot has zero or negative profit for a billing month, <strong>you don\'t pay anything</strong> for that month. You only pay the $1,000 subscription when the bot is profitable. We believe in aligning our success with yours.'},
+{q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account and stop trade copying at any time from the Connect tab. Note that disconnecting mid-cycle will trigger a final charge for the current month if the bot was profitable. There are no lock-in contracts.'},
 {q:'Is my payment information secure?',a:'All card data is handled by <strong>Stripe</strong>, a PCI-compliant payment processor. NQ Alpha never sees or stores your full card number — we only store the last 4 digits and card brand for display purposes.'},
 ]},
 {cat:'Account & Support',color:'var(--gold)',items:[
