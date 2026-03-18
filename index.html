@@ -94,6 +94,9 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .conn-box{max-width:100%;padding:20px;}
   .ob-step{gap:12px;padding:12px;}
 }
+@media(max-width:900px){
+  .conn-grid-2col{grid-template-columns:1fr!important;}
+}
 @media(max-width:380px){
   .hero h1{font-size:28px;}
   .pnl-grid-4{grid-template-columns:1fr;}.pnl-grid-6{grid-template-columns:repeat(2,1fr);}
@@ -1748,7 +1751,37 @@ h+='</div>';
 }
 
 if(conn.connected){h+='<div class="conn-ok"><div style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:8px">✓ Account Connected</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:4px">Username: '+conn.username+'</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">Connected: '+conn.connected_at+'</div><button onclick="doDisconnect()" style="margin-top:16px;font-family:var(--mono);font-size:11px;padding:8px 24px;background:transparent;border:1px solid rgba(255,68,102,.25);border-radius:8px;color:var(--red);cursor:pointer">Disconnect</button></div>';}
-else{h+='<div class="conn-box"><div class="field"><label>TRADOVATE USERNAME</label><input id="cUser" placeholder="your_username"></div><div class="field"><label>TRADOVATE PASSWORD</label><input id="cPass" type="password" placeholder="••••••••"></div><div class="field"><label>APP ID</label><input id="cApp" placeholder="YOUR_APP_ID"></div><div class="field"><label>CLIENT ID (CID)</label><input id="cCid" placeholder="10609"></div><div class="field"><label>API SECRET</label><input id="cSec" type="password" placeholder="••••••••"></div><div class="field"><label>ACCOUNT MODE</label><div id="modeToggle" style="display:flex;gap:0;background:var(--sf2);border-radius:10px;padding:3px;margin-top:4px"><button type="button" id="modeDemo" onclick="setMode(false)" style="flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;background:var(--bd);color:var(--white)">🟡 DEMO</button><button type="button" id="modeLive" onclick="setMode(true)" style="flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;background:transparent;color:var(--muted)">🔴 LIVE</button></div></div><div class="warn-box">⚠ Credentials are encrypted and stored securely. Start with DEMO — switch to LIVE only after verifying trades.</div><div id="connErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div><button id="connBtn" onclick="doConnect()" style="width:100%;padding:13px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Connect Account</button></div>';}
+else{
+h+='<div class="conn-grid-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">';
+h+='<div class="conn-box"><div class="field"><label>TRADOVATE USERNAME</label><input id="cUser" placeholder="your_username"></div><div class="field"><label>TRADOVATE PASSWORD</label><input id="cPass" type="password" placeholder="••••••••"></div><div class="field"><label>APP ID</label><input id="cApp" placeholder="YOUR_APP_ID"></div><div class="field"><label>CLIENT ID (CID)</label><input id="cCid" placeholder="10609"></div><div class="field"><label>API SECRET</label><input id="cSec" type="password" placeholder="••••••••"></div><div class="field"><label>ACCOUNT MODE</label><div id="modeToggle" style="display:flex;gap:0;background:var(--sf2);border-radius:10px;padding:3px;margin-top:4px"><button type="button" id="modeDemo" onclick="setMode(false)" style="flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;background:var(--bd);color:var(--white)">🟡 DEMO</button><button type="button" id="modeLive" onclick="setMode(true)" style="flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;background:transparent;color:var(--muted)">🔴 LIVE</button></div></div><div class="warn-box">⚠ Credentials are encrypted and stored securely. Start with DEMO — switch to LIVE only after verifying trades.</div><div id="connErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div><button id="connBtn" onclick="doConnect()" style="width:100%;padding:13px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Connect Account</button></div>';
+// MES Teaser — right side
+h+='<div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(176,112,255,.2);background:var(--sf)">';
+h+='<style>@keyframes mesGlow{0%,100%{box-shadow:0 0 30px rgba(176,112,255,.08),0 0 60px rgba(0,196,255,.04)}50%{box-shadow:0 0 50px rgba(176,112,255,.15),0 0 80px rgba(0,196,255,.08)}}</style>';
+h+='<div style="position:absolute;inset:0;animation:mesGlow 4s ease-in-out infinite;border-radius:16px;pointer-events:none"></div>';
+h+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#B070FF,#00C4FF)"></div>';
+h+='<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(176,112,255,.06),transparent 70%);pointer-events:none"></div>';
+h+='<div style="position:relative;padding:28px 24px">';
+h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">';
+h+='<div style="width:44px;height:44px;border-radius:12px;background:rgba(176,112,255,.1);border:1px solid rgba(176,112,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px">🔒</div>';
+h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">MES — S&P 500</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:#B070FF;letter-spacing:2px;margin-top:3px">PREMIUM ADD-ON</div></div></div>';
+h+='<div style="font-size:13px;color:var(--text);line-height:1.8;margin-bottom:24px">Unlock our Micro E-Mini S&P 500 strategy — the same proven VWAP mean-reversion system, optimized for MES futures. Runs alongside your MNQ bot for true index diversification.</div>';
+h+='<div style="background:rgba(176,112,255,.04);border:1px solid rgba(176,112,255,.1);border-radius:12px;padding:20px;margin-bottom:24px;text-align:center">';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">ONE-TIME ACCESS FEE</div>';
+h+='<div style="font-size:36px;font-weight:900;color:var(--white);letter-spacing:-1px">$2,500</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">or payment plan available</div>';
+h+='</div>';
+h+='<div style="display:flex;flex-direction:column;gap:8px">';
+h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Same VWAP strategy, optimized for S&P</div>';
+h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Diversify across two major indices</div>';
+h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Runs 24/5 alongside your MNQ bot</div>';
+h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Lifetime access — one payment, no monthly</div>';
+h+='</div>';
+h+='<button style="margin-top:24px;width:100%;padding:14px;background:rgba(176,112,255,.08);border:1px solid rgba(176,112,255,.25);border-radius:10px;color:#B070FF;font-size:14px;font-weight:700;cursor:not-allowed;font-family:var(--font);opacity:.7;letter-spacing:1px" disabled>Coming Soon</button>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:10px">Your MNQ subscription is included free</div>';
+h+='</div></div>';
+h+='</div>'; // close grid
+}
 
 } // close risk disclosure gate
 h+='<div style="margin-top:24px"><div style="font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px">Position Sizing</div>';
@@ -1919,26 +1952,6 @@ h+='</div></div>';
 h+='</div>';
 
 h+='</div>'; // close guide container
-
-// ── MES UPSELL TEASER ──
-h+='<div style="margin-top:32px;background:linear-gradient(135deg,rgba(176,112,255,.04),rgba(0,196,255,.04));border:1px solid rgba(176,112,255,.2);border-radius:16px;overflow:hidden;position:relative">';
-h+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#B070FF,#00C4FF)"></div>';
-h+='<div style="padding:28px 24px">';
-h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">';
-h+='<div style="width:40px;height:40px;border-radius:10px;background:rgba(176,112,255,.1);border:1px solid rgba(176,112,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px">🔒</div>';
-h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">Micro E-Mini S&P 500 (MES)</div>';
-h+='<div style="font-family:var(--mono);font-size:10px;color:#B070FF;letter-spacing:1px;margin-top:2px">PREMIUM ADD-ON</div></div></div>';
-h+='<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:20px">Unlock our S&P 500 strategy — the same proven VWAP mean-reversion system, optimized for MES futures. Runs alongside your MNQ bot for true index diversification across two major indices.</div>';
-h+='<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">';
-h+='<div style="margin-left:auto"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;text-align:center">ONE-TIME ACCESS FEE</div>';
-h+='<div style="font-size:28px;font-weight:900;color:var(--white);text-align:center">$2,500</div>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:2px">or payment plan available</div></div>';
-h+='</div>';
-h+='<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(176,112,255,.12);display:flex;align-items:center;gap:12px">';
-h+='<button style="padding:12px 32px;background:rgba(176,112,255,.1);border:1px solid rgba(176,112,255,.3);border-radius:10px;color:#B070FF;font-size:13px;font-weight:700;cursor:not-allowed;font-family:var(--font);opacity:.7" disabled>Coming Soon</button>';
-h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">MES trading launches soon. Your MNQ subscription is included free.</div>';
-h+='</div>';
-h+='</div></div>';
 }
 if(dashTab==='billing'){
 var mp=stats.month_pnl||0;var fee=stats.performance_fee||0;
@@ -2638,7 +2651,6 @@ async function renderAdminContent(){
 
           h+='<div id="masterTradeTable"></div>';
           h+='<div id="masterTradePager" style="padding:12px 20px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"></div>';
-          h+='<script>renderMasterTradePage(0);<\/script>';
         }
         h+='</div>';
       }
@@ -3045,6 +3057,7 @@ async function renderAdminContent(){
     }
 
     m.innerHTML=h;
+    if(adminTab==='master' && window._masterTradesAll) setTimeout(function(){renderMasterTradePage(0);},50);
     setTimeout(initDualScrollbars,50);
   }catch(e){
     m.innerHTML='<div style="padding:40px;text-align:center;color:var(--red);font-family:var(--mono);font-size:12px">'+e.message+' — <span style="cursor:pointer;text-decoration:underline" onclick="buildAdminLogin();showPage(\'adminPage\')">Log in again</span></div>';
