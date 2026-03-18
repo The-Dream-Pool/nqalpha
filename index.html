@@ -2380,6 +2380,72 @@ async function buildAdminDash(){
   await renderAdminContent();
 }
 
+function renderMasterTradePage(page){
+  var trades=window._masterTradesAll||[];
+  var pp=window._masterTradesPerPage||25;
+  var totalPages=Math.ceil(trades.length/pp);
+  if(page<0)page=0;if(page>=totalPages)page=totalPages-1;
+  window._masterTradesPage=page;
+
+  var start=page*pp;
+  var slice=trades.slice(start,start+pp);
+
+  var h='<div class="table-wrap"><table><thead><tr><th>Entry Time</th><th>Exit Time</th><th>Strategy</th><th>Dir</th><th>Qty</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody>';
+  slice.forEach(function(t){
+    var stratColor='var(--cyan)';
+    if(t.strategy==='VWAP30') stratColor='#00C4FF';
+    else if(t.strategy==='VWAP28') stratColor='#B070FF';
+    else if(t.strategy==='SMA25') stratColor='var(--green)';
+    else if(t.strategy==='VWAP25') stratColor='var(--gold)';
+
+    var resultBadge='';
+    if(t.result==='TP') resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">TP</span>';
+    else if(t.result==='SL') resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">SL</span>';
+    else resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(0,196,255,.08);color:var(--cyan)">OPEN</span>';
+
+    var pnlCol=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--muted)';
+
+    h+='<tr>';
+    h+='<td style="color:var(--text);font-family:var(--mono);font-size:10px">'+(t.entry_time||'').replace('T',' ')+'</td>';
+    h+='<td style="color:var(--muted);font-family:var(--mono);font-size:10px">'+(t.exit_time?(t.exit_time||'').replace('T',' '):'—')+'</td>';
+    h+='<td style="color:'+stratColor+';font-weight:600">'+(t.strategy||'—')+'</td>';
+    h+='<td style="color:var(--green)">'+(t.direction||'').toUpperCase()+'</td>';
+    h+='<td style="color:var(--white)">'+t.contracts+'</td>';
+    h+='<td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td>';
+    h+='<td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td>';
+    h+='<td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td>';
+    h+='<td>'+resultBadge+'</td>';
+    h+='<td style="color:'+pnlCol+';font-weight:600">'+(t.result==='open'?'—':(t.pnl>=0?'+':'')+fmtD(Math.round(t.pnl)))+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+
+  var tbl=document.getElementById('masterTradeTable');
+  if(tbl) tbl.innerHTML=h;
+
+  // Pager
+  var pg='';
+  var btnStyle='font-family:var(--mono);font-size:10px;padding:6px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--muted);transition:all .2s';
+  var btnActiveStyle='font-family:var(--mono);font-size:10px;padding:6px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--green);background:rgba(0,232,162,.08);color:var(--green)';
+  var btnDisabledStyle='font-family:var(--mono);font-size:10px;padding:6px 14px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--bd);cursor:default';
+
+  pg+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Showing '+(start+1)+'-'+Math.min(start+pp,trades.length)+' of '+trades.length+'</div>';
+  pg+='<div style="display:flex;gap:6px">';
+  pg+='<button style="'+(page>0?btnStyle:btnDisabledStyle)+'" '+(page>0?'onclick="renderMasterTradePage(0)"':'')+'>First</button>';
+  pg+='<button style="'+(page>0?btnStyle:btnDisabledStyle)+'" '+(page>0?'onclick="renderMasterTradePage('+(page-1)+')"':'')+'>← Prev</button>';
+
+  for(var p=Math.max(0,page-2);p<=Math.min(totalPages-1,page+2);p++){
+    pg+='<button style="'+(p===page?btnActiveStyle:btnStyle)+'" onclick="renderMasterTradePage('+p+')">'+(p+1)+'</button>';
+  }
+
+  pg+='<button style="'+(page<totalPages-1?btnStyle:btnDisabledStyle)+'" '+(page<totalPages-1?'onclick="renderMasterTradePage('+(page+1)+')"':'')+'>Next →</button>';
+  pg+='<button style="'+(page<totalPages-1?btnStyle:btnDisabledStyle)+'" '+(page<totalPages-1?'onclick="renderMasterTradePage('+(totalPages-1)+')"':'')+'>Last</button>';
+  pg+='</div>';
+
+  var pgr=document.getElementById('masterTradePager');
+  if(pgr) pgr.innerHTML=pg;
+}
+
 function adminLogout(){
   ADMIN_KEY_STORED=null;localStorage.removeItem('nq_admin_token');
   showPage('homePage');
@@ -2545,35 +2611,14 @@ async function renderAdminContent(){
         if(trades.length===0){
           h+='<div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No master trades recorded yet. Trades will appear once the copier detects entries.</div>';
         } else {
-          h+='<div class="table-wrap"><table><thead><tr><th>Entry Time</th><th>Exit Time</th><th>Strategy</th><th>Dir</th><th>Qty</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody>';
-          trades.forEach(function(t){
-            var stratColor='var(--cyan)';
-            if(t.strategy==='VWAP30') stratColor='#00C4FF';
-            else if(t.strategy==='VWAP28') stratColor='#B070FF';
-            else if(t.strategy==='SMA25') stratColor='var(--green)';
-            else if(t.strategy==='VWAP25') stratColor='var(--gold)';
+          var perPage=25;
+          window._masterTradesAll=trades;
+          window._masterTradesPage=0;
+          window._masterTradesPerPage=perPage;
 
-            var resultBadge='';
-            if(t.result==='TP') resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">TP</span>';
-            else if(t.result==='SL') resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">SL</span>';
-            else resultBadge='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(0,196,255,.08);color:var(--cyan)">OPEN</span>';
-
-            var pnlCol=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--muted)';
-
-            h+='<tr>';
-            h+='<td style="color:var(--text);font-family:var(--mono);font-size:10px">'+(t.entry_time||'').replace('T',' ')+'</td>';
-            h+='<td style="color:var(--muted);font-family:var(--mono);font-size:10px">'+(t.exit_time?(t.exit_time||'').replace('T',' '):'—')+'</td>';
-            h+='<td style="color:'+stratColor+';font-weight:600">'+(t.strategy||'—')+'</td>';
-            h+='<td style="color:var(--green)">'+(t.direction||'').toUpperCase()+'</td>';
-            h+='<td style="color:var(--white)">'+t.contracts+'</td>';
-            h+='<td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td>';
-            h+='<td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td>';
-            h+='<td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td>';
-            h+='<td>'+resultBadge+'</td>';
-            h+='<td style="color:'+pnlCol+';font-weight:600">'+(t.result==='open'?'—':(t.pnl>=0?'+':'')+fmtD(Math.round(t.pnl)))+'</td>';
-            h+='</tr>';
-          });
-          h+='</tbody></table></div>';
+          h+='<div id="masterTradeTable"></div>';
+          h+='<div id="masterTradePager" style="padding:12px 20px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"></div>';
+          h+='<script>renderMasterTradePage(0);<\/script>';
         }
         h+='</div>';
       }
