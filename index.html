@@ -1959,15 +1959,15 @@ h+='</div>';
 h+='</div>'; // close guide container
 }
 if(dashTab==='billing'){
-var mp=stats.month_pnl||0;var fee=stats.performance_fee||0;
+var mp=stats.month_pnl||0;var fee=1000;
 var hasCard=profile.stripe_card_last4||false;var cardBrand=(profile.stripe_card_brand||'').toUpperCase();var cardLast4=profile.stripe_card_last4||'';
 h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Subscription</div>';
 h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">$1,000/month flat subscription · 30-day free trial on live · No charge when bot isn\'t profitable</div>';
 
 // Subscription fee bar
 h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">';
-h+='<div style="display:flex;align-items:center;gap:12px"><div class="dc-label">SUBSCRIPTION FEE</div></div>';
-h+='<div style="font-size:20px;font-weight:700;color:var(--white)">'+fmtD(fee)+'</div>';
+h+='<div style="display:flex;align-items:center;gap:12px"><div class="dc-label">MONTHLY SUBSCRIPTION</div></div>';
+h+='<div style="font-size:20px;font-weight:700;color:var(--white)">$1,000</div>';
 h+='</div>';
 
 // ── PAYMENT METHOD CARD ──
@@ -2146,9 +2146,15 @@ function toggleGuideStep(n){
   }
 }
 var _useLive=false;
-function setMode(live){_useLive=live;var d=document.getElementById('modeDemo');var l=document.getElementById('modeLive');if(live){l.style.background='var(--bd)';l.style.color='var(--white)';d.style.background='transparent';d.style.color='var(--muted)';}else{d.style.background='var(--bd)';d.style.color='var(--white)';l.style.background='transparent';l.style.color='var(--muted)';}}
+function setMode(live){
+if(live && SESSION.investor && !SESSION.investor.stripe_card_last4){
+  alert('You must add a payment method in the Billing tab before switching to LIVE mode.');
+  return;
+}
+_useLive=live;var d=document.getElementById('modeDemo');var l=document.getElementById('modeLive');if(live){l.style.background='var(--bd)';l.style.color='var(--white)';d.style.background='transparent';d.style.color='var(--muted)';}else{d.style.background='var(--bd)';d.style.color='var(--white)';l.style.background='transparent';l.style.color='var(--muted)';}}
 async function doConnect(){
 var btn=document.getElementById('connBtn');var err=document.getElementById('connErr');err.style.display='none';
+if(_useLive&&!SESSION.investor.stripe_card_last4){err.textContent='Add a payment method in the Billing tab before connecting in LIVE mode.';err.style.display='block';return;}
 if(_useLive&&!confirm('⚠ You selected LIVE mode. Real money will be used. Are you sure?')){return;}
 btn.textContent='Connecting...';btn.disabled=true;
 try{await apiCall('POST','/investor/connect',{username:document.getElementById('cUser').value,password:document.getElementById('cPass').value,app_id:document.getElementById('cApp').value,cid:document.getElementById('cCid').value,api_secret:document.getElementById('cSec').value,use_live:_useLive});await renderDashContent();}
@@ -2822,51 +2828,48 @@ async function renderAdminContent(){
       h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Payments</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Payment status for all active investors</div>';
 
-      // Summary cards
+      // Summary cards — flat $1,000/mo subscription
       var noCard=investors.filter(function(i){return i.is_approved && !i.stripe_card_last4;});
       var hasCard=investors.filter(function(i){return i.is_approved && i.stripe_card_last4;});
-      var oweFee=investors.filter(function(i){return i.is_approved && i.stats && i.stats.performance_fee>0;});
-      var latePayments=investors.filter(function(i){return i.is_approved && i.stats && i.stats.performance_fee>0 && !i.stripe_card_last4;});
+      var liveInvestors=investors.filter(function(i){return i.is_approved && i.use_live;});
+      var noCardLive=investors.filter(function(i){return i.is_approved && i.use_live && !i.stripe_card_last4;});
 
       h+='<div class="admin-grid-4" style="margin-bottom:24px">';
       h+='<div class="dash-card"><div class="dc-label">CARDS ON FILE</div><div class="dc-val" style="color:var(--green)">'+hasCard.length+'</div><div class="dc-sub">auto-pay enabled</div></div>';
       h+='<div class="dash-card"><div class="dc-label">NO CARD</div><div class="dc-val" style="color:var(--gold)">'+noCard.length+'</div><div class="dc-sub">can\'t be billed</div></div>';
-      h+='<div class="dash-card"><div class="dc-label">FEES OWED</div><div class="dc-val" style="color:var(--cyan)">'+oweFee.length+'</div><div class="dc-sub">this month</div></div>';
-      h+='<div class="dash-card"><div class="dc-label" style="color:var(--red)">⚠ NEEDS ATTENTION</div><div class="dc-val" style="color:var(--red)">'+latePayments.length+'</div><div class="dc-sub">owe fee but no card</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">LIVE INVESTORS</div><div class="dc-val" style="color:var(--cyan)">'+liveInvestors.length+'</div><div class="dc-sub">$1,000/mo each</div></div>';
+      h+='<div class="dash-card"><div class="dc-label" style="color:var(--red)">⚠ NEEDS ATTENTION</div><div class="dc-val" style="color:var(--red)">'+noCardLive.length+'</div><div class="dc-sub">live but no card</div></div>';
       h+='</div>';
 
       // Late / needs attention section
-      if(latePayments.length>0){
+      if(noCardLive.length>0){
         h+='<div style="background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.2);border-radius:14px;padding:24px;margin-bottom:24px">';
-        h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:20px">⚠️</span><div><div style="font-size:16px;font-weight:700;color:var(--red)">Action Required — Subscription Due But No Card</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">These investors have an outstanding subscription fee but haven\'t added a payment method</div></div></div>';
+        h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:20px">⚠️</span><div><div style="font-size:16px;font-weight:700;color:var(--red)">Action Required — Live But No Card</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">These investors are on live accounts but haven\'t added a payment method</div></div></div>';
         h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
-        h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Phone</th><th>Fee Owed</th><th>Monthly P&L</th><th>Action</th></tr></thead><tbody>';
-        latePayments.forEach(function(inv){
-          var fee=inv.stats?inv.stats.performance_fee:0;
-          var pnl=inv.stats?inv.stats.month_pnl:0;
+        h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Phone</th><th>Subscription</th><th>Action</th></tr></thead><tbody>';
+        noCardLive.forEach(function(inv){
           h+='<tr>';
           h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
           h+='<td style="color:var(--text)"><a href="mailto:'+inv.email+'" style="color:var(--cyan)">'+inv.email+'</a></td>';
           h+='<td style="color:var(--text);font-family:var(--mono);font-size:11px">'+(inv.phone||'—')+'</td>';
-          h+='<td style="color:var(--red);font-weight:700">'+fmtD(fee)+'</td>';
-          h+='<td style="color:var(--green)">+'+fmtD(pnl)+'</td>';
-          h+='<td><a href="mailto:'+inv.email+'?subject=NQ%20Alpha%20-%20Payment%20Method%20Needed&body=Hi%20'+(inv.name||'').split(' ')[0]+',%0A%0AYou%20have%20a%20subscription%20fee%20of%20'+encodeURIComponent(fmtD(fee))+'%20due%20this%20month.%20Please%20log%20into%20your%20NQ%20Alpha%20dashboard%20and%20add%20a%20payment%20method%20in%20the%20Billing%20tab.%0A%0Ahttps://nqalpha.com%0A%0AThanks,%0ANQ%20Alpha" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:var(--gold);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:none;display:inline-block">EMAIL</a></td>';
+          h+='<td style="color:var(--white);font-weight:700">$1,000/mo</td>';
+          h+='<td><a href="mailto:'+inv.email+'?subject=NQ%20Alpha%20-%20Payment%20Method%20Needed&body=Hi%20'+(inv.name||'').split(' ')[0]+',%0A%0AYour%20NQ%20Alpha%20subscription%20is%20%241%2C000%2Fmonth.%20Please%20log%20into%20your%20dashboard%20and%20add%20a%20payment%20method%20in%20the%20Billing%20tab.%0A%0Ahttps://nqalpha.com%0A%0AThanks,%0ANQ%20Alpha" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:var(--gold);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:none;display:inline-block">EMAIL</a></td>';
           h+='</tr>';
         });
         h+='</tbody></table></div></div></div>';
       }
 
       // No card section
-      if(noCard.length>0 && latePayments.length!==noCard.length){
-        var noCardNoFee=noCard.filter(function(i){return !i.stats || !i.stats.performance_fee || i.stats.performance_fee<=0;});
-        if(noCardNoFee.length>0){
+      if(noCard.length>0 && noCardLive.length!==noCard.length){
+        var noCardDemo=noCard.filter(function(i){return !i.use_live;});
+        if(noCardDemo.length>0){
           h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:24px">';
-          h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:16px">💳</span><div style="font-size:14px;font-weight:600;color:var(--gold)">No Payment Method Yet</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px">No fee owed currently — just need to set up card</div></div>';
+          h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:16px">💳</span><div style="font-size:14px;font-weight:600;color:var(--gold)">No Payment Method Yet</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px">On demo — no fee until they go live</div></div>';
           h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
-          noCardNoFee.forEach(function(inv){
+          noCardDemo.forEach(function(inv){
             h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">';
             h+='<span style="font-size:12px;color:var(--white);font-weight:600">'+(inv.name||inv.email)+'</span>';
-            h+='<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">no card</span>';
+            h+='<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">demo · no card</span>';
             h+='</div>';
           });
           h+='</div></div>';
@@ -2876,26 +2879,24 @@ async function renderAdminContent(){
       // All investors billing table
       h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
       h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">ALL INVESTOR BILLING STATUS</div></div>';
-      h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Card</th><th>Monthly P&L</th><th>Sub Fee</th><th>Status</th></tr></thead><tbody>';
+      h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Card</th><th>Mode</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
       investors.filter(function(i){return i.is_approved;}).forEach(function(inv){
-        var pnl=inv.stats?inv.stats.month_pnl:0;
-        var fee=inv.stats?inv.stats.performance_fee:0;
-        var hwm=inv.high_water_mark||0;
         var hasC=!!inv.stripe_card_last4;
+        var isLive=!!inv.use_live;
         var cardStr=hasC?(inv.stripe_card_brand||'CARD')+' ••'+inv.stripe_card_last4:'—';
+        var sub=isLive?'$1,000/mo':'Free trial';
         var status='';
-        if(fee>0 && hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">AUTO-PAY</span>';
-        else if(fee>0 && !hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">NO CARD ⚠</span>';
-        else if(pnl<=0) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(64,80,96,.15);color:var(--muted)">NO FEE</span>';
-        else if(hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">OK</span>';
-        else status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">NO CARD</span>';
+        if(isLive && hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">AUTO-PAY</span>';
+        else if(isLive && !hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">NO CARD ⚠</span>';
+        else if(!isLive && hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">READY</span>';
+        else status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">DEMO</span>';
 
         h+='<tr>';
         h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
         h+='<td style="color:var(--text);font-size:11px">'+inv.email+'</td>';
         h+='<td style="font-family:var(--mono);font-size:10px;color:'+(hasC?'var(--text)':'var(--muted)')+'">'+cardStr+'</td>';
-        h+='<td style="color:'+(pnl>=0?'var(--green)':'var(--red)')+';font-weight:600">'+(pnl>=0?'+':'')+fmtD(pnl)+'</td>';
-        h+='<td style="color:var(--white);font-weight:600">'+(fee>0?fmtD(fee):'—')+'</td>';
+        h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(isLive?'background:rgba(255,68,102,.08);color:var(--red)':'background:rgba(240,192,64,.08);color:var(--gold)')+'">'+( isLive?'LIVE':'DEMO')+'</span></td>';
+        h+='<td style="color:var(--white);font-weight:600">'+sub+'</td>';
         h+='<td>'+status+'</td>';
         h+='</tr>';
       });
