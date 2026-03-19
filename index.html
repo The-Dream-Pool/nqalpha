@@ -900,7 +900,7 @@ function buildLogin(){
 var h='<div class="login-wrap"><div class="login-box">';
 h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">INVESTOR PORTAL</div></div>';
 h+='<div class="login-form"><div class="login-toggle"><button id="ltLogin" class="active" onclick="toggleLogin(\'login\')">LOG IN</button><button id="ltSignup" class="inactive" onclick="toggleLogin(\'signup\')">SIGN UP</button></div>';
-h+='<div id="signupFields" style="display:none"><div class="field"><label>FULL NAME</label><input id="regName" placeholder="John Smith"></div><div class="field"><label>PHONE</label><input id="regPhone" placeholder="+1 (555) 000-0000"></div></div>';
+h+='<div id="signupFields" style="display:none"><div class="field"><label>FULL NAME</label><input id="regName" placeholder="John Smith"></div><div class="field"><label>PHONE</label><input id="regPhone" placeholder="+1 (555) 000-0000"></div><div class="field"><label>HOW DID YOU HEAR ABOUT US?</label><select id="regReferral" onchange="toggleReferralName()" style="width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none"><option value="">Select one...</option><option value="instagram">Instagram</option><option value="friend">Friend / Referral</option><option value="other">Other</option></select></div><div id="referralNameField" class="field" style="display:none"><label>WHO REFERRED YOU?</label><input id="regReferralName" placeholder="Their name or @handle"></div></div>';
 h+='<div class="field"><label>EMAIL</label><input id="regEmail" type="email" placeholder="investor@email.com"></div>';
 h+='<div class="field" style="margin-bottom:8px"><label>PASSWORD</label><input id="regPassword" type="password" placeholder="••••••••"></div>';
 h+='<div id="tosField" style="display:none;margin-bottom:16px"><label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:var(--text);line-height:1.6"><input type="checkbox" id="regTos" style="margin-top:3px;width:16px;height:16px;accent-color:var(--green);flex-shrink:0;cursor:pointer"><span>I agree to the <a href="javascript:void(0)" onclick="event.stopPropagation();showTosModal()" style="color:var(--cyan);text-decoration:underline">Terms of Service</a> and acknowledge that trading futures involves substantial risk of loss.</span></label></div>';
@@ -920,6 +920,11 @@ document.getElementById('tosField').style.display=mode==='signup'?'block':'none'
 document.getElementById('loginBtn').textContent=mode==='login'?'Log In':'Create Account';
 hideLoginError();
 }
+function toggleReferralName(){
+var sel=(document.getElementById('regReferral')||{}).value||'';
+var f=document.getElementById('referralNameField');
+if(f) f.style.display=(sel==='friend'||sel==='other')?'block':'none';
+}
 async function doLogin(){
 var btn=document.getElementById('loginBtn');
 var isSignup=btn.textContent==='Create Account';
@@ -934,7 +939,7 @@ if(isSignup){
 btn.textContent='Please wait...';btn.disabled=true;
 try{
   var data;
-  if(isSignup){var name=(document.getElementById('regName')||{}).value||'';var phone=(document.getElementById('regPhone')||{}).value||'';data=await apiCall('POST','/auth/signup',{email:email,password:password,name:name,phone:phone,accept_tos:true});}
+  if(isSignup){var name=(document.getElementById('regName')||{}).value||'';var phone=(document.getElementById('regPhone')||{}).value||'';var refSrc=(document.getElementById('regReferral')||{}).value||'';var refName=(document.getElementById('regReferralName')||{}).value||'';var referral=refSrc+(refName?' — '+refName:'');data=await apiCall('POST','/auth/signup',{email:email,password:password,name:name,phone:phone,referral:referral,accept_tos:true});}
   else{data=await apiCall('POST','/auth/login',{email:email,password:password});}
   setToken(data.token);
   var profile=await apiCall('GET','/investor/profile');
@@ -3068,7 +3073,7 @@ function renderInvestorTable(investors, mode){
   if(!investors.length) return '<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No investors yet</div>';
   var h='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
   h+='<div class="table-wrap"><table><thead><tr>';
-  h+='<th>ID</th><th>Name</th><th>Email</th><th>Joined</th><th>Status</th><th>Tradovate</th><th>Mode</th><th>Live Since</th><th>Position</th><th>P&L</th><th>Actions</th>';
+  h+='<th>ID</th><th>Name</th><th>Email</th><th>Referral</th><th>Joined</th><th>Status</th><th>Tradovate</th><th>Mode</th><th>Live Since</th><th>Position</th><th>P&L</th><th>Actions</th>';
   h+='</tr></thead><tbody>';
   investors.forEach(function(inv){
     var joined=(inv.created_at||'').split('T')[0];
@@ -3082,6 +3087,13 @@ function renderInvestorTable(investors, mode){
     h+='<td style="color:var(--muted)">#'+inv.id+'</td>';
     h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
     h+='<td style="color:var(--text)">'+inv.email+'</td>';
+    var ref=inv.referral||'—';
+    var refCol='var(--muted)';
+    if(ref.startsWith('instagram'))refCol='#E1306C';
+    else if(ref.startsWith('friend'))refCol='var(--green)';
+    else if(ref.startsWith('other'))refCol='var(--cyan)';
+    else if(ref!=='—')refCol='var(--text)';
+    h+='<td><span style="font-family:var(--mono);font-size:10px;color:'+refCol+'">'+(ref||'—')+'</span></td>';
     h+='<td style="color:var(--muted)">'+joined+'</td>';
     h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(approved?'background:rgba(0,232,162,.08);color:var(--green)':'background:rgba(240,192,64,.08);color:var(--gold)')+'">'+( approved?'APPROVED':'PENDING')+'</span></td>';
     h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(connected?'background:rgba(0,196,255,.08);color:var(--cyan)':'background:rgba(64,80,96,.15);color:var(--muted)')+'">'+( connected?'CONNECTED':'NOT CONNECTED')+'</span></td>';
