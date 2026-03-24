@@ -2719,7 +2719,7 @@ async function doFlattenAll(){
 }
 
 function renderAdminTabs(){
-  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'investors',l:'Investors'},{id:'daily',l:'Daily P&L'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'investors',l:'Investors'},{id:'daily',l:'Daily P&L'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'},{id:'promos',l:'Promos'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
@@ -3084,6 +3084,76 @@ async function renderAdminContent(){
       h+='</tbody></table></div></div>';
     }
 
+    if(adminTab==='promos'){
+      var promos=[];
+      try{ var promoData=await adminApi('GET','/api/admin/promo/list'); promos=promoData.promos||[]; }catch(e){}
+
+      h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Promo Codes</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Create and manage promotional codes for investors</div>';
+
+      // ── CREATE NEW PROMO ──
+      h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(240,192,64,.03));border:1px solid rgba(240,192,64,.15);border-radius:16px;padding:24px;margin-bottom:24px;position:relative;overflow:hidden">';
+      h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(240,192,64,.4),transparent)"></div>';
+      h+='<div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:16px">Create New Promo Code</div>';
+
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">';
+      h+='<div class="field"><label style="color:rgba(240,192,64,.5)">CODE</label><input id="promoNewCode" placeholder="ALPHAVIP" style="text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)"></div>';
+      h+='<div class="field"><label style="color:rgba(240,192,64,.5)">DESCRIPTION</label><input id="promoNewDesc" placeholder="Launch promo — free MNQ"></div>';
+      h+='</div>';
+
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px">';
+      h+='<div class="field"><label style="color:rgba(240,192,64,.5)">FREE MNQ</label><select id="promoNewMnq" style="width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none"><option value="0">No</option><option value="1">Yes</option></select></div>';
+      h+='<div class="field"><label style="color:rgba(240,192,64,.5)">FREE MES</label><select id="promoNewMes" style="width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none"><option value="0">No</option><option value="1">Yes</option></select></div>';
+      h+='<div class="field"><label style="color:rgba(240,192,64,.5)">SUB DISCOUNT %</label><input id="promoNewDiscount" type="number" min="0" max="100" value="0" placeholder="0"></div>';
+      h+='<div class="field"><label style="color:rgba(240,192,64,.5)">MAX USES</label><input id="promoNewMax" type="number" min="-1" value="10" placeholder="10 (-1 = unlimited)"></div>';
+      h+='</div>';
+
+      h+='<div id="promoCreateMsg" style="display:none;font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;border-radius:6px"></div>';
+      h+='<button onclick="createPromoCode()" style="padding:12px 32px;background:linear-gradient(135deg,var(--gold),#d4a830);border:none;border-radius:10px;color:#04080D;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(240,192,64,.2);transition:all .2s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Create Promo Code</button>';
+      h+='</div>';
+
+      // ── SUMMARY ──
+      var activeCount=promos.filter(function(p){return p.active;}).length;
+      var totalUsed=promos.reduce(function(a,p){return a+p.times_used;},0);
+      h+='<div class="admin-grid-4" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">';
+      h+='<div class="dash-card"><div class="dc-label">TOTAL CODES</div><div class="dc-val" style="color:var(--gold)">'+promos.length+'</div><div class="dc-sub">created</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">ACTIVE</div><div class="dc-val" style="color:var(--green)">'+activeCount+'</div><div class="dc-sub">accepting redemptions</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">TOTAL REDEMPTIONS</div><div class="dc-val" style="color:var(--cyan)">'+totalUsed+'</div><div class="dc-sub">across all codes</div></div>';
+      h+='</div>';
+
+      // ── PROMO TABLE ──
+      if(promos.length>0){
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
+        h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">ALL PROMO CODES</div></div>';
+        h+='<div class="table-wrap"><table><thead><tr><th>Code</th><th>Description</th><th>Free MNQ</th><th>Free MES</th><th>Sub Discount</th><th>Uses</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+        promos.forEach(function(p){
+          var statusBadge=p.active?'<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">ACTIVE</span>':'<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">DISABLED</span>';
+          var usageStr=p.max_uses>0?p.times_used+'/'+p.max_uses:p.times_used+'/∞';
+          h+='<tr>';
+          h+='<td style="color:var(--gold);font-weight:700;letter-spacing:1px">'+p.code+'</td>';
+          h+='<td style="color:var(--text);font-size:11px">'+(p.description||'—')+'</td>';
+          h+='<td style="color:'+(p.mnq_free?'var(--green)':'var(--muted)')+'">'+( p.mnq_free?'✓':'—')+'</td>';
+          h+='<td style="color:'+(p.mes_free?'var(--green)':'var(--muted)')+'">'+( p.mes_free?'✓':'—')+'</td>';
+          h+='<td style="color:'+(p.sub_discount_pct>0?'var(--cyan)':'var(--muted)')+'">'+(p.sub_discount_pct>0?p.sub_discount_pct+'%':'—')+'</td>';
+          h+='<td style="font-family:var(--mono);font-size:11px;color:var(--text)">'+usageStr+'</td>';
+          h+='<td>'+statusBadge+'</td>';
+          h+='<td><div style="display:flex;gap:6px">';
+          if(p.active){
+            h+='<button onclick="togglePromo(\''+p.code+'\',0)" style="font-family:var(--mono);font-size:10px;padding:5px 12px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:6px;color:var(--gold);cursor:pointer" title="Disable">DISABLE</button>';
+          } else {
+            h+='<button onclick="togglePromo(\''+p.code+'\',1)" style="font-family:var(--mono);font-size:10px;padding:5px 12px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:6px;color:var(--green);cursor:pointer" title="Enable">ENABLE</button>';
+          }
+          h+='<button onclick="editPromoMax(\''+p.code+'\','+p.max_uses+')" style="font-family:var(--mono);font-size:10px;padding:5px 12px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:6px;color:var(--cyan);cursor:pointer" title="Edit max uses">EDIT</button>';
+          h+='<button onclick="deletePromo(\''+p.code+'\')" style="font-family:var(--mono);font-size:10px;padding:5px 10px;background:transparent;border:1px solid rgba(255,68,102,.25);border-radius:6px;color:var(--red);cursor:pointer" title="Delete">✕</button>';
+          h+='</div></td>';
+          h+='</tr>';
+        });
+        h+='</tbody></table></div></div>';
+      } else {
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No promo codes created yet</div>';
+      }
+    }
+
     if(adminTab==='health'){
       var health;
       try{ health = await adminApi('GET','/admin/system-health'); }
@@ -3313,6 +3383,49 @@ async function adminAction(action, investorId){
     else if(action==='pause') await adminApi('POST','/admin/pause/'+investorId);
     else if(action==='resume') await adminApi('POST','/admin/resume/'+investorId);
     await renderAdminContent();
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// ─── PROMO CODE MANAGEMENT ──────────────────────────────────────────
+async function createPromoCode(){
+  var code=(document.getElementById('promoNewCode')||{}).value||'';
+  var desc=(document.getElementById('promoNewDesc')||{}).value||'';
+  var mnqFree=parseInt((document.getElementById('promoNewMnq')||{}).value||0);
+  var mesFree=parseInt((document.getElementById('promoNewMes')||{}).value||0);
+  var discount=parseInt((document.getElementById('promoNewDiscount')||{}).value||0);
+  var maxUses=parseInt((document.getElementById('promoNewMax')||{}).value||10);
+  var msg=document.getElementById('promoCreateMsg');
+  if(!code.trim()){if(msg){msg.style.display='block';msg.style.color='var(--red)';msg.style.background='rgba(255,68,102,.08)';msg.textContent='Enter a promo code';}return;}
+  try{
+    await adminApi('POST','/api/admin/promo/create',{code:code.trim(),description:desc,mnq_free:mnqFree,mes_free:mesFree,sub_discount_pct:discount,max_uses:maxUses});
+    if(msg){msg.style.display='block';msg.style.color='var(--green)';msg.style.background='rgba(0,232,162,.08)';msg.textContent='✓ Promo code '+code.toUpperCase()+' created';}
+    setTimeout(function(){switchAdminTab('promos');},800);
+  }catch(e){if(msg){msg.style.display='block';msg.style.color='var(--red)';msg.style.background='rgba(255,68,102,.08)';msg.textContent='Error: '+e.message;}}
+}
+
+async function togglePromo(code,active){
+  try{
+    await adminApi('PUT','/api/admin/promo/update',{code:code,active:active});
+    await switchAdminTab('promos');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function editPromoMax(code,currentMax){
+  var newMax=prompt('New max uses for '+code+' (current: '+(currentMax>0?currentMax:'unlimited')+', -1 = unlimited):',currentMax);
+  if(newMax===null)return;
+  newMax=parseInt(newMax);
+  if(isNaN(newMax))return;
+  try{
+    await adminApi('PUT','/api/admin/promo/update',{code:code,max_uses:newMax});
+    await switchAdminTab('promos');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function deletePromo(code){
+  if(!confirm('Delete promo code '+code+'? This cannot be undone.'))return;
+  try{
+    await adminApi('DELETE','/api/admin/promo/'+code);
+    await switchAdminTab('promos');
   }catch(e){alert('Error: '+e.message);}
 }
 
