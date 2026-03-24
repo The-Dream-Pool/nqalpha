@@ -1996,12 +1996,14 @@ h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin
 // ── STATUS BANNER ──
 if(isPaid&&trialActive){
 h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite"></div>Active — first charge in '+trialDays+' days</div>';
-} else if(isPaid){
+} else if(isPaid&&subStatus==='active'){
 h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Active subscription</div>';
+} else if(isPaid){
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Product access active — subscription starts when you go live</div>';
 } else if(subStatus==='past_due'){
 h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);font-size:13px;font-weight:500;color:var(--red)"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>Payment past due — please update your payment method</div>';
 } else {
-h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.12);font-size:13px;font-weight:500;color:var(--red)"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>No active subscription — set up billing to unlock full access</div>';
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,196,255,.04);border:1px solid rgba(0,196,255,.12);font-size:13px;font-weight:500;color:var(--cyan)"><div style="width:8px;height:8px;border-radius:50%;background:var(--cyan)"></div>Purchase product access to get started</div>';
 }
 
 // ── STEP 1: PRODUCT ACCESS ──
