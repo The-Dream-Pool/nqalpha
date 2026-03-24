@@ -166,7 +166,7 @@ function buildHome(){
   h+='</div>';
   h+='<div class="card"><div class="card-title" style="margin-bottom:20px">PORTFOLIO CHARACTERISTICS</div><div class="chars"><div class="char"><div class="char-label">AVG MONTHLY RETURN</div><div class="char-val">$29,340</div><div class="char-sub">Across 60 months</div></div><div class="char"><div class="char-label">PROFITABLE MONTHS</div><div class="char-val">92%</div><div class="char-sub">55 of 60 months</div></div><div class="char"><div class="char-label">BEST MONTH</div><div class="char-val">$82,880</div><div class="char-sub">November 2023</div></div><div class="char"><div class="char-label">WORST MONTH</div><div class="char-val" style="color:var(--red)">-$7,440</div><div class="char-sub">February 2025</div></div></div></div>';
   h+='<div style="margin-bottom:48px"><div class="tlog-toggle" id="tlogToggle" onclick="toggleTradeLog()"><div><div class="card-title">INDEPENDENTLY VERIFIABLE TRADE LOG</div><div style="font-size:13px;color:var(--text);margin-top:6px">Every trade timestamped and verifiable on MNQ futures charts \u00b7 All times CST</div></div><span class="tlog-arrow" id="tlogArrow">\u25bc</span></div><div class="tlog-body" id="tlogBody"><table class="tlog-table"><thead><tr><th>DATE</th><th>ENTRY</th><th>STRATEGY</th><th>DIR</th><th>ENTRY $</th><th>TP</th><th>SL</th><th>RESULT</th><th>P&L</th><th>EXIT</th></tr></thead><tbody id="tlogRows"></tbody></table><div class="tlog-count" id="tlogCount"></div></div></div>';
-  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join as an Investor</h2><p>Connect your Tradovate account and start receiving automated trade signals today.</p><button class="btn-primary" style="font-size:16px;padding:18px 56px;border-radius:14px;box-shadow:0 6px 30px rgba(0,232,162,.25)" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">Monthly subscription \u00b7 30-day free trial \u00b7 Cancel anytime</div></div>';
+  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join as an Investor</h2><p>Connect your Tradovate account and start receiving automated trade signals today.</p><button class="btn-primary" style="font-size:16px;padding:18px 56px;border-radius:14px;box-shadow:0 6px 30px rgba(0,232,162,.25)" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">Monthly subscription \u00b7 First charge 30 days after going live \u00b7 Cancel anytime</div></div>';
   h+='</div>';
   h+='<div class="footer"><p>PAST PERFORMANCE IS NOT INDICATIVE OF FUTURE RESULTS. TRADING FUTURES INVOLVES SUBSTANTIAL RISK OF LOSS. BACKTEST RESULTS MARCH 2021 \u2014 FEBRUARY 2026. RESULTS SHOWN BEFORE FEES. NOT FINANCIAL ADVICE.</p></div>';
   document.getElementById('homePage').innerHTML=h;
@@ -1985,7 +1985,7 @@ h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin
 
 // ── STATUS BANNER ──
 if(isPaid&&trialActive){
-h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:500;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 2s ease infinite"></div>Free trial — '+trialDays+' days remaining</div>';
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite"></div>Active — first charge in '+trialDays+' days</div>';
 } else if(isPaid){
 h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Active subscription</div>';
 } else if(subStatus==='past_due'){
@@ -2100,7 +2100,7 @@ h+='<div style="position:absolute;inset:0;display:flex;align-items:center;justif
 }
 h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:12px">';
 h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">NQ Alpha Platform</div>';
-h+='<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(240,192,64,.08);color:var(--gold);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-top:8px">🎁 30-day free trial when you go live</div></div>';
+h+='<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(240,192,64,.08);color:var(--gold);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-top:8px">📅 First charge 30 days after going live</div></div>';
 var displayPrice=promoDiscount>0?Math.round(1000*(1-promoDiscount/100)):1000;
 h+='<div style="text-align:right"><div style="font-family:var(--mono);font-size:30px;font-weight:700;color:var(--white)">$'+displayPrice.toLocaleString()+'</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">/month</div>';
 if(promoDiscount>0){h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-top:2px">'+promoDiscount+'% promo discount applied</div>';}
@@ -2116,9 +2116,9 @@ h+='</div>';
 if(subStatus==='active'){
 h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,232,162,.08);color:var(--green);font-family:var(--font);font-size:14px;font-weight:700;text-align:center">Subscribed ✓</div>';
 } else if(subStatus==='trialing'){
-h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(240,192,64,.08);color:var(--gold);font-family:var(--font);font-size:14px;font-weight:700;text-align:center">Trial Active — '+trialDays+' days remaining</div>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,232,162,.08);color:var(--green);font-family:var(--font);font-size:14px;font-weight:700;text-align:center">Active — first charge in '+trialDays+' days</div>';
 } else {
-h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.15);text-align:center"><div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">Starts automatically when you go live</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Connect your Tradovate account in Live mode → 30-day free trial begins</div></div>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.15);text-align:center"><div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">Starts automatically when you go live</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Connect your Tradovate account in Live mode → first charge in 30 days</div></div>';
 }
 h+='</div>';
 
@@ -2154,7 +2154,7 @@ h+='</div>';
 h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div>';
 h+='<div class="how-item">• <strong>$2,500 one-time</strong> for MNQ access — unlocks the trading system</div>';
 h+='<div class="how-item">• <strong>Demo mode is free</strong> — connect Tradovate in demo to test with paper money at no cost</div>';
-h+='<div class="how-item">• <strong>$1,000/month subscription starts when you go live</strong> — 30-day free trial begins on your first live connection</div>';
+h+='<div class="how-item">• <strong>$1,000/month subscription starts when you go live</strong> — first charge 30 days after connecting. If you disconnect early, the $1,000 is still owed.</div>';
 h+='<div class="how-item">• <strong>No charge if bot isn\'t profitable</strong> — subscription is skipped for months with zero or negative profit</div>';
 h+='<div class="how-item">• <strong>Cancel anytime</strong> — no lock-in contracts or cancellation fees</div>';
 h+='<div class="how-item">• <strong>Secure payments</strong> — all payments handled by Stripe (PCI compliant)</div>';
@@ -2194,10 +2194,10 @@ var faqs=[
 {q:'Do I need a funded Tradovate account?',a:'For <strong>Demo mode</strong>, no — Tradovate provides a simulated account with paper money. For <strong>Live mode</strong>, yes — you\'ll need a funded account with enough margin to cover your position size. Check with Tradovate for their current margin requirements on MNQ contracts.'},
 ]},
 {cat:'Billing & Fees',color:'var(--cyan)',items:[
-{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) A $1,000/month flat subscription</strong> that starts automatically when you connect a live Tradovate account. Your first 30 days on live are free. Demo mode is completely free — you can test as long as you want. If the bot has zero or negative profit in a given month, you won\'t be charged.'},
+{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) A $1,000/month flat subscription</strong> that starts automatically when you connect a live Tradovate account. Your first charge is 30 days after going live — giving you time to see profits before paying. Demo mode is completely free — test as long as you want. If the bot has zero or negative profit in a given month, you won\'t be charged.'},
 {q:'What are the one-time product fees?',a:'Each product (MNQ or MES) requires a <strong>$2,500 one-time access fee</strong> to unlock. You can purchase one or both. This fee grants you permanent access to that product\'s trading strategies. The $5,000 bundle gets you both MNQ and MES access.'},
 {q:'What if the bot loses money?',a:'If the bot has zero or negative profit for a billing month, <strong>you don\'t pay anything</strong> for that month. You only pay the $1,000 subscription when the bot is profitable. We believe in aligning our success with yours.'},
-{q:'What happens if I disconnect early?',a:'If you disconnect during your 30-day free trial, you\'ll be charged the subscription fee for the current month. After the trial, you can cancel anytime with no additional charges beyond the current billing period.'},
+{q:'What happens if I disconnect early?',a:'If you disconnect your live Tradovate account at any point, the <strong>$1,000 subscription fee is still owed</strong> and will be charged immediately to your card on file. This applies whether you disconnect on day 1 or day 29. After the first 30 days, your subscription renews monthly and you can cancel anytime with no additional charges.'},
 {q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account and cancel your subscription at any time. The one-time product access fees are non-refundable. There are no lock-in contracts or cancellation fees on the monthly subscription.'},
 {q:'Do you offer promo codes?',a:'Yes! If you have a promo code, you can apply it in the <strong>Billing</strong> tab. Promos can include free product access, subscription discounts, or both. Each investor can only use one promo code.'},
 {q:'Is my payment information secure?',a:'All payments are handled by <strong>Stripe</strong>, a PCI-compliant payment processor. NQ Alpha never sees or stores your full card number. All checkout happens securely through Stripe\'s hosted payment page.'},
