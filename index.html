@@ -155,7 +155,7 @@ function buildHome(){
   h+='</div>';
   h+='<div class="card"><div class="card-title" style="margin-bottom:20px">PORTFOLIO CHARACTERISTICS</div><div class="chars"><div class="char"><div class="char-label">AVG MONTHLY RETURN</div><div class="char-val">$29,340</div><div class="char-sub">Across 60 months</div></div><div class="char"><div class="char-label">PROFITABLE MONTHS</div><div class="char-val">92%</div><div class="char-sub">55 of 60 months</div></div><div class="char"><div class="char-label">BEST MONTH</div><div class="char-val">$82,880</div><div class="char-sub">November 2023</div></div><div class="char"><div class="char-label">WORST MONTH</div><div class="char-val" style="color:var(--red)">-$7,440</div><div class="char-sub">February 2025</div></div></div></div>';
   h+='<div style="margin-bottom:48px"><div class="tlog-toggle" id="tlogToggle" onclick="toggleTradeLog()"><div><div class="card-title">INDEPENDENTLY VERIFIABLE TRADE LOG</div><div style="font-size:13px;color:var(--text);margin-top:6px">Every trade timestamped and verifiable on MNQ futures charts \u00b7 All times CST</div></div><span class="tlog-arrow" id="tlogArrow">\u25bc</span></div><div class="tlog-body" id="tlogBody"><table class="tlog-table"><thead><tr><th>DATE</th><th>ENTRY</th><th>STRATEGY</th><th>DIR</th><th>ENTRY $</th><th>TP</th><th>SL</th><th>RESULT</th><th>P&L</th><th>EXIT</th></tr></thead><tbody id="tlogRows"></tbody></table><div class="tlog-count" id="tlogCount"></div></div></div>';
-  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join as an Investor</h2><p>Connect your Tradovate account and start receiving automated trade signals today.</p><button class="btn-primary" style="font-size:15px;padding:16px 52px;border-radius:12px" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">Monthly subscription \u00b7 Cancel anytime</div></div>';
+  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join as an Investor</h2><p>Connect your Tradovate account and start receiving automated trade signals today.</p><button class="btn-primary" style="font-size:15px;padding:16px 52px;border-radius:12px" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">Monthly subscription \u00b7 30-day free trial \u00b7 Cancel anytime</div></div>';
   h+='</div>';
   h+='<div class="footer"><p>PAST PERFORMANCE IS NOT INDICATIVE OF FUTURE RESULTS. TRADING FUTURES INVOLVES SUBSTANTIAL RISK OF LOSS. BACKTEST RESULTS MARCH 2021 \u2014 FEBRUARY 2026. RESULTS SHOWN BEFORE FEES. NOT FINANCIAL ADVICE.</p></div>';
   document.getElementById('homePage').innerHTML=h;
@@ -1219,7 +1219,7 @@ var mp=stats.month_pnl||0;
 // ── ONBOARDING WALKTHROUGH ──
 var ob1=true; // Account created (always true if they're here)
 var ob2=!!profile.is_approved;
-var ob3=!!(profile.stripe_card_last4);
+var ob3=!!(profile.mnq_access||profile.mes_access||profile.stripe_card_last4);
 var ob4=!!(conn&&conn.connected);
 var obDone=ob1&&ob2&&ob3&&ob4;
 var obCount=(ob1?1:0)+(ob2?1:0)+(ob3?1:0)+(ob4?1:0);
@@ -1273,20 +1273,20 @@ h+='<div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-s
 h+='</div>';
 }
 
-// Step 3 — Add Payment Method
+// Step 3 — Purchase Product Access
 if(ob3){
 h+='<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;padding:14px 16px;border-radius:10px;background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.1)">';
 h+='<div style="width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#04080D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
-h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--green)">Payment Method Added</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(profile.stripe_card_brand||'CARD')+' ending in '+(profile.stripe_card_last4||'')+'</div></div>';
+h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--green)">Product Access Purchased</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(profile.mnq_access&&profile.mes_access?'MNQ + MES':profile.mnq_access?'MNQ Access':profile.mes_access?'MES Access':'Payment on file')+'</div></div>';
 h+='<div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1px;padding:4px 10px;background:rgba(0,232,162,.08);border-radius:5px;margin-top:4px">DONE</div>';
 h+='</div>';
 } else {
 var s3disabled=!ob2;
 h+='<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;padding:14px 16px;border-radius:10px;background:'+(s3disabled?'rgba(22,32,48,.3)':'var(--sf)')+';border:1px solid var(--bd);'+(s3disabled?'opacity:.5;':'cursor:pointer;')+'" '+(s3disabled?'':'onclick="switchTab(\'billing\')"')+' '+(s3disabled?'':'onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'"')+'>';
 h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(0,196,255,.08);border:2px solid '+(s3disabled?'var(--muted)':'var(--cyan)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(s3disabled?'var(--muted)':'var(--cyan)')+'">3</span></div>';
-h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s3disabled?'var(--muted)':'var(--white)')+'">Add Payment Method</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s3disabled?'Complete step 2 first':'Add a card before connecting your Tradovate account →')+'</div></div>';
+h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s3disabled?'var(--muted)':'var(--white)')+'">Purchase Product Access</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s3disabled?'Complete step 2 first':'Choose MNQ, MES, or both and set up billing →')+'</div></div>';
 if(!s3disabled)h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:1px;padding:4px 10px;background:rgba(0,196,255,.08);border-radius:5px;margin-top:4px">SET UP →</div>';
 h+='</div>';
 }
@@ -1959,72 +1959,143 @@ h+='</div>';
 h+='</div>'; // close guide container
 }
 if(dashTab==='billing'){
-var mp=stats.month_pnl||0;var fee=1000;
-var hasCard=profile.stripe_card_last4||false;var cardBrand=(profile.stripe_card_brand||'').toUpperCase();var cardLast4=profile.stripe_card_last4||'';
-h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Subscription</div>';
-h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">$1,000/month flat subscription · 30-day free trial on live · No charge when bot isn\'t profitable</div>';
+// Fetch billing status from Stripe billing module
+var billingData=null;
+try{billingData=await apiCall('GET','/api/billing-status/'+profile.id);}catch(e){billingData=null;}
+var hasMnq=billingData&&billingData.mnq_access;
+var hasMes=billingData&&billingData.mes_access;
+var subStatus=billingData?billingData.subscription_status:'none';
+var trialActive=billingData&&billingData.trial_active;
+var trialDays=billingData?billingData.trial_days_remaining:0;
+var promoCode=billingData?billingData.promo_code:null;
+var promoDiscount=billingData?billingData.promo_sub_discount_pct:0;
+var isPaid=billingData&&billingData.is_paid;
+var hasProduct=hasMnq||hasMes;
 
-// Subscription fee bar
-h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">';
-h+='<div style="display:flex;align-items:center;gap:12px"><div class="dc-label">MONTHLY SUBSCRIPTION</div></div>';
-h+='<div style="font-size:20px;font-weight:700;color:var(--white)">$1,000</div>';
-h+='</div>';
+h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Access</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Manage your product access and subscription</div>';
 
-// ── PAYMENT METHOD CARD ──
-h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px">';
-h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="card-title">PAYMENT METHOD</div>';
-if(hasCard){h+='<div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div><span style="font-family:var(--mono);font-size:10px;color:var(--green)">ACTIVE</span></div>';}
-else{h+='<div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div><span style="font-family:var(--mono);font-size:10px;color:var(--gold)">NOT SET UP</span></div>';}
-h+='</div>';
-
-if(hasCard){
-h+='<div style="display:flex;align-items:center;gap:16px">';
-h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;flex:1;display:flex;align-items:center;gap:14px">';
-h+='<div style="background:linear-gradient(135deg,#1a1f3c,#2d3561);border-radius:6px;padding:8px 12px;min-width:52px;text-align:center"><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px">'+cardBrand+'</span></div>';
-h+='<div><div style="font-family:var(--mono);font-size:14px;color:var(--white);letter-spacing:2px">•••• •••• •••• '+cardLast4+'</div>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">Auto-charged on the 1st of each month</div></div></div>';
-h+='<button onclick="setupPaymentMethod()" style="padding:10px 20px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'">Update Card</button>';
-h+='</div>';
+// ── STATUS BANNER ──
+if(isPaid&&trialActive){
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:500;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 2s ease infinite"></div>Free trial — '+trialDays+' days remaining</div>';
+} else if(isPaid){
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Active subscription</div>';
+} else if(subStatus==='past_due'){
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);font-size:13px;font-weight:500;color:var(--red)"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>Payment past due — please update your payment method</div>';
 } else {
-h+='<div style="background:rgba(240,192,64,.04);border:1px solid rgba(240,192,64,.15);border-radius:10px;padding:20px;text-align:center">';
-h+='<div style="font-size:28px;margin-bottom:10px">💳</div>';
-h+='<div style="font-size:14px;color:var(--white);font-weight:600;margin-bottom:6px">Add a Payment Method</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Add your card to enable automatic billing.<br>You will only be charged when you profit.</div>';
-h+='<button onclick="setupPaymentMethod()" style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);transition:transform .2s" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">Add Card</button>';
-h+='</div>';
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.12);font-size:13px;font-weight:500;color:var(--red)"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>No active subscription — set up billing to unlock full access</div>';
+}
+
+// ── STEP 1: PRODUCT ACCESS ──
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">STEP 1 — PRODUCT ACCESS</div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">';
+
+// MNQ Card
+h+='<div style="background:var(--sf);border:1px solid '+(hasMnq?'rgba(0,232,162,.25)':'var(--bd)')+';border-radius:14px;padding:24px;position:relative;transition:all .2s">';
+if(hasMnq){h+='<div style="position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--green);background:rgba(0,232,162,.08);padding:3px 10px;border-radius:20px">✓ PURCHASED</div>';}
+h+='<div style="width:36px;height:36px;border-radius:8px;background:rgba(0,196,255,.1);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:12px;color:var(--cyan);margin-bottom:14px">MNQ</div>';
+h+='<div style="font-size:17px;font-weight:600;color:var(--white);margin-bottom:4px">Micro Nasdaq</div>';
+h+='<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Automated mean-reversion trading on MNQ futures. Three simultaneous strategies.</div>';
+h+='<div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--white);margin-bottom:2px">$2,500</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px">One-time access fee</div>';
+if(!hasMnq){
+h+='<button onclick="checkoutProduct(\'mnq\')" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--cyan);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Purchase MNQ Access</button>';
+} else {
+h+='<button disabled style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--cyan);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;opacity:.3;cursor:not-allowed">Purchased</button>';
 }
 h+='</div>';
 
-// ── CURRENT MONTH ──
-h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:20px"><table><thead><tr><th>Month</th><th>P&L</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
-if(mp>0){
-var feeStatus=hasCard?'<span class="badge-tp">Auto-Pay</span>':'<span class="badge-pending">Add Card</span>';
-h+='<tr><td style="color:var(--white)">'+new Date().toLocaleString('default',{month:'long',year:'numeric'})+'</td><td style="color:var(--green)">+'+fmtD(mp)+'</td><td style="color:var(--white);font-weight:600">'+fmtD(fee)+'</td><td>'+feeStatus+'</td></tr>';
+// MES Card
+h+='<div style="background:var(--sf);border:1px solid '+(hasMes?'rgba(0,232,162,.25)':'var(--bd)')+';border-radius:14px;padding:24px;position:relative;transition:all .2s">';
+if(hasMes){h+='<div style="position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--green);background:rgba(0,232,162,.08);padding:3px 10px;border-radius:20px">✓ PURCHASED</div>';}
+h+='<div style="width:36px;height:36px;border-radius:8px;background:rgba(0,232,162,.1);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:12px;color:var(--green);margin-bottom:14px">MES</div>';
+h+='<div style="font-size:17px;font-weight:600;color:var(--white);margin-bottom:4px">Micro S&P</div>';
+h+='<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Automated mean-reversion trading on MES futures. Same proven strategies, different market.</div>';
+h+='<div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--white);margin-bottom:2px">$2,500</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px">One-time access fee</div>';
+if(!hasMes){
+h+='<button onclick="checkoutProduct(\'mes\')" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Purchase MES Access</button>';
 } else {
-h+='<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:20px">No billable activity yet this month</td></tr>';
+h+='<button disabled style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;opacity:.3;cursor:not-allowed">Purchased</button>';
 }
-h+='</tbody></table></div>';
+h+='</div>';
+h+='</div>';
 
-// ── INVOICE HISTORY ──
-var invoices=profile.invoices||[];
-if(invoices.length>0){
-h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:20px">';
-h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">INVOICE HISTORY</div></div>';
-h+='<table><thead><tr><th>Date</th><th>Period</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
-invoices.forEach(function(inv){
-var statusBadge=inv.status==='paid'?'<span class="badge-tp">Paid</span>':inv.status==='pending'?'<span class="badge-pending">Pending</span>':'<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">Failed</span>';
-h+='<tr><td style="color:var(--white)">'+inv.date+'</td><td style="color:var(--muted)">'+inv.period+'</td><td style="color:var(--white);font-weight:600">'+fmtD(inv.amount)+'</td><td>'+statusBadge+'</td></tr>';
+// Bundle banner (only if both not purchased)
+if(!hasMnq||!hasMes){
+var canBundle=!hasMnq&&!hasMes;
+h+='<div style="background:linear-gradient(135deg,rgba(0,196,255,.04),rgba(0,232,162,.04));border:1px dashed rgba(0,232,162,.2);border-radius:12px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">';
+h+='<div style="font-size:13px;font-weight:500;color:var(--text)">'+(canBundle?'Get both products for <span style="font-family:var(--mono);color:var(--green);font-weight:700">$5,000</span> — full market coverage':'Add the other product for <span style="font-family:var(--mono);color:var(--green);font-weight:700">$2,500</span>')+'</div>';
+h+='<button onclick="checkoutProduct(\''+(canBundle?'both':(hasMnq?'mes':'mnq'))+'\')" style="padding:10px 22px;border:1px solid rgba(0,232,162,.2);border-radius:8px;background:transparent;color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.2)\';this.style.color=\'var(--text)\'">'+(canBundle?'Buy Both':'Buy Now')+'</button>';
+h+='</div>';
+} else {
+h+='<div style="margin-bottom:28px"></div>';
+}
+
+// ── STEP 2: MONTHLY SUBSCRIPTION ──
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">STEP 2 — MONTHLY SUBSCRIPTION</div>';
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:28px;margin-bottom:24px;position:relative;'+(hasProduct?'':'opacity:.5;pointer-events:none;')+'">';
+if(!hasProduct){
+h+='<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,8,13,.7);border-radius:14px;font-size:13px;font-weight:500;color:var(--muted);z-index:2;pointer-events:none">Purchase a product first to unlock</div>';
+}
+h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:12px">';
+h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">NQ Alpha Platform</div>';
+h+='<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(240,192,64,.08);color:var(--gold);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-top:8px">🎁 30-day free trial included</div></div>';
+var displayPrice=promoDiscount>0?Math.round(1000*(1-promoDiscount/100)):1000;
+h+='<div style="text-align:right"><div style="font-family:var(--mono);font-size:30px;font-weight:700;color:var(--white)">$'+displayPrice.toLocaleString()+'</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">/month</div>';
+if(promoDiscount>0){h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-top:2px">'+promoDiscount+'% promo discount applied</div>';}
+h+='</div></div>';
+
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">';
+var subFeatures=['Automated trade execution','Real-time P&L tracking','Investor portal access','Priority support','Skip months with no profit','Cancel anytime'];
+subFeatures.forEach(function(f){
+h+='<div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-family:var(--mono);font-size:11px">→</span>'+f+'</div>';
 });
-h+='</tbody></table></div>';
+h+='</div>';
+
+if(subStatus==='active'){
+h+='<button disabled style="width:100%;padding:14px;border:none;border-radius:10px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:14px;font-weight:700;opacity:.4;cursor:not-allowed">Subscribed ✓</button>';
+} else if(subStatus==='trialing'){
+h+='<button disabled style="width:100%;padding:14px;border:none;border-radius:10px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:14px;font-weight:700;opacity:.4;cursor:not-allowed">Trial Active — '+trialDays+' days left</button>';
+} else {
+h+='<button onclick="checkoutSubscription()" style="width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--green),#00c968);color:var(--bg);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\';this.style.boxShadow=\'0 4px 20px rgba(0,232,162,.3)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'none\'">Start 30-Day Free Trial</button>';
 }
+h+='</div>';
+
+// ── PROMO CODE ──
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">PROMO CODE</div>';
+if(promoCode){
+h+='<div style="background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.15);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:10px;margin-bottom:24px">';
+h+='<div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--green);letter-spacing:1px">'+promoCode+'</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Applied</div></div>';
+} else {
+h+='<div style="display:flex;gap:10px;margin-bottom:24px">';
+h+='<input type="text" id="promoInput" placeholder="Enter promo code" maxlength="30" style="flex:1;padding:12px 16px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-family:var(--mono);font-size:13px;outline:none;text-transform:uppercase;letter-spacing:1px" onfocus="this.style.borderColor=\'var(--cyan)\'" onblur="this.style.borderColor=\'var(--bd)\'">';
+h+='<button onclick="applyPromoCode()" style="padding:12px 22px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s" onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">Apply</button>';
+h+='</div>';
+h+='<div id="promoResult" style="display:none;margin-top:-14px;margin-bottom:24px;font-size:12px;padding:10px 14px;border-radius:8px"></div>';
+}
+
+// ── ACCOUNT DETAILS ──
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:22px;margin-bottom:24px">';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:16px">ACCOUNT DETAILS</div>';
+var billingRows=[
+{l:'Subscription Status',v:subStatus||'none'},
+{l:'MNQ Access',v:hasMnq?'<span style="color:var(--green)">✓ Active</span>':'—'},
+{l:'MES Access',v:hasMes?'<span style="color:var(--green)">✓ Active</span>':'—'},
+{l:'Last Payment',v:billingData&&billingData.last_payment_date?new Date(billingData.last_payment_date).toLocaleDateString():'—'},
+];
+billingRows.forEach(function(r){
+h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);font-size:12px"><span style="color:var(--muted)">'+r.l+'</span><span style="font-weight:500;font-family:var(--mono);font-size:11px">'+r.v+'</span></div>';
+});
+h+='</div>';
 
 // ── HOW IT WORKS ──
 h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div>';
+h+='<div class="how-item">• <strong>$2,500 one-time</strong> per product (MNQ and/or MES) — unlocks access to the trading system</div>';
 h+='<div class="how-item">• <strong>$1,000/month flat subscription</strong> — 30-day free trial on live, no charge if the bot isn\'t profitable</div>';
-h+='<div class="how-item">• <strong>Transparent pricing</strong> — no hidden charges or surprise costs</div>';
-h+='<div class="how-item">• <strong>Automatic billing</strong> — your card is charged on the 1st of each month</div>';
 h+='<div class="how-item">• <strong>Cancel anytime</strong> — no lock-in contracts or cancellation fees</div>';
-h+='<div class="how-item">• <strong>Secure payments</strong> — all card data handled by Stripe (PCI compliant)</div>';
+h+='<div class="how-item">• <strong>Secure payments</strong> — all payments handled by Stripe (PCI compliant)</div>';
 h+='<div class="how-item">• <strong>Receipts</strong> — emailed automatically after each charge</div>';
 h+='</div>';
 }
@@ -2062,10 +2133,13 @@ var faqs=[
 {q:'Do I need a funded Tradovate account?',a:'For <strong>Demo mode</strong>, no — Tradovate provides a simulated account with paper money. For <strong>Live mode</strong>, yes — you\'ll need a funded account with enough margin to cover your position size. Check with Tradovate for their current margin requirements on MNQ contracts.'},
 ]},
 {cat:'Billing & Fees',color:'var(--cyan)',items:[
-{q:'How does billing work?',a:'NQ Alpha charges a <strong>flat $1,000/month subscription fee</strong> for access to the MNQ trade-copying service. Your first 30 days after switching to a live Tradovate account are free. After the trial, billing occurs monthly. If the bot has zero or negative profit in a given month, you won\'t be charged for that month.'},
+{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) A $1,000/month flat subscription</strong> for platform access. Your first 30 days after going live are free. If the bot has zero or negative profit in a given month, you won\'t be charged for that month.'},
+{q:'What are the one-time product fees?',a:'Each product (MNQ or MES) requires a <strong>$2,500 one-time access fee</strong> to unlock. You can purchase one or both. This fee grants you permanent access to that product\'s trading strategies. The $5,000 bundle gets you both MNQ and MES access.'},
 {q:'What if the bot loses money?',a:'If the bot has zero or negative profit for a billing month, <strong>you don\'t pay anything</strong> for that month. You only pay the $1,000 subscription when the bot is profitable. We believe in aligning our success with yours.'},
-{q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account and stop trade copying at any time from the Connect tab. Note that disconnecting mid-cycle will trigger a final charge for the current month if the bot was profitable. There are no lock-in contracts.'},
-{q:'Is my payment information secure?',a:'All card data is handled by <strong>Stripe</strong>, a PCI-compliant payment processor. NQ Alpha never sees or stores your full card number — we only store the last 4 digits and card brand for display purposes.'},
+{q:'What happens if I disconnect early?',a:'If you disconnect during your 30-day free trial, you\'ll be charged the subscription fee for the current month. After the trial, you can cancel anytime with no additional charges beyond the current billing period.'},
+{q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account and cancel your subscription at any time. The one-time product access fees are non-refundable. There are no lock-in contracts or cancellation fees on the monthly subscription.'},
+{q:'Do you offer promo codes?',a:'Yes! If you have a promo code, you can apply it in the <strong>Billing</strong> tab. Promos can include free product access, subscription discounts, or both. Each investor can only use one promo code.'},
+{q:'Is my payment information secure?',a:'All payments are handled by <strong>Stripe</strong>, a PCI-compliant payment processor. NQ Alpha never sees or stores your full card number. All checkout happens securely through Stripe\'s hosted payment page.'},
 ]},
 {cat:'Account & Support',color:'var(--gold)',items:[
 {q:'How do I update my profile?',a:'Go to the <strong>Settings</strong> tab in your dashboard. You can update your name and phone number. Email changes require contacting support.'},
@@ -2110,6 +2184,19 @@ h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:
 h+='<div class="conn-box"><div class="field"><label>FULL NAME</label><input id="setName" value="'+(profile.name||'')+'"></div><div class="field"><label>EMAIL</label><input value="'+(profile.email||'')+'" disabled style="opacity:0.5"></div><div class="field"><label>PHONE</label><input id="setPhone" value="'+(profile.phone||'')+'" placeholder="+1 (555) 000-0000"></div><div id="setMsg" style="display:none;font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;border-radius:6px"></div><button onclick="saveSettings()" style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Save Changes</button></div>';
 }
 m.innerHTML=h;
+// ── PAYWALL: Read-only gate for unpaid investors ──
+if(dashTab!=='billing' && dashTab!=='settings' && dashTab!=='help' && profile.is_approved){
+  try{
+    var _bill=await apiCall('GET','/api/billing-status/'+profile.id);
+    if(_bill && !_bill.is_paid){
+      m.querySelectorAll('button,[onclick]').forEach(function(el){if(!el.closest||!el.closest('.dash-side')){el.disabled=true;el.style.opacity='0.4';el.style.cursor='not-allowed';el.style.pointerEvents='none';}});
+      m.querySelectorAll('input,select,textarea').forEach(function(el){el.disabled=true;el.style.opacity='0.5';});
+      var _pw=document.createElement('div');
+      _pw.innerHTML='<div style="position:sticky;top:60px;z-index:90;background:linear-gradient(135deg,#12141c,#1a1d28);border:1px solid #252836;border-radius:10px;padding:12px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:14px;font-size:13px;flex-wrap:wrap"><span style="color:#ffb647">\u26a0\ufe0f</span><span style="color:#e8eaf0">Read-only mode \u2014 <strong>set up billing</strong> to unlock full access</span><button onclick="switchTab(\'billing\')" style="padding:8px 18px;background:#00E8A2;border:none;border-radius:6px;color:#04080D;font-weight:700;font-size:12px;cursor:pointer;pointer-events:all;white-space:nowrap">Upgrade Now</button></div>';
+      m.insertBefore(_pw,m.firstChild);
+    }
+  }catch(e){}
+}
 if(dashTab==='overview')setTimeout(function(){drawDashEq();},50);
 if(dashTab==='pnl')setTimeout(function(){drawLiveEqChart();drawDailyPnlChart();},50);
 if(dashTab==='connect')updatePosPreview();
@@ -2175,7 +2262,51 @@ msg.textContent='✓ Saved successfully';msg.style.cssText='display:block;color:
 catch(e){msg.textContent=e.message;msg.style.cssText='display:block;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;border-radius:6px';}
 btn.textContent='Save Changes';btn.disabled=false;
 }
-// ─── STRIPE PAYMENT METHOD SETUP ──────────────────────────────────────────
+// ─── STRIPE BILLING CHECKOUT ──────────────────────────────────────────
+async function checkoutProduct(product){
+try{
+  var resp = await apiCall('POST','/api/checkout/product',{investor_id:SESSION.investor.id,product:product});
+  if(resp.checkout_url){
+    window.location.href = resp.checkout_url;
+  } else if(resp.error){
+    alert(resp.error);
+  } else {
+    alert('Unable to start checkout. Please try again.');
+  }
+}catch(e){
+  alert('Error: ' + e.message);
+}
+}
+async function checkoutSubscription(){
+try{
+  var resp = await apiCall('POST','/api/checkout/subscription',{investor_id:SESSION.investor.id});
+  if(resp.checkout_url){
+    window.location.href = resp.checkout_url;
+  } else if(resp.error){
+    alert(resp.error);
+  } else {
+    alert('Unable to start subscription checkout. Please try again.');
+  }
+}catch(e){
+  alert('Error: ' + e.message);
+}
+}
+async function applyPromoCode(){
+var code=(document.getElementById('promoInput')||{}).value||'';
+if(!code.trim())return;
+var result=document.getElementById('promoResult');
+try{
+  var resp = await apiCall('POST','/api/promo/apply',{investor_id:SESSION.investor.id,code:code.trim()});
+  if(resp.error){
+    if(result){result.style.display='block';result.style.background='rgba(255,68,102,.06)';result.style.color='var(--red)';result.textContent=resp.error;}
+  } else {
+    if(result){result.style.display='block';result.style.background='rgba(0,232,162,.06)';result.style.color='var(--green)';result.textContent=resp.message||'Promo applied!';}
+    setTimeout(function(){renderDashContent();},800);
+  }
+}catch(e){
+  if(result){result.style.display='block';result.style.background='rgba(255,68,102,.06)';result.style.color='var(--red)';result.textContent=e.message||'Failed to apply promo code';}
+}
+}
 async function setupPaymentMethod(){
 try{
   var data = await apiCall('POST','/billing/setup-payment');
@@ -2826,77 +2957,64 @@ async function renderAdminContent(){
 
     if(adminTab==='billing'){
       h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Payments</div>';
-      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Payment status for all active investors</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Product access and subscription status for all investors</div>';
 
-      // Summary cards — flat $1,000/mo subscription
-      var noCard=investors.filter(function(i){return i.is_approved && !i.stripe_card_last4;});
-      var hasCard=investors.filter(function(i){return i.is_approved && i.stripe_card_last4;});
-      var liveInvestors=investors.filter(function(i){return i.is_approved && i.use_live;});
-      var noCardLive=investors.filter(function(i){return i.is_approved && i.use_live && !i.stripe_card_last4;});
+      // Summary cards
+      var hasMnqCount=investors.filter(function(i){return i.is_approved && i.mnq_access;}).length;
+      var hasMesCount=investors.filter(function(i){return i.is_approved && i.mes_access;}).length;
+      var hasSubCount=investors.filter(function(i){return i.is_approved && (i.subscription_status==='active'||i.subscription_status==='trialing');}).length;
+      var noProdCount=investors.filter(function(i){return i.is_approved && !i.mnq_access && !i.mes_access && !i.stripe_card_last4;}).length;
 
       h+='<div class="admin-grid-4" style="margin-bottom:24px">';
-      h+='<div class="dash-card"><div class="dc-label">CARDS ON FILE</div><div class="dc-val" style="color:var(--green)">'+hasCard.length+'</div><div class="dc-sub">auto-pay enabled</div></div>';
-      h+='<div class="dash-card"><div class="dc-label">NO CARD</div><div class="dc-val" style="color:var(--gold)">'+noCard.length+'</div><div class="dc-sub">can\'t be billed</div></div>';
-      h+='<div class="dash-card"><div class="dc-label">LIVE INVESTORS</div><div class="dc-val" style="color:var(--cyan)">'+liveInvestors.length+'</div><div class="dc-sub">$1,000/mo each</div></div>';
-      h+='<div class="dash-card"><div class="dc-label" style="color:var(--red)">⚠ NEEDS ATTENTION</div><div class="dc-val" style="color:var(--red)">'+noCardLive.length+'</div><div class="dc-sub">live but no card</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">MNQ ACCESS</div><div class="dc-val" style="color:var(--cyan)">'+hasMnqCount+'</div><div class="dc-sub">$2,500 one-time</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">MES ACCESS</div><div class="dc-val" style="color:var(--green)">'+hasMesCount+'</div><div class="dc-sub">$2,500 one-time</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">ACTIVE SUBS</div><div class="dc-val" style="color:var(--white)">'+hasSubCount+'</div><div class="dc-sub">$1,000/mo each</div></div>';
+      h+='<div class="dash-card"><div class="dc-label" style="color:var(--gold)">NO PRODUCT</div><div class="dc-val" style="color:var(--gold)">'+noProdCount+'</div><div class="dc-sub">haven\'t purchased</div></div>';
       h+='</div>';
 
-      // Late / needs attention section
-      if(noCardLive.length>0){
+      // Needs attention — live but no subscription
+      var liveNoSub=investors.filter(function(i){return i.is_approved && i.use_live && i.subscription_status!=='active' && i.subscription_status!=='trialing';});
+      if(liveNoSub.length>0){
         h+='<div style="background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.2);border-radius:14px;padding:24px;margin-bottom:24px">';
-        h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:20px">⚠️</span><div><div style="font-size:16px;font-weight:700;color:var(--red)">Action Required — Live But No Card</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">These investors are on live accounts but haven\'t added a payment method</div></div></div>';
+        h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:20px">⚠️</span><div><div style="font-size:16px;font-weight:700;color:var(--red)">Action Required — Live But No Subscription</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">These investors are on live accounts but don\'t have an active subscription</div></div></div>';
         h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
-        h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Phone</th><th>Subscription</th><th>Action</th></tr></thead><tbody>';
-        noCardLive.forEach(function(inv){
+        h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Products</th><th>Sub Status</th><th>Action</th></tr></thead><tbody>';
+        liveNoSub.forEach(function(inv){
+          var prods=[];if(inv.mnq_access)prods.push('MNQ');if(inv.mes_access)prods.push('MES');
           h+='<tr>';
           h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
           h+='<td style="color:var(--text)"><a href="mailto:'+inv.email+'" style="color:var(--cyan)">'+inv.email+'</a></td>';
-          h+='<td style="color:var(--text);font-family:var(--mono);font-size:11px">'+(inv.phone||'—')+'</td>';
-          h+='<td style="color:var(--white);font-weight:700">$1,000/mo</td>';
-          h+='<td><a href="mailto:'+inv.email+'?subject=NQ%20Alpha%20-%20Payment%20Method%20Needed&body=Hi%20'+(inv.name||'').split(' ')[0]+',%0A%0AYour%20NQ%20Alpha%20subscription%20is%20%241%2C000%2Fmonth.%20Please%20log%20into%20your%20dashboard%20and%20add%20a%20payment%20method%20in%20the%20Billing%20tab.%0A%0Ahttps://nqalpha.com%0A%0AThanks,%0ANQ%20Alpha" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:var(--gold);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:none;display:inline-block">EMAIL</a></td>';
+          h+='<td style="font-family:var(--mono);font-size:10px;color:var(--text)">'+(prods.length>0?prods.join(', '):'None')+'</td>';
+          h+='<td style="font-family:var(--mono);font-size:10px;color:var(--red)">'+(inv.subscription_status||'none')+'</td>';
+          h+='<td><a href="mailto:'+inv.email+'?subject=NQ%20Alpha%20-%20Subscription%20Needed&body=Hi%20'+(inv.name||'').split(' ')[0]+',%0A%0APlease%20set%20up%20your%20subscription%20in%20the%20Billing%20tab%20of%20your%20NQ%20Alpha%20dashboard.%0A%0Ahttps://nqalpha.com%0A%0AThanks,%0ANQ%20Alpha" style="font-family:var(--mono);font-size:10px;padding:5px 14px;background:var(--gold);border:none;border-radius:6px;color:var(--bg);font-weight:700;cursor:pointer;text-decoration:none;display:inline-block">EMAIL</a></td>';
           h+='</tr>';
         });
         h+='</tbody></table></div></div></div>';
       }
 
-      // No card section
-      if(noCard.length>0 && noCardLive.length!==noCard.length){
-        var noCardDemo=noCard.filter(function(i){return !i.use_live;});
-        if(noCardDemo.length>0){
-          h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:24px">';
-          h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:16px">💳</span><div style="font-size:14px;font-weight:600;color:var(--gold)">No Payment Method Yet</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px">On demo — no fee until they go live</div></div>';
-          h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
-          noCardDemo.forEach(function(inv){
-            h+='<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">';
-            h+='<span style="font-size:12px;color:var(--white);font-weight:600">'+(inv.name||inv.email)+'</span>';
-            h+='<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">demo · no card</span>';
-            h+='</div>';
-          });
-          h+='</div></div>';
-        }
-      }
-
       // All investors billing table
       h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
       h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">ALL INVESTOR BILLING STATUS</div></div>';
-      h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Card</th><th>Mode</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
+      h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Products</th><th>Mode</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
       investors.filter(function(i){return i.is_approved;}).forEach(function(inv){
-        var hasC=!!inv.stripe_card_last4;
+        var prods=[];if(inv.mnq_access)prods.push('MNQ');if(inv.mes_access)prods.push('MES');
+        var prodStr=prods.length>0?prods.join(' + '):'—';
         var isLive=!!inv.use_live;
-        var cardStr=hasC?(inv.stripe_card_brand||'CARD')+' ••'+inv.stripe_card_last4:'—';
-        var sub=isLive?'$1,000/mo':'Free trial';
+        var subSt=inv.subscription_status||'none';
         var status='';
-        if(isLive && hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">AUTO-PAY</span>';
-        else if(isLive && !hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">NO CARD ⚠</span>';
-        else if(!isLive && hasC) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">READY</span>';
-        else status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">DEMO</span>';
+        if(subSt==='active') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">ACTIVE</span>';
+        else if(subSt==='trialing') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">TRIAL</span>';
+        else if(subSt==='past_due') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">PAST DUE</span>';
+        else if(subSt==='canceled') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">CANCELED</span>';
+        else if(prods.length>0) status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,196,255,.08);color:var(--cyan)">NO SUB</span>';
+        else status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(64,80,96,.15);color:var(--muted)">UNPAID</span>';
 
         h+='<tr>';
         h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
         h+='<td style="color:var(--text);font-size:11px">'+inv.email+'</td>';
-        h+='<td style="font-family:var(--mono);font-size:10px;color:'+(hasC?'var(--text)':'var(--muted)')+'">'+cardStr+'</td>';
+        h+='<td style="font-family:var(--mono);font-size:10px;color:'+(prods.length>0?'var(--text)':'var(--muted)')+'">'+prodStr+'</td>';
         h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(isLive?'background:rgba(255,68,102,.08);color:var(--red)':'background:rgba(240,192,64,.08);color:var(--gold)')+'">'+( isLive?'LIVE':'DEMO')+'</span></td>';
-        h+='<td style="color:var(--white);font-weight:600">'+sub+'</td>';
+        h+='<td style="color:var(--white);font-weight:600">$1,000/mo</td>';
         h+='<td>'+status+'</td>';
         h+='</tr>';
       });
@@ -3144,7 +3262,8 @@ checkAdminSession();
 
 // ─── Init
 // Auto-navigate to billing tab if redirected from Stripe
-if(window.location.search.includes('card=added')){
+var _qs=window.location.search;
+if(_qs.includes('card=added')||_qs.includes('status=success')||_qs.includes('status=sub_success')||_qs.includes('status=canceled')){
   var t=localStorage.getItem('nq_token');
   if(t){TOKEN=t;apiCall('GET','/investor/profile').then(function(data){SESSION.investor=data;showPage('dashPage');buildDash(data.email);setTimeout(function(){switchTab('billing');},500);}).catch(function(){buildHome();});}
   else{buildHome();}
