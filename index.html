@@ -2563,14 +2563,16 @@ var ADMIN_KEY_STORED = null;
 
 function buildAdminLogin(){
   var h='<div class="login-wrap"><div class="login-box">';
-  h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot" style="background:var(--gold);box-shadow:0 0 14px rgba(240,192,64,.4)"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">ADMIN PORTAL</div></div>';
-  h+='<div class="login-form">';
-  h+='<div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:20px;text-align:center">ADMINISTRATOR ACCESS</div>';
-  h+='<div class="field"><label>ADMIN PASSWORD</label><input id="adminPass" type="password" placeholder="••••••••" onkeydown="if(event.key===\'Enter\')doAdminLogin()"></div>';
+  h+='<div class="login-logo" onclick="showPage(\'homePage\')"><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px"><div class="logo-dot" style="background:var(--gold);box-shadow:0 0 14px rgba(240,192,64,.5),0 0 30px rgba(240,192,64,.2)"></div><span style="font-size:20px;font-weight:800;color:var(--white)">NQ ALPHA</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:3px;text-shadow:0 0 15px rgba(240,192,64,.3)">ADMIN PORTAL</div></div>';
+  h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(240,192,64,.03));border:1px solid rgba(240,192,64,.15);border-radius:18px;padding:36px;position:relative;overflow:hidden">';
+  h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(240,192,64,.4),rgba(240,192,64,.15),transparent)"></div>';
+  h+='<div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(240,192,64,.06),transparent 70%);pointer-events:none"></div>';
+  h+='<div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:20px;text-align:center;text-shadow:0 0 10px rgba(240,192,64,.2)">ADMINISTRATOR ACCESS</div>';
+  h+='<div class="field"><label style="color:rgba(240,192,64,.5)">ADMIN PASSWORD</label><input id="adminPass" type="password" placeholder="••••••••" style="border-color:rgba(240,192,64,.15)" onfocus="this.style.borderColor=\'rgba(240,192,64,.4)\';this.style.boxShadow=\'0 0 12px rgba(240,192,64,.1)\'" onblur="this.style.borderColor=\'rgba(240,192,64,.15)\';this.style.boxShadow=\'none\'" onkeydown="if(event.key===\'Enter\')doAdminLogin()"></div>';
   h+='<div id="adminLoginErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px;padding:8px 12px;background:rgba(255,68,102,.08);border-radius:6px"></div>';
-  h+='<button onclick="doAdminLogin()" style="width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;color:#04080D;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font)">Sign In as Admin</button>';
+  h+='<button onclick="doAdminLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#d4a830);border:none;border-radius:10px;color:#04080D;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 20px rgba(240,192,64,.2);transition:all .2s" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 28px rgba(240,192,64,.35)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'0 4px 20px rgba(240,192,64,.2)\'">Sign In as Admin</button>';
   h+='</div>';
-  h+='<div class="login-back" onclick="showPage(\'homePage\')">← Back to Homepage</div>';
+  h+='<div class="login-back" onclick="showPage(\'homePage\')" style="color:rgba(240,192,64,.4)" onmouseover="this.style.color=\'var(--gold)\'" onmouseout="this.style.color=\'rgba(240,192,64,.4)\'">← Back to Homepage</div>';
   h+='</div></div>';
   document.getElementById('adminPage').innerHTML=h;
 }
