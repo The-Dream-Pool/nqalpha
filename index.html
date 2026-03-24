@@ -2134,6 +2134,28 @@ h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;backgroun
 }
 h+='</div>';
 
+// ── PAYMENT METHOD (needed for subscription when going live) ──
+var hasCard=!!(profile.stripe_card_last4);
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">PAYMENT METHOD</div>';
+h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid '+(hasCard?'rgba(0,232,162,.15)':'rgba(240,192,64,.15)')+';border-radius:14px;padding:22px;margin-bottom:24px">';
+if(hasCard){
+h+='<div style="display:flex;align-items:center;justify-content:space-between">';
+h+='<div style="display:flex;align-items:center;gap:14px">';
+h+='<div style="background:linear-gradient(135deg,#1a1f3c,#2d3561);border-radius:8px;padding:8px 14px"><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px">'+(profile.stripe_card_brand||'CARD').toUpperCase()+'</span></div>';
+h+='<div><div style="font-family:var(--mono);font-size:14px;color:var(--white);letter-spacing:2px">•••• •••• •••• '+(profile.stripe_card_last4||'')+'</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Used for monthly subscription</div></div></div>';
+h+='<button onclick="setupPaymentMethod()" style="padding:8px 18px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'">Update</button>';
+h+='</div>';
+} else {
+h+='<div style="text-align:center;padding:8px 0">';
+h+='<div style="font-size:24px;margin-bottom:10px">💳</div>';
+h+='<div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px">Add a Payment Method</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Required before switching to Live mode. Your card will be charged $1,000/month starting 30 days after going live.</div>';
+h+='<button onclick="setupPaymentMethod()" style="padding:12px 32px;background:linear-gradient(135deg,var(--green),#00c968);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,232,162,.2);transition:all .2s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Add Card</button>';
+h+='</div>';
+}
+h+='</div>';
+
 // ── PROMO CODE ──
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">PROMO CODE</div>';
 if(promoCode){
