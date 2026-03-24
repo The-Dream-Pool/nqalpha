@@ -1286,7 +1286,7 @@ var s3disabled=!ob2;
 h+='<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;padding:14px 16px;border-radius:10px;background:'+(s3disabled?'rgba(22,32,48,.3)':'var(--sf)')+';border:1px solid var(--bd);'+(s3disabled?'opacity:.5;':'cursor:pointer;')+'" '+(s3disabled?'':'onclick="switchTab(\'billing\')"')+' '+(s3disabled?'':'onmouseover="this.style.borderColor=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\'"')+'>';
 h+='<div style="width:28px;height:28px;border-radius:50%;background:rgba(0,196,255,.08);border:2px solid '+(s3disabled?'var(--muted)':'var(--cyan)')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px"><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+(s3disabled?'var(--muted)':'var(--cyan)')+'">3</span></div>';
 h+='<div style="flex:1"><div style="font-size:14px;font-weight:600;color:'+(s3disabled?'var(--muted)':'var(--white)')+'">Purchase Product Access</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s3disabled?'Complete step 2 first':'Choose MNQ, MES, or both and set up billing →')+'</div></div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px">'+(s3disabled?'Complete step 2 first':'Purchase MNQ access to get started →')+'</div></div>';
 if(!s3disabled)h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:1px;padding:4px 10px;background:rgba(0,196,255,.08);border-radius:5px;margin-top:4px">SET UP →</div>';
 h+='</div>';
 }
@@ -1757,35 +1757,7 @@ h+='</div>';
 
 if(conn.connected){h+='<div class="conn-ok"><div style="font-size:18px;font-weight:700;color:var(--green);margin-bottom:8px">✓ Account Connected</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:4px">Username: '+conn.username+'</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">Connected: '+conn.connected_at+'</div><button onclick="doDisconnect()" style="margin-top:16px;font-family:var(--mono);font-size:11px;padding:8px 24px;background:transparent;border:1px solid rgba(255,68,102,.25);border-radius:8px;color:var(--red);cursor:pointer">Disconnect</button></div>';}
 else{
-h+='<div class="conn-grid-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">';
 h+='<div class="conn-box"><div class="field"><label>TRADOVATE USERNAME</label><input id="cUser" placeholder="your_username"></div><div class="field"><label>TRADOVATE PASSWORD</label><input id="cPass" type="password" placeholder="••••••••"></div><div class="field"><label>APP ID</label><input id="cApp" placeholder="YOUR_APP_ID"></div><div class="field"><label>CLIENT ID (CID)</label><input id="cCid" placeholder="10609"></div><div class="field"><label>API SECRET</label><input id="cSec" type="password" placeholder="••••••••"></div><div class="field"><label>ACCOUNT MODE</label><div id="modeToggle" style="display:flex;gap:0;background:var(--sf2);border-radius:10px;padding:3px;margin-top:4px"><button type="button" id="modeDemo" onclick="setMode(false)" style="flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;background:var(--bd);color:var(--white)">🟡 DEMO</button><button type="button" id="modeLive" onclick="setMode(true)" style="flex:1;padding:11px 0;border-radius:8px;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;transition:all .2s;background:transparent;color:var(--muted)">🔴 LIVE</button></div></div><div class="warn-box">⚠ Credentials are encrypted and stored securely. Start with DEMO — switch to LIVE only after verifying trades.</div><div id="connErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div><button id="connBtn" onclick="doConnect()" style="width:100%;padding:13px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Connect Account</button></div>';
-// MES Teaser — right side
-h+='<div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(176,112,255,.2);background:var(--sf)">';
-h+='<style>@keyframes mesGlow{0%,100%{box-shadow:0 0 30px rgba(176,112,255,.08),0 0 60px rgba(0,196,255,.04)}50%{box-shadow:0 0 50px rgba(176,112,255,.15),0 0 80px rgba(0,196,255,.08)}}</style>';
-h+='<div style="position:absolute;inset:0;animation:mesGlow 4s ease-in-out infinite;border-radius:16px;pointer-events:none"></div>';
-h+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#B070FF,#00C4FF)"></div>';
-h+='<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(176,112,255,.06),transparent 70%);pointer-events:none"></div>';
-h+='<div style="position:relative;padding:28px 24px">';
-h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">';
-h+='<div style="width:44px;height:44px;border-radius:12px;background:rgba(176,112,255,.1);border:1px solid rgba(176,112,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px">🔒</div>';
-h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">MES — S&P 500</div>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:#B070FF;letter-spacing:2px;margin-top:3px">PREMIUM ADD-ON</div></div></div>';
-h+='<div style="font-size:13px;color:var(--text);line-height:1.8;margin-bottom:24px">Unlock our Micro E-Mini S&P 500 strategies — Alpha and Beta, optimized for MES futures. Runs alongside your MNQ bot for true index diversification across two major indices.</div>';
-h+='<div style="background:rgba(176,112,255,.04);border:1px solid rgba(176,112,255,.1);border-radius:12px;padding:20px;margin-bottom:24px;text-align:center">';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">ONE-TIME ACCESS FEE</div>';
-h+='<div style="font-size:36px;font-weight:900;color:var(--white);letter-spacing:-1px">$2,500</div>';
-h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">or payment plan available</div>';
-h+='</div>';
-h+='<div style="display:flex;flex-direction:column;gap:8px">';
-h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Alpha & Beta strategies, optimized for S&P</div>';
-h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Diversify across two major indices</div>';
-h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Runs 24/5 alongside your MNQ bot</div>';
-h+='<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text)"><span style="color:var(--green)">✓</span> Lifetime access — one payment, no monthly</div>';
-h+='</div>';
-h+='<button style="margin-top:24px;width:100%;padding:14px;background:rgba(176,112,255,.08);border:1px solid rgba(176,112,255,.25);border-radius:10px;color:#B070FF;font-size:14px;font-weight:700;cursor:not-allowed;font-family:var(--font);opacity:.7;letter-spacing:1px" disabled>Coming Soon</button>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:10px">Your MNQ subscription is included free</div>';
-h+='</div></div>';
-h+='</div>'; // close grid
 }
 
 } // close risk disclosure gate
@@ -1988,49 +1960,40 @@ h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;borde
 
 // ── STEP 1: PRODUCT ACCESS ──
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">STEP 1 — PRODUCT ACCESS</div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px">';
 
-// MNQ Card
-h+='<div style="background:var(--sf);border:1px solid '+(hasMnq?'rgba(0,232,162,.25)':'var(--bd)')+';border-radius:14px;padding:24px;position:relative;transition:all .2s">';
-if(hasMnq){h+='<div style="position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--green);background:rgba(0,232,162,.08);padding:3px 10px;border-radius:20px">✓ PURCHASED</div>';}
-h+='<div style="width:36px;height:36px;border-radius:8px;background:rgba(0,196,255,.1);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:12px;color:var(--cyan);margin-bottom:14px">MNQ</div>';
-h+='<div style="font-size:17px;font-weight:600;color:var(--white);margin-bottom:4px">Micro Nasdaq</div>';
-h+='<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Automated mean-reversion trading on MNQ futures. Three simultaneous strategies.</div>';
-h+='<div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--white);margin-bottom:2px">$2,500</div>';
-h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px">One-time access fee</div>';
+// MNQ Card — with glow
+h+='<div style="background:linear-gradient(135deg,var(--sf),rgba(0,196,255,.03));border:1px solid '+(hasMnq?'rgba(0,232,162,.3)':'rgba(0,196,255,.2)')+';border-radius:16px;padding:28px;position:relative;transition:all .3s;overflow:hidden">';
+// Glow effect
+h+='<div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,255,.1),transparent 70%);pointer-events:none"></div>';
+if(hasMnq){h+='<div style="position:absolute;top:16px;right:16px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--green);background:rgba(0,232,162,.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(0,232,162,.2)">✓ PURCHASED</div>';}
+h+='<div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,rgba(0,196,255,.15),rgba(0,196,255,.05));border:1px solid rgba(0,196,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:13px;color:var(--cyan);margin-bottom:16px;box-shadow:0 0 20px rgba(0,196,255,.1)">MNQ</div>';
+h+='<div style="font-size:20px;font-weight:700;color:var(--white);margin-bottom:6px;letter-spacing:-.3px">Micro Nasdaq</div>';
+h+='<div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px">Three proprietary mean-reversion strategies on MNQ futures. Fully automated 24/5 execution with real-time P&L tracking.</div>';
+h+='<div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--white);margin-bottom:2px;text-shadow:0 0 30px rgba(0,196,255,.15)">$2,500</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:20px">One-time access fee</div>';
 if(!hasMnq){
-h+='<button onclick="checkoutProduct(\'mnq\')" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--cyan);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Purchase MNQ Access</button>';
+h+='<button onclick="checkoutProduct(\'mnq\')" style="width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--cyan),#0090dd);color:#fff;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,196,255,.2)" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 28px rgba(0,196,255,.35)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'0 4px 20px rgba(0,196,255,.2)\'">Get MNQ Access</button>';
 } else {
-h+='<button disabled style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--cyan);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;opacity:.3;cursor:not-allowed">Purchased</button>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,232,162,.08);color:var(--green);font-family:var(--font);font-size:14px;font-weight:700;text-align:center;border:1px solid rgba(0,232,162,.15)">Access Unlocked ✓</div>';
 }
 h+='</div>';
 
-// MES Card
-h+='<div style="background:var(--sf);border:1px solid '+(hasMes?'rgba(0,232,162,.25)':'var(--bd)')+';border-radius:14px;padding:24px;position:relative;transition:all .2s">';
-if(hasMes){h+='<div style="position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--green);background:rgba(0,232,162,.08);padding:3px 10px;border-radius:20px">✓ PURCHASED</div>';}
-h+='<div style="width:36px;height:36px;border-radius:8px;background:rgba(0,232,162,.1);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:12px;color:var(--green);margin-bottom:14px">MES</div>';
-h+='<div style="font-size:17px;font-weight:600;color:var(--white);margin-bottom:4px">Micro S&P</div>';
-h+='<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">Automated mean-reversion trading on MES futures. Same proven strategies, different market.</div>';
-h+='<div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--white);margin-bottom:2px">$2,500</div>';
-h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px">One-time access fee</div>';
-if(!hasMes){
-h+='<button onclick="checkoutProduct(\'mes\')" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Purchase MES Access</button>';
-} else {
-h+='<button disabled style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:13px;font-weight:700;opacity:.3;cursor:not-allowed">Purchased</button>';
-}
+// MES Card — Coming Soon
+h+='<div style="background:linear-gradient(135deg,var(--sf),rgba(0,232,162,.02));border:1px solid var(--bd);border-radius:16px;padding:28px;position:relative;overflow:hidden;opacity:.7">';
+h+='<div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,162,.06),transparent 70%);pointer-events:none"></div>';
+h+='<div style="position:absolute;top:16px;right:16px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:rgba(240,192,64,.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(240,192,64,.15)">COMING SOON</div>';
+h+='<div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,rgba(0,232,162,.1),rgba(0,232,162,.03));border:1px solid rgba(0,232,162,.15);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:13px;color:var(--green);margin-bottom:16px">MES</div>';
+h+='<div style="font-size:20px;font-weight:700;color:var(--white);margin-bottom:6px;letter-spacing:-.3px">Micro S&P</div>';
+h+='<div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px">Same proven strategies applied to MES futures. Launching soon — stay tuned for full market coverage.</div>';
+h+='<div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--muted);margin-bottom:2px">$2,500</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:20px">One-time access fee</div>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(64,80,96,.1);color:var(--muted);font-family:var(--font);font-size:14px;font-weight:600;text-align:center;border:1px solid var(--bd)">Coming Soon</div>';
 h+='</div>';
 h+='</div>';
 
-// Bundle banner (only if both not purchased)
-if(!hasMnq||!hasMes){
-var canBundle=!hasMnq&&!hasMes;
-h+='<div style="background:linear-gradient(135deg,rgba(0,196,255,.04),rgba(0,232,162,.04));border:1px dashed rgba(0,232,162,.2);border-radius:12px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">';
-h+='<div style="font-size:13px;font-weight:500;color:var(--text)">'+(canBundle?'Get both products for <span style="font-family:var(--mono);color:var(--green);font-weight:700">$5,000</span> — full market coverage':'Add the other product for <span style="font-family:var(--mono);color:var(--green);font-weight:700">$2,500</span>')+'</div>';
-h+='<button onclick="checkoutProduct(\''+(canBundle?'both':(hasMnq?'mes':'mnq'))+'\')" style="padding:10px 22px;border:1px solid rgba(0,232,162,.2);border-radius:8px;background:transparent;color:var(--text);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.2)\';this.style.color=\'var(--text)\'">'+(canBundle?'Buy Both':'Buy Now')+'</button>';
-h+='</div>';
-} else {
-h+='<div style="margin-bottom:28px"></div>';
-}
+// No bundle banner since MES isn't available yet
+h+='<div style="margin-bottom:4px"></div>';
 
 // ── STEP 2: MONTHLY SUBSCRIPTION ──
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">STEP 2 — MONTHLY SUBSCRIPTION</div>';
@@ -2040,7 +2003,7 @@ h+='<div style="position:absolute;inset:0;display:flex;align-items:center;justif
 }
 h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:12px">';
 h+='<div><div style="font-size:18px;font-weight:700;color:var(--white)">NQ Alpha Platform</div>';
-h+='<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(240,192,64,.08);color:var(--gold);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-top:8px">🎁 30-day free trial included</div></div>';
+h+='<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(240,192,64,.08);color:var(--gold);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-top:8px">🎁 30-day free trial when you go live</div></div>';
 var displayPrice=promoDiscount>0?Math.round(1000*(1-promoDiscount/100)):1000;
 h+='<div style="text-align:right"><div style="font-family:var(--mono);font-size:30px;font-weight:700;color:var(--white)">$'+displayPrice.toLocaleString()+'</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">/month</div>';
 if(promoDiscount>0){h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-top:2px">'+promoDiscount+'% promo discount applied</div>';}
@@ -2054,11 +2017,11 @@ h+='<div style="font-size:12px;color:var(--muted);display:flex;align-items:cente
 h+='</div>';
 
 if(subStatus==='active'){
-h+='<button disabled style="width:100%;padding:14px;border:none;border-radius:10px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:14px;font-weight:700;opacity:.4;cursor:not-allowed">Subscribed ✓</button>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,232,162,.08);color:var(--green);font-family:var(--font);font-size:14px;font-weight:700;text-align:center">Subscribed ✓</div>';
 } else if(subStatus==='trialing'){
-h+='<button disabled style="width:100%;padding:14px;border:none;border-radius:10px;background:var(--green);color:var(--bg);font-family:var(--font);font-size:14px;font-weight:700;opacity:.4;cursor:not-allowed">Trial Active — '+trialDays+' days left</button>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(240,192,64,.08);color:var(--gold);font-family:var(--font);font-size:14px;font-weight:700;text-align:center">Trial Active — '+trialDays+' days remaining</div>';
 } else {
-h+='<button onclick="checkoutSubscription()" style="width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--green),#00c968);color:var(--bg);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s" onmouseover="this.style.transform=\'translateY(-1px)\';this.style.boxShadow=\'0 4px 20px rgba(0,232,162,.3)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'none\'">Start 30-Day Free Trial</button>';
+h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.15);text-align:center"><div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px">Starts automatically when you go live</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Connect your Tradovate account in Live mode → 30-day free trial begins</div></div>';
 }
 h+='</div>';
 
@@ -2092,11 +2055,12 @@ h+='</div>';
 
 // ── HOW IT WORKS ──
 h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div>';
-h+='<div class="how-item">• <strong>$2,500 one-time</strong> per product (MNQ and/or MES) — unlocks access to the trading system</div>';
-h+='<div class="how-item">• <strong>$1,000/month flat subscription</strong> — 30-day free trial on live, no charge if the bot isn\'t profitable</div>';
+h+='<div class="how-item">• <strong>$2,500 one-time</strong> for MNQ access — unlocks the trading system</div>';
+h+='<div class="how-item">• <strong>Demo mode is free</strong> — connect Tradovate in demo to test with paper money at no cost</div>';
+h+='<div class="how-item">• <strong>$1,000/month subscription starts when you go live</strong> — 30-day free trial begins on your first live connection</div>';
+h+='<div class="how-item">• <strong>No charge if bot isn\'t profitable</strong> — subscription is skipped for months with zero or negative profit</div>';
 h+='<div class="how-item">• <strong>Cancel anytime</strong> — no lock-in contracts or cancellation fees</div>';
 h+='<div class="how-item">• <strong>Secure payments</strong> — all payments handled by Stripe (PCI compliant)</div>';
-h+='<div class="how-item">• <strong>Receipts</strong> — emailed automatically after each charge</div>';
 h+='</div>';
 }
 if(dashTab==='help'){
@@ -2133,7 +2097,7 @@ var faqs=[
 {q:'Do I need a funded Tradovate account?',a:'For <strong>Demo mode</strong>, no — Tradovate provides a simulated account with paper money. For <strong>Live mode</strong>, yes — you\'ll need a funded account with enough margin to cover your position size. Check with Tradovate for their current margin requirements on MNQ contracts.'},
 ]},
 {cat:'Billing & Fees',color:'var(--cyan)',items:[
-{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) A $1,000/month flat subscription</strong> for platform access. Your first 30 days after going live are free. If the bot has zero or negative profit in a given month, you won\'t be charged for that month.'},
+{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) A $1,000/month flat subscription</strong> that starts automatically when you connect a live Tradovate account. Your first 30 days on live are free. Demo mode is completely free — you can test as long as you want. If the bot has zero or negative profit in a given month, you won\'t be charged.'},
 {q:'What are the one-time product fees?',a:'Each product (MNQ or MES) requires a <strong>$2,500 one-time access fee</strong> to unlock. You can purchase one or both. This fee grants you permanent access to that product\'s trading strategies. The $5,000 bundle gets you both MNQ and MES access.'},
 {q:'What if the bot loses money?',a:'If the bot has zero or negative profit for a billing month, <strong>you don\'t pay anything</strong> for that month. You only pay the $1,000 subscription when the bot is profitable. We believe in aligning our success with yours.'},
 {q:'What happens if I disconnect early?',a:'If you disconnect during your 30-day free trial, you\'ll be charged the subscription fee for the current month. After the trial, you can cancel anytime with no additional charges beyond the current billing period.'},
@@ -2192,7 +2156,7 @@ if(dashTab!=='billing' && dashTab!=='settings' && dashTab!=='help' && profile.is
       m.querySelectorAll('button,[onclick]').forEach(function(el){if(!el.closest||!el.closest('.dash-side')){el.disabled=true;el.style.opacity='0.4';el.style.cursor='not-allowed';el.style.pointerEvents='none';}});
       m.querySelectorAll('input,select,textarea').forEach(function(el){el.disabled=true;el.style.opacity='0.5';});
       var _pw=document.createElement('div');
-      _pw.innerHTML='<div style="position:sticky;top:60px;z-index:90;background:linear-gradient(135deg,#12141c,#1a1d28);border:1px solid #252836;border-radius:10px;padding:12px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:14px;font-size:13px;flex-wrap:wrap"><span style="color:#ffb647">\u26a0\ufe0f</span><span style="color:#e8eaf0">Read-only mode \u2014 <strong>set up billing</strong> to unlock full access</span><button onclick="switchTab(\'billing\')" style="padding:8px 18px;background:#00E8A2;border:none;border-radius:6px;color:#04080D;font-weight:700;font-size:12px;cursor:pointer;pointer-events:all;white-space:nowrap">Upgrade Now</button></div>';
+      _pw.innerHTML='<div style="position:sticky;top:60px;z-index:90;background:linear-gradient(135deg,rgba(0,196,255,.06),rgba(0,232,162,.04));border:1px solid rgba(0,196,255,.2);border-radius:10px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:14px;font-size:13px;flex-wrap:wrap"><span style="font-size:16px">\u26a1</span><span style="color:#e8eaf0">Unlock live trading, real-time P&L, and full dashboard access</span><button onclick="switchTab(\'billing\')" style="padding:9px 22px;background:linear-gradient(135deg,#00C4FF,#00E8A2);border:none;border-radius:8px;color:#04080D;font-weight:700;font-size:12px;cursor:pointer;pointer-events:all;white-space:nowrap;box-shadow:0 2px 12px rgba(0,196,255,.25);transition:all .2s" onmouseover="this.style.transform=\'translateY(-1px)\';this.style.boxShadow=\'0 4px 20px rgba(0,196,255,.35)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'0 2px 12px rgba(0,196,255,.25)\'">Get Started \u2192</button></div>';
       m.insertBefore(_pw,m.firstChild);
     }
   }catch(e){}
