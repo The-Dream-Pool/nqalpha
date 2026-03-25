@@ -2798,6 +2798,7 @@ async function renderAdminContent(){
         h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live trade log from the master account</div></div>';
         h+='<div style="display:flex;gap:8px">';
         h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(255,68,102,.15)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
+        h+='<button onclick="reconcileTrades()" id="reconcileBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'rgba(240,192,64,.06)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.background=\'transparent\'">⚡ Reconcile P&L</button>';
         h+='<button onclick="generateMasterDailyCard(window._masterStats.todayPnl,window._masterStats.winRate,window._masterStats.totalTrades,window._masterStats.openPositions,window._masterStats.strats)" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share Daily</button>';
         h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
         h+='</div>';
@@ -3092,12 +3093,13 @@ async function renderAdminContent(){
       // All investors billing table
       h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
       h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">ALL INVESTOR BILLING STATUS</div></div>';
-      h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Products</th><th>Mode</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
+      h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Products</th><th>Card</th><th>Mode</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
       investors.filter(function(i){return i.is_approved;}).forEach(function(inv){
         var prods=[];if(inv.mnq_access)prods.push('MNQ');if(inv.mes_access)prods.push('MES');
         var prodStr=prods.length>0?prods.join(' + '):'—';
         var isLive=!!inv.use_live;
         var subSt=inv.subscription_status||'none';
+        var cardStr=inv.stripe_card_last4?'<span style="color:var(--white)">•••• '+inv.stripe_card_last4+'</span>':'<span style="color:var(--red)">None</span>';
         var status='';
         if(subSt==='active') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">ACTIVE</span>';
         else if(subSt==='trialing') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">TRIAL</span>';
@@ -3110,6 +3112,7 @@ async function renderAdminContent(){
         h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
         h+='<td style="color:var(--text);font-size:11px">'+inv.email+'</td>';
         h+='<td style="font-family:var(--mono);font-size:10px;color:'+(prods.length>0?'var(--text)':'var(--muted)')+'">'+prodStr+'</td>';
+        h+='<td style="font-family:var(--mono);font-size:11px">'+cardStr+'</td>';
         h+='<td><span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;'+(isLive?'background:rgba(255,68,102,.08);color:var(--red)':'background:rgba(240,192,64,.08);color:var(--gold)')+'">'+( isLive?'LIVE':'DEMO')+'</span></td>';
         h+='<td style="color:var(--white);font-weight:600">$1,000/mo</td>';
         h+='<td>'+status+'</td>';
@@ -3421,6 +3424,29 @@ async function adminAction(action, investorId){
 }
 
 // ─── PROMO CODE MANAGEMENT ──────────────────────────────────────────
+async function reconcileTrades(){
+  var btn=document.getElementById('reconcileBtn');
+  if(btn){btn.textContent='⏳ Reconciling...';btn.disabled=true;}
+  try{
+    var result=await adminApi('POST','/admin/reconcile-trades',{});
+    if(result.success){
+      if(result.fixed>0){
+        var msg='✅ Fixed '+result.fixed+' trade(s):\n';
+        result.changes.forEach(function(c){
+          msg+='  #'+c.trade_id+' '+c.strategy+': $'+c.old_pnl+' → $'+c.new_pnl+' ('+( c.diff>=0?'+':'')+c.diff+')\n';
+        });
+        alert(msg);
+      } else {
+        alert('✅ All '+result.matched+' trades match Tradovate — no corrections needed');
+      }
+      await switchAdminTab('master');
+    } else {
+      alert('Error: '+(result.error||'Unknown error'));
+    }
+  }catch(e){alert('Error: '+e.message);}
+  if(btn){btn.textContent='⚡ Reconcile P&L';btn.disabled=false;}
+}
+
 async function createPromoCode(){
   var code=(document.getElementById('promoNewCode')||{}).value||'';
   var desc=(document.getElementById('promoNewDesc')||{}).value||'';
