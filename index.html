@@ -2903,7 +2903,6 @@ async function renderAdminContent(){
     if(adminTab==='investors'){
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
       h+='<div style="font-size:24px;font-weight:700;color:var(--white)">Investors</div>';
-      h+='<button onclick="refreshBalances()" id="balanceBtn" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:8px;color:var(--cyan);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.background=\'rgba(0,196,255,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,196,255,.3)\';this.style.background=\'transparent\'">💰 Refresh Balances</button>';
       h+='</div>';
       h+='<div class="admin-grid-4">';
       h+='<div class="dash-card"><div class="dc-label">TOTAL INVESTORS</div><div class="dc-val" style="color:var(--white)">'+stats.total+'</div></div>';
@@ -3204,7 +3203,10 @@ async function renderAdminContent(){
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
       h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">System Health</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live system status and copier monitoring</div></div>';
+      h+='<div style="display:flex;gap:8px">';
+      h+='<button onclick="refreshBalances()" id="balanceBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:8px;color:var(--cyan);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.background=\'rgba(0,196,255,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,196,255,.3)\';this.style.background=\'transparent\'">💰 Refresh Balances</button>';
       h+='<button onclick="switchAdminTab(\'health\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='</div>';
       h+='</div>';
 
       if(!health){
