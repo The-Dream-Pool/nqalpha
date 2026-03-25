@@ -122,6 +122,8 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .billing-products{grid-template-columns:1fr!important;}
   .promo-grid-2{grid-template-columns:1fr!important;}
   .promo-grid-4{grid-template-columns:1fr 1fr!important;}
+  .master-btns{width:100%!important;}
+  .master-header{flex-direction:column!important;}
 }
 </style>
 </head>
@@ -2793,14 +2795,16 @@ async function renderAdminContent(){
         // Store stats globally for share button
         window._masterStats={todayPnl:ms.today_pnl||0,winRate:ms.win_rate||0,totalTrades:ms.total_trades||0,openPositions:ms.open_positions||0,strats:strats};
 
-        h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+        h+='<div class="master-header" style="margin-bottom:24px">';
+        h+='<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:16px">';
         h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Trades</div>';
         h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live trade log from the master account</div></div>';
-        h+='<div style="display:flex;gap:8px">';
-        h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(255,68,102,.15)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
-        h+='<button onclick="reconcileTrades()" id="reconcileBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'rgba(240,192,64,.06)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.background=\'transparent\'">⚡ Reconcile P&L</button>';
-        h+='<button onclick="generateMasterDailyCard(window._masterStats.todayPnl,window._masterStats.winRate,window._masterStats.totalTrades,window._masterStats.openPositions,window._masterStats.strats)" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share Daily</button>';
-        h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+        h+='<div class="master-btns" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+        h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s;text-align:center" onmouseover="this.style.background=\'rgba(255,68,102,.15)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
+        h+='<button onclick="reconcileTrades()" id="reconcileBtn" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'rgba(240,192,64,.06)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.background=\'transparent\'">⚡ Reconcile P&L</button>';
+        h+='<button onclick="generateMasterDailyCard(window._masterStats.todayPnl,window._masterStats.winRate,window._masterStats.totalTrades,window._masterStats.openPositions,window._masterStats.strats)" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share Daily</button>';
+        h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+        h+='</div>';
         h+='</div>';
         h+='</div>';
 
@@ -3430,14 +3434,32 @@ async function reconcileTrades(){
   try{
     var result=await adminApi('POST','/admin/reconcile-trades',{});
     if(result.success){
+      var msg='';
       if(result.fixed>0){
-        var msg='✅ Fixed '+result.fixed+' trade(s):\n';
-        result.changes.forEach(function(c){
-          msg+='  #'+c.trade_id+' '+c.strategy+': $'+c.old_pnl+' → $'+c.new_pnl+' ('+( c.diff>=0?'+':'')+c.diff+')\n';
-        });
+        msg+='✅ Fixed '+result.fixed+' trade(s):\n\n';
+        // Master changes
+        if(result.master&&result.master.changes&&result.master.changes.length>0){
+          msg+='MASTER:\n';
+          result.master.changes.forEach(function(c){
+            msg+='  #'+c.trade_id+' '+c.strategy+': $'+c.old_pnl+' → $'+c.new_pnl+'\n';
+          });
+        }
+        // Follower changes
+        if(result.followers){
+          result.followers.forEach(function(f){
+            if(f.changes&&f.changes.length>0){
+              msg+='\n'+f.investor_name+':\n';
+              f.changes.forEach(function(c){
+                msg+='  #'+c.trade_id+': $'+c.old_pnl+' → $'+c.new_pnl+'\n';
+              });
+            }
+          });
+        }
         alert(msg);
       } else {
-        alert('✅ All '+result.matched+' trades match Tradovate — no corrections needed');
+        var masterMatch=result.master?result.master.matched:0;
+        var followerMatch=result.followers?result.followers.reduce(function(a,f){return a+f.matched;},0):0;
+        alert('✅ All trades match Tradovate\n\nMaster: '+masterMatch+' matched\nFollowers: '+followerMatch+' matched');
       }
       await switchAdminTab('master');
     } else {
