@@ -2903,6 +2903,7 @@ async function renderAdminContent(){
     if(adminTab==='investors'){
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
       h+='<div style="font-size:24px;font-weight:700;color:var(--white)">Investors</div>';
+      h+='<button onclick="refreshBalances()" id="balanceBtn" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:8px;color:var(--cyan);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.background=\'rgba(0,196,255,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,196,255,.3)\';this.style.background=\'transparent\'">💰 Refresh Balances</button>';
       h+='</div>';
       h+='<div class="admin-grid-4">';
       h+='<div class="dash-card"><div class="dc-label">TOTAL INVESTORS</div><div class="dc-val" style="color:var(--white)">'+stats.total+'</div></div>';
@@ -3425,6 +3426,30 @@ async function adminAction(action, investorId){
     else if(action==='resume') await adminApi('POST','/admin/resume/'+investorId);
     await renderAdminContent();
   }catch(e){alert('Error: '+e.message);}
+}
+
+// ─── ADMIN TOOLS ────────────────────────────────────────────────────
+async function refreshBalances(){
+  var btn=document.getElementById('balanceBtn');
+  if(btn){btn.textContent='⏳ Pulling...';btn.disabled=true;}
+  try{
+    var result=await adminApi('POST','/admin/refresh-balances');
+    if(result.success){
+      var msg='💰 Balance Refresh Complete:\n\n';
+      result.results.forEach(function(r){
+        if(r.error){
+          msg+=r.name+': ❌ '+r.error+'\n';
+        } else {
+          msg+=r.name+': $'+r.balance.toLocaleString()+' (Open P&L: $'+r.unrealized.toLocaleString()+')\n';
+        }
+      });
+      alert(msg);
+      await switchAdminTab('investors');
+    } else {
+      alert('Error: '+(result.error||'Unknown'));
+    }
+  }catch(e){alert('Error: '+e.message);}
+  if(btn){btn.textContent='💰 Refresh Balances';btn.disabled=false;}
 }
 
 // ─── PROMO CODE MANAGEMENT ──────────────────────────────────────────
