@@ -1820,6 +1820,30 @@ h+='<div id="posPreview" style="font-family:var(--mono);font-size:12px;color:var
 h+='<div id="posErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div>';
 h+='<button id="posBtn" onclick="savePosSettings()" style="padding:12px 32px;background:var(--green);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">Save Position Settings</button></div></div>';
 
+// ── CONTRACT REQUIREMENTS TABLE ──
+h+='<div style="margin-top:24px">';
+h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><div style="font-size:18px;font-weight:700;color:var(--white)">Account Requirements</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.12);border-radius:5px">MNQ</div></div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Minimum account balance required per number of contracts traded</div>';
+h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;overflow:hidden">';
+h+='<div class="table-wrap"><table style="width:100%;font-family:var(--mono)">';
+h+='<thead><tr><th style="padding:14px 20px;text-align:center">CONTRACTS</th><th style="padding:14px 20px;text-align:center">MIN. BALANCE</th><th style="padding:14px 20px;text-align:center">PER CONTRACT</th></tr></thead>';
+h+='<tbody>';
+var reqData=[{c:1,b:3000},{c:2,b:6000},{c:3,b:10000},{c:4,b:13000},{c:5,b:16000},{c:6,b:19000},{c:7,b:22000},{c:8,b:25000}];
+var effContracts=pos.mode==="fixed"?pos.fixed_contracts:Math.max(1,Math.round(8*pos.multiplier));
+reqData.forEach(function(r){
+  var isActive=r.c===effContracts;
+  var rowBg=isActive?"background:rgba(0,232,162,.04);":"";
+  var highlight=isActive?"color:var(--green);font-weight:700":"color:var(--white)";
+  h+="<tr style=\""+rowBg+"transition:background .15s\" onmouseover=\"this.style.background='rgba(0,232,162,.03)'\" onmouseout=\"this.style.background='"+(isActive?"rgba(0,232,162,.04)":"transparent")+"'\">";
+  h+="<td style=\"padding:12px 20px;text-align:center;font-size:14px;"+highlight+"\">"+(isActive?"▸ ":"")+r.c+"x</td>";
+  h+="<td style=\"padding:12px 20px;text-align:center;font-size:14px;"+highlight+"\">$"+r.b.toLocaleString()+"</td>";
+  h+="<td style=\"padding:12px 20px;text-align:center;font-size:12px;color:var(--muted)\">$"+(Math.round(r.b/r.c)).toLocaleString()+"/ct</td>";
+  h+="</tr>";
+});
+h+='</tbody></table></div>';
+h+='<div style="padding:14px 20px;border-top:1px solid var(--bd);display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted)"><span style="color:var(--green)">▸</span> Your current setting: <span style="color:var(--green);font-weight:700">'+effContracts+' contract'+(effContracts>1?'s':'')+'</span> — requires <span style="color:var(--cyan);font-weight:700">$'+(reqData.find(function(r){return r.c===effContracts;})||{b:3000}).b.toLocaleString()+'</span> minimum</div>';
+h+='</div></div>';
+
 // ── STEP-BY-STEP CONNECTION GUIDE ──
 h+='<div style="margin-top:36px">';
 h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="font-size:22px">📋</div><div style="font-size:20px;font-weight:700;color:var(--white)">Step-by-Step Connection Guide</div></div>';
@@ -3497,8 +3521,10 @@ async function reconcileTrades(){
     var result=await adminApi('POST','/admin/reconcile-trades',{});
     if(result.success){
       var msg='';
-      if(result.fixed>0){
-        msg+='✅ Fixed '+result.fixed+' trade(s):\n\n';
+      var dupes=result.duplicates_removed||0;
+      if(result.fixed>0||dupes>0){
+        msg+='✅ Reconciliation Complete:\n\n';
+        if(dupes>0) msg+='🗑 Removed '+dupes+' duplicate investor trades\n\n';
         // Master changes
         if(result.master&&result.master.changes&&result.master.changes.length>0){
           msg+='MASTER:\n';
@@ -3517,6 +3543,7 @@ async function reconcileTrades(){
             }
           });
         }
+        if(!msg.includes('MASTER')&&!msg.includes(':\n  #')) msg+='All P&L values match Tradovate\n';
         alert(msg);
       } else {
         var masterMatch=result.master?result.master.matched:0;
