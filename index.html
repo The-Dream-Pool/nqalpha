@@ -124,6 +124,8 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .promo-grid-4{grid-template-columns:1fr 1fr!important;}
   .master-btns{width:100%!important;}
   .master-header{flex-direction:column!important;}
+  .health-header{flex-direction:column!important;}
+  .health-btns{width:100%!important;display:grid!important;grid-template-columns:1fr 1fr 1fr!important;}
 }
 </style>
 </head>
@@ -3210,10 +3212,10 @@ async function renderAdminContent(){
         h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);font-size:14px;font-weight:600;color:var(--red)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s ease infinite"></div>⏸ TRADING IS PAUSED — No signals will be executed</div>';
       }
 
-      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
+      h+='<div class="health-header" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px">';
       h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">System Health</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live system status and copier monitoring</div></div>';
-      h+='<div style="display:flex;gap:8px">';
+      h+='<div class="health-btns" style="display:flex;flex-wrap:wrap;gap:8px">';
       if(isPaused){
         h+='<button onclick="resumeTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.background=\'rgba(0,232,162,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.3)\';this.style.background=\'transparent\'">▶ Resume</button>';
       } else {
