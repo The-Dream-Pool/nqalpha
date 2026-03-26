@@ -3200,10 +3200,25 @@ async function renderAdminContent(){
       try{ health = await adminApi('GET','/admin/system-health'); }
       catch(e){ health = null; }
 
+      var tradingStatus;
+      try{ tradingStatus = await adminApi('GET','/admin/trading-status'); }
+      catch(e){ tradingStatus = {paused:false}; }
+      var isPaused=tradingStatus&&tradingStatus.paused;
+
+      // ── PAUSE BANNER ──
+      if(isPaused){
+        h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);font-size:14px;font-weight:600;color:var(--red)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s ease infinite"></div>⏸ TRADING IS PAUSED — No signals will be executed</div>';
+      }
+
       h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">';
       h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">System Health</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live system status and copier monitoring</div></div>';
       h+='<div style="display:flex;gap:8px">';
+      if(isPaused){
+        h+='<button onclick="resumeTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.background=\'rgba(0,232,162,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.3)\';this.style.background=\'transparent\'">▶ Resume</button>';
+      } else {
+        h+='<button onclick="pauseTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(255,68,102,.06)\'" onmouseout="this.style.borderColor=\'rgba(255,68,102,.3)\';this.style.background=\'transparent\'">⏸ Pause</button>';
+      }
       h+='<button onclick="refreshBalances()" id="balanceBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:8px;color:var(--cyan);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.background=\'rgba(0,196,255,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,196,255,.3)\';this.style.background=\'transparent\'">💰 Refresh Balances</button>';
       h+='<button onclick="switchAdminTab(\'health\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
       h+='</div>';
@@ -3431,6 +3446,24 @@ async function adminAction(action, investorId){
 }
 
 // ─── ADMIN TOOLS ────────────────────────────────────────────────────
+async function pauseTrading(){
+  if(!confirm('⏸ PAUSE ALL TRADING?\n\nThis will stop the master bot from taking new trades and prevent all followers from copying. Existing open positions will NOT be closed.\n\nContinue?'))return;
+  try{
+    await adminApi('POST','/admin/pause-trading');
+    alert('⏸ Trading PAUSED — no new trades will be placed');
+    await switchAdminTab('health');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function resumeTrading(){
+  if(!confirm('▶ RESUME TRADING?\n\nThe bot will start taking trades again and followers will resume copying.\n\nContinue?'))return;
+  try{
+    await adminApi('POST','/admin/resume-trading');
+    alert('▶ Trading RESUMED — bot is active');
+    await switchAdminTab('health');
+  }catch(e){alert('Error: '+e.message);}
+}
+
 async function refreshBalances(){
   var btn=document.getElementById('balanceBtn');
   if(btn){btn.textContent='⏳ Pulling...';btn.disabled=true;}
