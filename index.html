@@ -1812,27 +1812,28 @@ h+='<div class="conn-box"><div class="field"><label>TRADOVATE USERNAME</label><i
 }
 
 } // close risk disclosure gate
-h+='<div class="pos-layout" style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">';
+h+='<div class="pos-layout" style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch">';
 
 // ── LEFT: POSITION SIZING ──
-h+='<div>';
+h+='<div style="display:flex;flex-direction:column">';
 h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:20px">⚙️</div><div style="font-size:18px;font-weight:700;color:var(--white)">Position Sizing</div></div>';
 h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Master trades 8 contracts. Choose how many you want to copy.</div>';
-h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:border-color .3s" onmouseover="this.style.borderColor=\'rgba(0,232,162,.15)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
+h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:border-color .3s;flex:1;display:flex;flex-direction:column" onmouseover="this.style.borderColor=\'rgba(0,232,162,.15)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.3),transparent)"></div>';
 h+='<div class="field"><label>MODE</label><select id="posMode" onchange="updatePosPreview()" style="width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none"><option value="multiplier"'+(pos.mode==='multiplier'?' selected':'')+'>Multiplier (% of master)</option><option value="fixed"'+(pos.mode==='fixed'?' selected':'')+'>Fixed Contracts</option></select></div>';
 h+='<div id="mField" class="field" style="'+(pos.mode==='fixed'?'display:none':'')+'"><label>MULTIPLIER (0.25 = 2 contracts, 0.5 = 4, 1.0 = 8)</label><input id="posMult" type="number" step="0.05" min="0.05" max="5" value="'+(pos.multiplier||0.25)+'" oninput="updatePosPreview()"></div>';
 h+='<div id="fField" class="field" style="'+(pos.mode==='multiplier'?'display:none':'')+'"><label>FIXED CONTRACTS (1–50)</label><input id="posFixed" type="number" min="1" max="50" value="'+(pos.fixed_contracts||2)+'" oninput="updatePosPreview()"></div>';
 h+='<div id="posPreview" style="font-family:var(--mono);font-size:12px;color:var(--green);margin-bottom:16px;padding:12px 16px;background:rgba(0,232,162,.06);border-radius:10px;border:1px solid rgba(0,232,162,.15)"></div>';
 h+='<div id="posErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div>';
+h+='<div style="flex:1"></div>';
 h+='<button id="posBtn" onclick="savePosSettings()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--green),#00c968);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,232,162,.2);transition:all .2s" onmouseover="this.style.transform=\'translateY(-1px)\';this.style.boxShadow=\'0 6px 24px rgba(0,232,162,.3)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'0 4px 16px rgba(0,232,162,.2)\'">Save Position Settings</button>';
 h+='</div></div>';
 
 // ── RIGHT: CONTRACT REQUIREMENTS ──
-h+='<div>';
+h+='<div style="display:flex;flex-direction:column">';
 h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:20px">📊</div><div style="font-size:18px;font-weight:700;color:var(--white)">Account Requirements</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.12);border-radius:5px">MNQ</div></div>';
 h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Minimum balance required per contract size</div>';
-h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;overflow:hidden;position:relative;transition:border-color .3s" onmouseover="this.style.borderColor=\'rgba(0,196,255,.15)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
+h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;overflow:hidden;position:relative;transition:border-color .3s;flex:1;display:flex;flex-direction:column" onmouseover="this.style.borderColor=\'rgba(0,196,255,.15)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,196,255,.3),transparent)"></div>';
 h+='<table style="width:100%;font-family:var(--mono);border-collapse:collapse">';
 h+='<thead><tr><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">CONTRACTS</th><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">MIN. BALANCE</th></tr></thead>';
@@ -1850,7 +1851,7 @@ reqData.forEach(function(r){
   h+="</tr>";
 });
 h+='</tbody></table>';
-h+='<div style="padding:14px 20px;border-top:1px solid var(--bd);background:rgba(10,16,24,.3);display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)">Your setting: <span style="color:var(--green);font-weight:700">'+effContracts+'x</span> <span style="color:var(--bd)">|</span> <span style="color:var(--cyan);font-weight:700">$'+(reqData.find(function(r){return r.c===effContracts;})||{b:3000}).b.toLocaleString()+'</span> minimum</div>';
+h+='<div style="margin-top:auto;padding:14px 20px;border-top:1px solid var(--bd);background:rgba(10,16,24,.3);display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)">Your setting: <span style="color:var(--green);font-weight:700">'+effContracts+'x</span> <span style="color:var(--bd)">|</span> <span style="color:var(--cyan);font-weight:700">$'+(reqData.find(function(r){return r.c===effContracts;})||{b:3000}).b.toLocaleString()+'</span> minimum</div>';
 h+='</div></div>';
 
 h+='</div>'; // close pos-layout grid
