@@ -3109,20 +3109,24 @@ async function renderAdminContent(){
     }
 
     if(adminTab==='billing'){
+      // Fetch card data from Stripe
+      var adminCards={};
+      try{var _bc=await adminApi('GET','/admin/billing-cards');adminCards=_bc.cards||{};}catch(e){}
+
       h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Payments</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Product access and subscription status for all investors</div>';
 
       // Summary cards
-      var hasMnqCount=investors.filter(function(i){return i.is_approved && i.mnq_access;}).length;
+      var hasMnqCount=investors.filter(function(i){return i.is_approved && (i.mnq_access||i.promo_code);}).length;
       var hasMesCount=investors.filter(function(i){return i.is_approved && i.mes_access;}).length;
       var hasSubCount=investors.filter(function(i){return i.is_approved && (i.subscription_status==='active'||i.subscription_status==='trialing');}).length;
-      var noProdCount=investors.filter(function(i){return i.is_approved && !i.mnq_access && !i.mes_access && !i.stripe_card_last4;}).length;
+      var hasCardCount=Object.keys(adminCards).length;
 
       h+='<div class="admin-grid-4" style="margin-bottom:24px">';
-      h+='<div class="dash-card"><div class="dc-label">MNQ ACCESS</div><div class="dc-val" style="color:var(--cyan)">'+hasMnqCount+'</div><div class="dc-sub">$2,500 one-time</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">MNQ ACCESS</div><div class="dc-val" style="color:var(--cyan)">'+hasMnqCount+'</div><div class="dc-sub">$2,500 or promo</div></div>';
       h+='<div class="dash-card"><div class="dc-label">MES ACCESS</div><div class="dc-val" style="color:var(--green)">'+hasMesCount+'</div><div class="dc-sub">$2,500 one-time</div></div>';
       h+='<div class="dash-card"><div class="dc-label">ACTIVE SUBS</div><div class="dc-val" style="color:var(--white)">'+hasSubCount+'</div><div class="dc-sub">$1,000/mo each</div></div>';
-      h+='<div class="dash-card"><div class="dc-label" style="color:var(--gold)">NO PRODUCT</div><div class="dc-val" style="color:var(--gold)">'+noProdCount+'</div><div class="dc-sub">haven\'t purchased</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">CARDS ON FILE</div><div class="dc-val" style="color:var(--gold)">'+hasCardCount+'</div><div class="dc-sub">payment methods</div></div>';
       h+='</div>';
 
       // Needs attention — live but no subscription
@@ -3151,10 +3155,12 @@ async function renderAdminContent(){
       h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Email</th><th>Products</th><th>Card</th><th>Mode</th><th>Subscription</th><th>Status</th></tr></thead><tbody>';
       investors.filter(function(i){return i.is_approved;}).forEach(function(inv){
         var prods=[];if(inv.mnq_access)prods.push('MNQ');if(inv.mes_access)prods.push('MES');
+        if(inv.promo_code&&prods.length===0){if(!inv.mnq_access)prods.push('<span style="color:var(--gold)">MNQ (promo)</span>');}
         var prodStr=prods.length>0?prods.join(' + '):'—';
         var isLive=!!inv.use_live;
         var subSt=inv.subscription_status||'none';
-        var cardStr=inv.stripe_card_last4?'<span style="color:var(--white)">•••• '+inv.stripe_card_last4+'</span>':'<span style="color:var(--red)">None</span>';
+        var ac=adminCards[String(inv.id)];
+        var cardStr=ac?'<span style="color:var(--white)">'+ac.brand.toUpperCase()+' •••• '+ac.last4+'</span><div style="font-family:var(--mono);font-size:9px;color:var(--muted)">Exp '+ac.exp+'</div>':'<span style="color:var(--red)">None</span>';
         var status='';
         if(subSt==='active') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(0,232,162,.08);color:var(--green)">ACTIVE</span>';
         else if(subSt==='trialing') status='<span style="padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">TRIAL</span>';
