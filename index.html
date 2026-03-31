@@ -294,7 +294,8 @@ function hideError(){
 
 // ─── API CONFIG ───────────────────────────────────────────────────────────
 var API='https://api.nqalpha.com';
-var SESSION={token:null,investor:null};
+var SESSION={token:null,investor:null,hasCard:false,cardBrand:'',cardLast4:'',cardExp:'',_cardChecked:false};
+if(window.location.search.includes('card=added')||window.location.search.includes('updated=true')){SESSION._cardChecked=false;history.replaceState({},'',window.location.pathname+window.location.hash);}
 function getToken(){return localStorage.getItem('nq_token');}
 function setToken(t){localStorage.setItem('nq_token',t);}
 function clearToken(){localStorage.removeItem('nq_token');SESSION.token=null;SESSION.investor=null;}
@@ -1117,6 +1118,9 @@ var m=document.getElementById('dashMain');
 m.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">Loading...</div>';
 try{
 var profile=await apiCall('GET','/investor/profile');SESSION.investor=profile;
+// Fetch card status from Stripe on every render
+if(!SESSION._cardChecked){try{var _cd=await apiCall('GET','/billing/payment-method');if(_cd&&_cd.has_card){SESSION.hasCard=true;SESSION.cardBrand=_cd.brand;SESSION.cardLast4=_cd.last4;SESSION.cardExp=_cd.exp_month+'/'+_cd.exp_year;}else{SESSION.hasCard=false;}}catch(e){}}
+SESSION._cardChecked=true;
 var stats=profile.stats||{};var conn=profile.connection||{};var pos=profile.position_settings||{};
 var h='';
 
@@ -1245,7 +1249,7 @@ var mp=stats.month_pnl||0;
 // ── ONBOARDING WALKTHROUGH ──
 var ob1=true; // Account created (always true if they're here)
 var ob2=!!profile.is_approved;
-var ob3=!!(profile.mnq_access||profile.mes_access||profile.stripe_card_last4);
+var ob3=!!(profile.mnq_access||profile.mes_access||SESSION.hasCard);
 var ob4=!!(conn&&conn.connected);
 var obDone=ob1&&ob2&&ob3&&ob4;
 var obCount=(ob1?1:0)+(ob2?1:0)+(ob3?1:0)+(ob4?1:0);
@@ -2024,6 +2028,10 @@ if(dashTab==='billing'){
 // Fetch billing status from Stripe billing module
 var billingData=null;
 try{billingData=await apiCall('GET','/api/billing-status/'+profile.id);}catch(e){billingData=null;}
+// Fetch actual card info from Stripe
+var cardData=null;
+try{cardData=await apiCall('GET','/billing/payment-method');}catch(e){cardData=null;}
+if(cardData&&cardData.has_card){SESSION.hasCard=true;SESSION.cardBrand=cardData.brand;SESSION.cardLast4=cardData.last4;SESSION.cardExp=cardData.exp_month+'/'+cardData.exp_year;}else{SESSION.hasCard=false;}
 var hasMnq=billingData&&billingData.mnq_access;
 var hasMes=billingData&&billingData.mes_access;
 var subStatus=billingData?billingData.subscription_status:'none';
@@ -2179,22 +2187,22 @@ h+='<div style="width:100%;padding:14px;border:none;border-radius:10px;backgroun
 h+='</div>';
 
 // ── PAYMENT METHOD (needed for subscription when going live) ──
-var hasCard=!!(profile.stripe_card_last4);
+var hasCard=!!(SESSION.hasCard);
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">PAYMENT METHOD</div>';
 h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid '+(hasCard?'rgba(0,232,162,.15)':'rgba(240,192,64,.15)')+';border-radius:14px;padding:22px;margin-bottom:24px">';
 if(hasCard){
 h+='<div style="display:flex;align-items:center;justify-content:space-between">';
 h+='<div style="display:flex;align-items:center;gap:14px">';
-h+='<div style="background:linear-gradient(135deg,#1a1f3c,#2d3561);border-radius:8px;padding:8px 14px"><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px">'+(profile.stripe_card_brand||'CARD').toUpperCase()+'</span></div>';
-h+='<div><div style="font-family:var(--mono);font-size:14px;color:var(--white);letter-spacing:2px">•••• •••• •••• '+(profile.stripe_card_last4||'')+'</div>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Used for monthly subscription</div></div></div>';
+h+='<div style="background:linear-gradient(135deg,#1a1f3c,#2d3561);border-radius:8px;padding:8px 14px"><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px">'+(SESSION.cardBrand||'CARD').toUpperCase()+'</span></div>';
+h+='<div><div style="font-family:var(--mono);font-size:14px;color:var(--white);letter-spacing:2px">•••• •••• •••• '+(SESSION.cardLast4||'')+'</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Expires '+(SESSION.cardExp||'')+' · Used for monthly subscription</div></div></div>';
 h+='<button onclick="setupPaymentMethod()" style="padding:8px 18px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'">Update</button>';
 h+='</div>';
 } else {
 h+='<div style="text-align:center;padding:8px 0">';
 h+='<div style="font-size:24px;margin-bottom:10px">💳</div>';
 h+='<div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px">Add a Payment Method</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Required before switching to Live mode. Your card will be charged $1,000/month starting 30 days after going live.</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Required before switching to Live mode. Your card will be charged automatically based on your subscription plan.</div>';
 h+='<button onclick="setupPaymentMethod()" style="padding:12px 32px;background:linear-gradient(135deg,var(--green),#00c968);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,232,162,.2);transition:all .2s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Add Card</button>';
 h+='</div>';
 }
@@ -2373,14 +2381,14 @@ function toggleGuideStep(n){
 }
 var _useLive=false;
 function setMode(live){
-if(live && SESSION.investor && !SESSION.investor.stripe_card_last4){
+if(live && SESSION.investor && !SESSION.hasCard){
   alert('You must add a payment method in the Billing tab before switching to LIVE mode.');
   return;
 }
 _useLive=live;var d=document.getElementById('modeDemo');var l=document.getElementById('modeLive');if(live){l.style.background='var(--bd)';l.style.color='var(--white)';d.style.background='transparent';d.style.color='var(--muted)';}else{d.style.background='var(--bd)';d.style.color='var(--white)';l.style.background='transparent';l.style.color='var(--muted)';}}
 async function doConnect(){
 var btn=document.getElementById('connBtn');var err=document.getElementById('connErr');err.style.display='none';
-if(_useLive&&!SESSION.investor.stripe_card_last4){err.textContent='Add a payment method in the Billing tab before connecting in LIVE mode.';err.style.display='block';return;}
+if(_useLive&&!SESSION.hasCard){err.textContent='Add a payment method in the Billing tab before connecting in LIVE mode.';err.style.display='block';return;}
 if(_useLive&&!confirm('⚠ You selected LIVE mode. Real money will be used. Are you sure?')){return;}
 btn.textContent='Connecting...';btn.disabled=true;
 try{await apiCall('POST','/investor/connect',{username:document.getElementById('cUser').value,password:document.getElementById('cPass').value,app_id:document.getElementById('cApp').value,cid:document.getElementById('cCid').value,api_secret:document.getElementById('cSec').value,use_live:_useLive});await renderDashContent();}
@@ -2447,6 +2455,7 @@ try{
 }
 }
 async function setupPaymentMethod(){
+SESSION._cardChecked=false;
 try{
   var data = await apiCall('POST','/billing/setup-payment');
   if(data.url){
