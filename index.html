@@ -1045,16 +1045,32 @@ box+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Req
 box+='</div>';
 box+='<div style="padding:24px 28px;overflow-y:auto;flex:1;font-size:13px;color:var(--text);line-height:1.8">';
 
-box+='<div style="background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.15);border-radius:10px;padding:16px;margin-bottom:20px;font-size:12px;color:var(--red);font-weight:600;line-height:1.7">TRADING FUTURES INVOLVES SUBSTANTIAL RISK OF LOSS AND IS NOT SUITABLE FOR ALL INVESTORS. YOU SHOULD CAREFULLY CONSIDER WHETHER TRADING IS SUITABLE FOR YOU IN LIGHT OF YOUR FINANCIAL CONDITION. YOU MAY LOSE MORE THAN YOUR INITIAL INVESTMENT.</div>';
+box+='<div style="background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.15);border-radius:10px;padding:16px;margin-bottom:20px;font-size:12px;color:var(--red);font-weight:600;line-height:1.7">THE RISK OF LOSS IN TRADING COMMODITY INTERESTS CAN BE SUBSTANTIAL. YOU SHOULD THEREFORE CAREFULLY CONSIDER WHETHER SUCH TRADING IS SUITABLE FOR YOU IN LIGHT OF YOUR FINANCIAL CONDITION.</div>';
 
-box+='<div style="font-weight:700;color:var(--white);margin-bottom:10px;font-size:14px">Futures Trading Risks</div>';
-box+='<p style="margin-bottom:16px">Futures contracts are leveraged instruments. A small market movement can result in proportionately larger gains or losses. You may sustain a total loss of the margin funds deposited with your broker and may be required to deposit additional funds to cover losses beyond your initial deposit. Market conditions, including volatility, liquidity, and gaps, can result in rapid losses that exceed your account balance.</p>';
+box+='<div style="font-weight:700;color:var(--white);margin-bottom:10px;font-size:14px">CFTC Risk Disclosure Statement</div>';
+box+='<p style="margin-bottom:16px">The risk of loss in trading commodity interests can be substantial. You should therefore carefully consider whether such trading is suitable for you in light of your financial condition. In considering whether to trade or to authorize someone else to trade for you, you should be aware of the following:</p>';
+
+box+='<p style="margin-bottom:16px">If you purchase a commodity option you may sustain a total loss of the premium and of all transaction costs.</p>';
+
+box+='<p style="margin-bottom:16px">If you purchase or sell a commodity futures contract or sell a commodity option or engage in off-exchange foreign currency trading, you may sustain a total loss of the initial margin funds or security deposit and any additional funds that you deposit with your broker to establish or maintain your position. If the market moves against your position, you may be called upon by your broker to deposit a substantial amount of additional margin funds, on short notice, in order to maintain your position. If you do not provide the requested funds within the prescribed time, your position may be liquidated at a loss, and you will be liable for any resulting deficit in your account.</p>';
+
+box+='<p style="margin-bottom:16px">Under certain market conditions, you may find it difficult or impossible to liquidate a position. This can occur, for example, when the market makes a \\"limit move.\\"</p>';
+
+box+='<p style="margin-bottom:16px">The placement of contingent orders by you or your trading advisor, such as a \\"stop loss\\" or \\"stop limit\\" order, will not necessarily limit your losses to the intended amounts, since market conditions may make it impossible to execute such orders.</p>';
+
+box+='<p style="margin-bottom:16px">A \\"spread\\" position may not be less risky than a simple \\"long\\" or \\"short\\" position.</p>';
+
+box+='<p style="margin-bottom:16px">The high degree of leverage that is often obtainable in commodity interest trading can work against you as well as for you. The use of leverage can lead to large losses as well as gains.</p>';
+
+box+='<p style="margin-bottom:16px">In some cases, managed commodity accounts are subject to substantial charges for management and advisory fees. It may be necessary for those accounts that are subject to these charges to make substantial trading profits to avoid depletion or exhaustion of their assets.</p>';
+
+box+='<p style="margin-bottom:20px">This brief statement cannot disclose all the risks and other significant aspects of the commodity interest markets. You should therefore carefully study this disclosure and commodity interest trading before you trade.</p>';
 
 box+='<div style="font-weight:700;color:var(--white);margin-bottom:10px;font-size:14px">Automated Trading System Risks</div>';
-box+='<p style="margin-bottom:16px">NQ Alpha\'s automated trade-copying system is subject to the following risks: (a) technology failures including internet connectivity issues, server outages, and software bugs; (b) execution delays and slippage — your fills may differ materially from the master account; (c) system latency that may result in missed entries, missed exits, or partial fills; (d) broker-side limitations including margin requirements, position limits, and order rejections; (e) the system may not perform in the future as it has in the past.</p>';
+box+='<p style="margin-bottom:16px">NQ Alpha\'s automated trade-copying system is subject to the following additional risks: (a) technology failures including internet connectivity issues, server outages, and software bugs; (b) execution delays and slippage — your fills may differ materially from the master account; (c) system latency that may result in missed entries, missed exits, or partial fills; (d) broker-side limitations including margin requirements, position limits, and order rejections; (e) the system may not perform in the future as it has in the past.</p>';
 
 box+='<div style="font-weight:700;color:var(--white);margin-bottom:10px;font-size:14px">Past Performance Disclaimer</div>';
-box+='<p style="margin-bottom:16px">All performance data presented by NQ Alpha, including backtested results and historical returns, is for informational purposes only. Backtested performance has inherent limitations — it is developed with the benefit of hindsight and does not involve actual financial risk. Actual trading results may differ significantly. There is no guarantee that the strategies will be profitable in the future or that drawdowns similar to or worse than historical maximums will not occur.</p>';
+box+='<p style="margin-bottom:16px">PAST PERFORMANCE IS NOT NECESSARILY INDICATIVE OF FUTURE RESULTS. All performance data presented by NQ Alpha, including backtested results and historical returns, is for informational purposes only. Backtested performance has inherent limitations — it is developed with the benefit of hindsight and does not involve actual financial risk. Actual trading results may differ significantly.</p>';
 
 box+='<div style="font-weight:700;color:var(--white);margin-bottom:10px;font-size:14px">Your Responsibilities</div>';
 box+='<p style="margin-bottom:16px">By connecting your Tradovate account to NQ Alpha, you accept full responsibility for: (a) monitoring your account regularly; (b) ensuring adequate margin and account balance; (c) understanding the risks of each trade executed; (d) setting appropriate position sizes relative to your account; (e) disconnecting your account if you wish to stop trading at any time. NQ Alpha does not monitor your account health or margin levels.</p>';
@@ -3441,7 +3457,7 @@ function renderInvestorTable(investors, mode){
   if(!investors.length) return '<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No investors yet</div>';
   var h='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden">';
   h+='<div class="table-wrap"><table><thead><tr>';
-  h+='<th>ID</th><th>Name</th><th>Email</th><th>Referral</th><th>Joined</th><th>Status</th><th>Tradovate</th><th>Mode</th><th>Live Since</th><th>Position</th><th>P&L</th><th>Actions</th>';
+  h+='<th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Referral</th><th>Joined</th><th>Status</th><th>Tradovate</th><th>Mode</th><th>Live Since</th><th>Position</th><th>P&L</th><th>Actions</th>';
   h+='</tr></thead><tbody>';
   investors.forEach(function(inv){
     var joined=(inv.created_at||'').split('T')[0];
@@ -3455,6 +3471,7 @@ function renderInvestorTable(investors, mode){
     h+='<td style="color:var(--muted)">#'+inv.id+'</td>';
     h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
     h+='<td style="color:var(--text)">'+inv.email+'</td>';
+    h+='<td style="color:var(--text);font-family:var(--mono);font-size:11px">'+(inv.phone||'—')+'</td>';
     var ref=inv.referral||'—';
     var refCol='var(--muted)';
     if(ref.startsWith('instagram'))refCol='#E1306C';
