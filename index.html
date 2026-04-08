@@ -125,7 +125,8 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .master-btns{width:100%!important;}
   .master-header{flex-direction:column!important;}
   .health-header{flex-direction:column!important;}
-  .health-btns{width:100%!important;display:grid!important;grid-template-columns:1fr 1fr 1fr!important;}
+  .health-btns{width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .health-btns button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pos-layout{grid-template-columns:1fr!important;}
 }
 </style>
@@ -3277,10 +3278,20 @@ async function renderAdminContent(){
       try{ tradingStatus = await adminApi('GET','/admin/trading-status'); }
       catch(e){ tradingStatus = {paused:false}; }
       var isPaused=tradingStatus&&tradingStatus.paused;
+      var stratStatus={sma_paused:false,vwap_paused:false};
+      try{ stratStatus = await adminApi('GET','/admin/strategy-status'); }catch(e){}
+      var isSmaPaused=stratStatus&&stratStatus.sma_paused;
+      var isVwapPaused=stratStatus&&stratStatus.vwap_paused;
 
       // ── PAUSE BANNER ──
       if(isPaused){
         h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);font-size:14px;font-weight:600;color:var(--red)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s ease infinite"></div>⏸ TRADING IS PAUSED — No signals will be executed</div>';
+      }
+      if(isSmaPaused){
+        h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;margin-bottom:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:600;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>⏸ SMA25 PAUSED — SMA signals will be ignored</div>';
+      }
+      if(isVwapPaused){
+        h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;margin-bottom:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:600;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>⏸ VWAP PAUSED — All VWAP signals will be ignored</div>';
       }
 
       h+='<div class="health-header" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px">';
@@ -3291,6 +3302,16 @@ async function renderAdminContent(){
         h+='<button onclick="resumeTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.background=\'rgba(0,232,162,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.3)\';this.style.background=\'transparent\'">▶ Resume</button>';
       } else {
         h+='<button onclick="pauseTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(255,68,102,.06)\'" onmouseout="this.style.borderColor=\'rgba(255,68,102,.3)\';this.style.background=\'transparent\'">⏸ Pause</button>';
+      }
+      if(isSmaPaused){
+        h+='<button onclick="resumeSMA()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer">▶ Resume SMA</button>';
+      } else {
+        h+='<button onclick="pauseSMA()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer">⏸ Pause SMA</button>';
+      }
+      if(isVwapPaused){
+        h+='<button onclick="resumeVWAP()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer">▶ Resume VWAP</button>';
+      } else {
+        h+='<button onclick="pauseVWAP()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer">⏸ Pause VWAP</button>';
       }
       h+='<button onclick="refreshBalances()" id="balanceBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:8px;color:var(--cyan);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.background=\'rgba(0,196,255,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,196,255,.3)\';this.style.background=\'transparent\'">💰 Refresh Balances</button>';
       h+='<button onclick="switchAdminTab(\'health\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
@@ -3520,6 +3541,37 @@ async function adminAction(action, investorId){
 }
 
 // ─── ADMIN TOOLS ────────────────────────────────────────────────────
+async function pauseSMA(){
+  if(!confirm('⏸ PAUSE SMA25 ONLY?\n\nVWAP signals will still fire. Existing positions stay open.\n\nContinue?'))return;
+  try{
+    await adminApi('POST','/admin/pause-sma');
+    alert('⏸ SMA25 PAUSED');
+    await switchAdminTab('health');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function resumeSMA(){
+  try{
+    await adminApi('POST','/admin/resume-sma');
+    alert('▶ SMA25 RESUMED');
+    await switchAdminTab('health');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function pauseVWAP(){
+  if(!confirm('⏸ PAUSE ALL VWAP?\n\nSMA25 will still fire. Existing positions stay open.\n\nContinue?'))return;
+  try{
+    await adminApi('POST','/admin/pause-vwap');
+    alert('⏸ VWAP PAUSED');
+    await switchAdminTab('health');
+  }catch(e){alert('Error: '+e.message);}
+}
+async function resumeVWAP(){
+  try{
+    await adminApi('POST','/admin/resume-vwap');
+    alert('▶ VWAP RESUMED');
+    await switchAdminTab('health');
+  }catch(e){alert('Error: '+e.message);}
+}
+
 async function pauseTrading(){
   if(!confirm('⏸ PAUSE ALL TRADING?\n\nThis will stop the master bot from taking new trades and prevent all followers from copying. Existing open positions will NOT be closed.\n\nContinue?'))return;
   try{
