@@ -24,7 +24,8 @@
 <style>
 :root{--bg:#04080D;--sf:#0A1018;--sf2:#0E1620;--bd:#162030;--green:#00E8A2;--cyan:#00C4FF;--gold:#F0C040;--red:#FF4466;--text:#B8C8D8;--muted:#405060;--white:#F0F4F8;--font:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;}
+html,body{max-width:100vw;overflow-x:hidden;touch-action:pan-y;-ms-touch-action:pan-y;overscroll-behavior-x:none;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-text-size-adjust:100%;}
 ::selection{background:rgba(0,232,162,.2);color:var(--white);}
 input::placeholder{color:var(--muted);}
 ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
@@ -3716,6 +3717,10 @@ window.addEventListener('resize',function(){drawEqChart();if(dashTab==='pnl'){dr
 </script>
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});
+document.addEventListener('gesturechange',function(e){e.preventDefault();},{passive:false});
+document.addEventListener('gestureend',function(e){e.preventDefault();},{passive:false});
+document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:false});
 </script>
 </body>
 </html>
