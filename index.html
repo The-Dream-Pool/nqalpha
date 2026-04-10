@@ -3129,7 +3129,7 @@ async function renderAdminContent(){
 
         // Strategy breakdown
         if(strats.length>0){
-          h+='<div style="display:grid;grid-template-columns:repeat('+Math.min(strats.length,4)+',1fr);gap:12px;margin-bottom:20px">';
+          h+='<div class="admin-grid-4" style="margin-bottom:20px">';
           strats.forEach(function(s){
             var sClosed=(s.trades||0)-(s.open_count||0);
             var sWR=sClosed>0?Math.round((s.wins||0)/sClosed*100):0;
@@ -3220,7 +3220,7 @@ async function renderAdminContent(){
       var sTodayCol=sumToday>=0?'var(--green)':'var(--red)';
       var sMonthCol=sumMonth>=0?'var(--green)':'var(--red)';
       var sTotalCol=sumTotal>=0?'var(--green)':'var(--red)';
-      h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">';
+      h+='<div class="admin-grid-4">';
       h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+sTodayCol+'"></div><div class="dc-label">ALL INVESTORS TODAY</div><div class="dc-val" style="color:'+sTodayCol+'">'+(sumToday>=0?'+':'')+fmtD(sumToday)+'</div><div class="dc-sub">'+connectedInvestors.length+' active investor'+(connectedInvestors.length!==1?'s':'')+'</div></div>';
       h+='<div class="dash-card"><div class="dc-label">ALL INVESTORS MONTH</div><div class="dc-val" style="color:'+sMonthCol+'">'+(sumMonth>=0?'+':'')+fmtD(sumMonth)+'</div></div>';
       h+='<div class="dash-card"><div class="dc-label">ALL INVESTORS TOTAL</div><div class="dc-val" style="color:'+sTotalCol+'">'+(sumTotal>=0?'+':'')+fmtD(sumTotal)+'</div></div>';
