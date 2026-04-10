@@ -3037,80 +3037,75 @@ async function renderAdminContent(){
           months[m].pnl+=d.pnl;months[m].trades+=d.trades;months[m].wins+=d.wins;months[m].losses+=d.losses;months[m].days++;
         });
 
-        var monthKeys=Object.keys(months).sort().reverse();
-        var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
-        var dayLabels=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        // Store globally so nav buttons can re-render without rebuilding whole tab
+        window._adminDailyMonths=months;
+        window._adminDailyDayMap=dayMap;
+        window._adminDailyMonthKeys=Object.keys(months).sort().reverse();
+        if(typeof window._adminDailyIdx!=='number' || window._adminDailyIdx>=window._adminDailyMonthKeys.length) window._adminDailyIdx=0;
 
-        monthKeys.forEach(function(mk){
-          var mm=months[mk];
+        h+='<div id="adminDailyMonthWrap"></div>';
+
+        window.renderAdminDailyMonth=function(){
+          var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+          var dayLabels=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+          var keys=window._adminDailyMonthKeys;
+          var idx=window._adminDailyIdx;
+          var mk=keys[idx];
+          var mm=window._adminDailyMonths[mk];
+          var dayMap=window._adminDailyDayMap;
           var parts=mk.split('-');
           var yr=parseInt(parts[0]),mo=parseInt(parts[1]);
           var mLabel=monthNames[mo-1]+' '+yr;
           var mPnlCol=mm.pnl>=0?'var(--green)':'var(--red)';
           var mWr=mm.trades>0?Math.round(mm.wins/mm.trades*100):0;
-
-          h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:16px">';
-
+          var o='';
+          o+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden">';
           // Month header
-          h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">';
-          h+='<div style="display:flex;align-items:center;gap:12px">';
-          h+='<div style="font-size:16px;font-weight:700;color:var(--white)">'+mLabel+'</div>';
-          h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+mm.days+' days · '+mm.trades+' trades · '+mWr+'% WR</div>';
-          h+='</div>';
-          h+='<div style="font-size:18px;font-weight:800;color:'+mPnlCol+'">'+(mm.pnl>=0?'+':'')+fmtD(Math.round(mm.pnl))+'</div>';
-          h+='</div>';
-
-          // Calendar grid
-          h+='<div style="padding:16px 20px">';
-
-          // Day labels
-          h+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px">';
-          dayLabels.forEach(function(dl){
-            h+='<div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--muted);padding:4px 0">'+dl+'</div>';
-          });
-          h+='</div>';
-
-          // Calendar days
-          h+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
-
-          // First day offset
+          o+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">';
+          o+='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="font-size:16px;font-weight:700;color:var(--white)">'+mLabel+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+mm.days+' days · '+mm.trades+' trades · '+mWr+'% WR</div></div>';
+          o+='<div style="font-size:18px;font-weight:800;color:'+mPnlCol+'">'+(mm.pnl>=0?'+':'')+fmtD(Math.round(mm.pnl))+'</div>';
+          o+='</div>';
+          // Grid
+          o+='<div style="padding:16px 20px">';
+          o+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px">';
+          dayLabels.forEach(function(dl){o+='<div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--muted);padding:4px 0">'+dl+'</div>';});
+          o+='</div>';
+          o+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
           var firstDay=new Date(yr,mo-1,1).getDay();
-          for(var e=0;e<firstDay;e++){
-            h+='<div></div>';
-          }
-
+          for(var e=0;e<firstDay;e++)o+='<div></div>';
           var daysInMonth=new Date(yr,mo,0).getDate();
           for(var d=1;d<=daysInMonth;d++){
             var dateStr=mk+'-'+(d<10?'0':'')+d;
             var dd=dayMap[dateStr];
-            var bgCol='var(--sf2)';
-            var textCol='var(--muted)';
-            var pnlText='';
-            var border='1px solid var(--bd)';
-
+            var bgCol='var(--sf2)',textCol='var(--muted)',pnlText='',border='1px solid var(--bd)';
             if(dd){
-              if(dd.pnl>0){
-                bgCol='rgba(0,232,162,.08)';textCol='var(--green)';border='1px solid rgba(0,232,162,.2)';
-                pnlText='+'+fmtD(Math.round(dd.pnl));
-              } else if(dd.pnl<0){
-                bgCol='rgba(255,68,102,.08)';textCol='var(--red)';border='1px solid rgba(255,68,102,.2)';
-                pnlText=fmtD(Math.round(dd.pnl));
-              } else {
-                bgCol='rgba(0,196,255,.05)';textCol='var(--cyan)';border='1px solid rgba(0,196,255,.15)';
-                pnlText='$0';
-              }
+              if(dd.pnl>0){bgCol='rgba(0,232,162,.08)';textCol='var(--green)';border='1px solid rgba(0,232,162,.2)';pnlText='+'+fmtD(Math.round(dd.pnl));}
+              else if(dd.pnl<0){bgCol='rgba(255,68,102,.08)';textCol='var(--red)';border='1px solid rgba(255,68,102,.2)';pnlText=fmtD(Math.round(dd.pnl));}
+              else{bgCol='rgba(0,196,255,.05)';textCol='var(--cyan)';border='1px solid rgba(0,196,255,.15)';pnlText='$0';}
             }
-
-            h+='<div style="background:'+bgCol+';border:'+border+';border-radius:8px;padding:6px 4px;min-height:52px;position:relative">';
-            h+='<div style="font-family:var(--mono);font-size:10px;color:'+(dd?'var(--white)':'var(--muted)')+';margin-bottom:2px">'+d+'</div>';
+            o+='<div style="background:'+bgCol+';border:'+border+';border-radius:8px;padding:6px 4px;min-height:52px;position:relative">';
+            o+='<div style="font-family:var(--mono);font-size:10px;color:'+(dd?'var(--white)':'var(--muted)')+';margin-bottom:2px">'+d+'</div>';
             if(dd){
-              h+='<div style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+textCol+'">'+pnlText+'</div>';
-              h+='<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:1px">'+dd.trades+'T · '+dd.wins+'W</div>';
+              o+='<div style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+textCol+'">'+pnlText+'</div>';
+              o+='<div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:1px">'+dd.trades+'T · '+dd.wins+'W</div>';
             }
-            h+='</div>';
+            o+='</div>';
           }
-          h+='</div></div></div>';
-        });
+          o+='</div>';
+          // Nav buttons — same layout desktop + mobile
+          var hasPrev=idx<keys.length-1; // older
+          var hasNext=idx>0;              // newer
+          o+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd);gap:10px">';
+          o+='<button '+(hasPrev?'onclick="window._adminDailyIdx++;window.renderAdminDailyMonth()"':'disabled')+' style="flex:1;max-width:180px;font-family:var(--mono);font-size:10px;padding:11px 14px;background:transparent;border:1px solid '+(hasPrev?'var(--bd)':'rgba(255,255,255,.05)')+';border-radius:8px;color:'+(hasPrev?'var(--text)':'var(--muted)')+';cursor:'+(hasPrev?'pointer':'not-allowed')+';opacity:'+(hasPrev?'1':'.35')+';transition:all .2s;letter-spacing:1px;white-space:nowrap" '+(hasPrev?'onmouseover="this.style.borderColor=\'var(--gold)\';this.style.color=\'var(--gold)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'"':'')+'>← PREV</button>';
+          o+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-align:center;white-space:nowrap">'+(idx+1)+' / '+keys.length+'</div>';
+          o+='<button '+(hasNext?'onclick="window._adminDailyIdx--;window.renderAdminDailyMonth()"':'disabled')+' style="flex:1;max-width:180px;font-family:var(--mono);font-size:10px;padding:11px 14px;background:transparent;border:1px solid '+(hasNext?'var(--bd)':'rgba(255,255,255,.05)')+';border-radius:8px;color:'+(hasNext?'var(--text)':'var(--muted)')+';cursor:'+(hasNext?'pointer':'not-allowed')+';opacity:'+(hasNext?'1':'.35')+';transition:all .2s;letter-spacing:1px;white-space:nowrap" '+(hasNext?'onmouseover="this.style.borderColor=\'var(--gold)\';this.style.color=\'var(--gold)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'"':'')+'>NEXT →</button>';
+          o+='</div>';
+          o+='</div></div>';
+          var el=document.getElementById('adminDailyMonthWrap');
+          if(el)el.innerHTML=o;
+        };
+
+        setTimeout(window.renderAdminDailyMonth,0);
       }
     }
 
