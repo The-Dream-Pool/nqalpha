@@ -3237,7 +3237,7 @@ async function renderAdminContent(){
         h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+connectedInvestors.length+' connected / '+allApproved.length+' approved</div>';
         h+='</div>';
         h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Mode</th><th>Contracts</th><th>Today</th><th>This Week</th><th>This Month</th><th>All Time</th><th>Trades</th><th>Win Rate</th><th>Open</th></tr></thead><tbody>';
-        allApproved.sort(function(a,b){return ((b.stats||{}).today_pnl||0)-((a.stats||{}).today_pnl||0);});
+        allApproved.sort(function(a,b){var aConn=a.is_connected?1:0;var bConn=b.is_connected?1:0;if(aConn!==bConn)return bConn-aConn;return ((b.stats||{}).today_pnl||0)-((a.stats||{}).today_pnl||0);});
         allApproved.forEach(function(inv){
           var s=inv.stats||{};
           var todayPnl=s.today_pnl||0;
