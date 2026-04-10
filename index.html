@@ -1653,7 +1653,7 @@ h+='</div>';
 h+='</div>';
 
 // 4. Strategy chart
-h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(0,232,162,.5),rgba(0,196,255,.3),transparent)"></div><div class="dc-label" style="margin-bottom:14px">STRATEGY PERFORMANCE (5Y BACKTEST)</div><canvas id="dashEq" style="width:100%;height:180px;display:block"></canvas></div>';
+h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(0,232,162,.5),rgba(0,196,255,.3),transparent)"></div><div class="dc-label" style="margin-bottom:14px">PORTFOLIO PERFORMANCE (5Y BACKTEST)</div><canvas id="dashEq" style="width:100%;height:180px;display:block"></canvas></div>';
 
 }
 if(dashTab==='pnl'){
@@ -1666,7 +1666,7 @@ var eqCurve = dash.equity_curve||[];
 var dailyPnl = dash.daily_pnl||[];
 var openPos = dash.open_positions||[];
 
-h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><div><div style="font-size:24px;font-weight:700;color:var(--white)">P&L Tracker</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Real-time performance across all strategies</div></div><div style="display:flex;gap:8px"><button onclick="generateShareCard('+JSON.stringify(ds.month_pnl||0)+','+JSON.stringify(ds.win_rate||0)+')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share</button><button onclick="switchTab(\'pnl\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button></div></div>';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><div><div style="font-size:24px;font-weight:700;color:var(--white)">P&L Tracker</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Real-time performance tracking</div></div><div style="display:flex;gap:8px"><button onclick="generateShareCard('+JSON.stringify(ds.month_pnl||0)+','+JSON.stringify(ds.win_rate||0)+')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share</button><button onclick="switchTab(\'pnl\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button></div></div>';
 
 // ── ACCOUNT BALANCE BANNER ──
 var pnlBal=profile.account_balance||{};
@@ -1786,11 +1786,11 @@ h+='</div>';
 if(openPos.length === 0){
   h+='<div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No open positions right now</div>';
 } else {
-  h+='<table><thead><tr><th>Entry Time</th><th>Strategy</th><th>Dir</th><th>Contracts</th><th>Entry</th><th>TP</th><th>SL</th></tr></thead><tbody>';
+  h+='<table><thead><tr><th>Entry Time</th><th>Signal</th><th>Dir</th><th>Contracts</th><th>Entry</th><th>TP</th><th>SL</th></tr></thead><tbody>';
   openPos.forEach(function(p){
     h+='<tr>';
     h+='<td style="color:var(--text)">'+(p.entry_time||'').replace('T',' ')+'</td>';
-    h+='<td style="color:var(--cyan)">'+p.strategy+'</td>';
+    h+='<td style="color:var(--cyan)">Copied</td>';
     h+='<td style="color:var(--green)">'+(p.direction||'LONG')+'</td>';
     h+='<td style="color:var(--white)">'+p.contracts+'</td>';
     h+='<td style="color:var(--white)">$'+(p.entry_price||0).toFixed(2)+'</td>';
@@ -1807,13 +1807,13 @@ if(eqCurve.length > 0){
   var recent = eqCurve.slice(-20).reverse();
   h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden">';
   h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd)"><div class="card-title">RECENT TRADES</div></div>';
-  h+='<table><thead><tr><th>Time</th><th>Strategy</th><th>Result</th><th>P&L</th><th>Cumulative</th></tr></thead><tbody>';
+  h+='<table><thead><tr><th>Time</th><th>Signal</th><th>Result</th><th>P&L</th><th>Cumulative</th></tr></thead><tbody>';
   recent.forEach(function(t){
     var pc=t.pnl>0?'var(--green)':'var(--red)';
     var rc=t.result==='TP'?'background:rgba(0,232,162,.08);color:var(--green)':'background:rgba(255,68,102,.08);color:var(--red)';
     h+='<tr>';
     h+='<td style="color:var(--text)">'+(t.time||'').replace('T',' ')+'</td>';
-    h+='<td style="color:var(--cyan)">'+t.strategy+'</td>';
+    h+='<td style="color:var(--cyan)">Copied</td>';
     h+='<td><span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;'+rc+'">'+t.result+'</span></td>';
     h+='<td style="color:'+pc+';font-weight:600">'+(t.pnl>=0?'+':'')+fmtD(t.pnl)+'</td>';
     h+='<td style="font-weight:600;color:'+(t.cumulative>=0?'var(--green)':'var(--red)')+'">'+(t.cumulative>=0?'+':'')+fmtD(t.cumulative)+'</td>';
@@ -2039,8 +2039,8 @@ if(dashTab==='trades'){
 var trades=(await apiCall('GET','/investor/trades')).trades||[];
 h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:20px">Trade History</div>';
 if(!trades.length){h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No trades yet. Connect your account to start copying trades.</div>';}
-else{h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Strategy</th><th>Contracts</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody>';
-trades.forEach(function(t){var pc=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--muted)';var rc=t.result==='TP'?'background:rgba(0,232,162,.08);color:var(--green)':t.result==='SL'?'background:rgba(255,68,102,.08);color:var(--red)':'background:rgba(240,192,64,.08);color:var(--gold)';h+='<tr><td style="color:var(--text)">'+(t.entry_time||'').split('T')[0]+'</td><td style="color:var(--cyan)">'+t.strategy+'</td><td>'+t.contracts+'</td><td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td><td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td><td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td><td><span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;'+rc+'">'+t.result+'</span></td><td style="color:'+pc+';font-weight:600">'+(t.pnl>=0?'+':'')+fmtD(t.pnl)+'</td></tr>';});
+else{h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;overflow:hidden"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Signal</th><th>Contracts</th><th>Entry</th><th>TP</th><th>SL</th><th>Result</th><th>P&L</th></tr></thead><tbody>';
+trades.forEach(function(t){var pc=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--muted)';var rc=t.result==='TP'?'background:rgba(0,232,162,.08);color:var(--green)':t.result==='SL'?'background:rgba(255,68,102,.08);color:var(--red)':'background:rgba(240,192,64,.08);color:var(--gold)';h+='<tr><td style="color:var(--text)">'+(t.entry_time||'').split('T')[0]+'</td><td style="color:var(--cyan)">Copied</td><td>'+t.contracts+'</td><td style="color:var(--white)">$'+(t.entry_price||0).toFixed(2)+'</td><td style="color:var(--muted)">$'+(t.tp_price||0).toFixed(2)+'</td><td style="color:var(--muted)">$'+(t.sl_price||0).toFixed(2)+'</td><td><span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;'+rc+'">'+t.result+'</span></td><td style="color:'+pc+';font-weight:600">'+(t.pnl>=0?'+':'')+fmtD(t.pnl)+'</td></tr>';});
 h+='</tbody></table></div></div>';}
 }
 if(dashTab==='connect'){
@@ -3061,7 +3061,7 @@ async function doFlattenAll(){
 }
 
 function renderAdminTabs(){
-  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'investors',l:'Investors'},{id:'daily',l:'Daily P&L'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'},{id:'promos',l:'Promos'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'daily',l:'Daily P&L'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'},{id:'promos',l:'Promos'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold);background:linear-gradient(135deg,rgba(240,192,64,.08),rgba(240,192,64,.03));box-shadow:0 0 15px rgba(240,192,64,.05)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
@@ -3203,6 +3203,83 @@ async function renderAdminContent(){
           h+='<div id="masterTradePager" style="padding:12px 20px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center"></div>';
         }
         h+='</div>';
+      }
+    }
+
+    if(adminTab==='investor_pnl'){
+      var connectedInvestors=investors.filter(function(i){return i.is_approved&&i.is_connected;});
+      var allApproved=investors.filter(function(i){return i.is_approved;});
+
+      // Calculate totals across all connected investors
+      var sumToday=0,sumWeek=0,sumMonth=0,sumTotal=0,sumOpen=0;
+      connectedInvestors.forEach(function(inv){
+        var s=inv.stats||{};
+        sumToday+=(s.today_pnl||0);sumWeek+=(s.week_pnl||0);sumMonth+=(s.month_pnl||0);sumTotal+=(s.total_pnl||0);sumOpen+=(s.open_positions||0);
+      });
+
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">';
+      h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Investor P&L</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Real-time P&L across all connected investors</div></div>';
+      h+='<button onclick="switchAdminTab(\'investor_pnl\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='</div>';
+
+      // Summary cards
+      var sTodayCol=sumToday>=0?'var(--green)':'var(--red)';
+      var sMonthCol=sumMonth>=0?'var(--green)':'var(--red)';
+      var sTotalCol=sumTotal>=0?'var(--green)':'var(--red)';
+      h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">';
+      h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+sTodayCol+'"></div><div class="dc-label">ALL INVESTORS TODAY</div><div class="dc-val" style="color:'+sTodayCol+'">'+(sumToday>=0?'+':'')+fmtD(sumToday)+'</div><div class="dc-sub">'+connectedInvestors.length+' active investor'+(connectedInvestors.length!==1?'s':'')+'</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">ALL INVESTORS MONTH</div><div class="dc-val" style="color:'+sMonthCol+'">'+(sumMonth>=0?'+':'')+fmtD(sumMonth)+'</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">ALL INVESTORS TOTAL</div><div class="dc-val" style="color:'+sTotalCol+'">'+(sumTotal>=0?'+':'')+fmtD(sumTotal)+'</div></div>';
+      h+='<div class="dash-card"><div class="dc-label">OPEN POSITIONS</div><div class="dc-val" style="color:'+(sumOpen>0?'var(--cyan)':'var(--muted)')+'">'+sumOpen+'</div><div class="dc-sub">across all accounts</div></div>';
+      h+='</div>';
+
+      // Investor P&L table
+      if(allApproved.length===0){
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">No approved investors yet</div>';
+      } else {
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden">';
+        h+='<div style="padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">';
+        h+='<div class="card-title">P&L BY INVESTOR</div>';
+        h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+connectedInvestors.length+' connected / '+allApproved.length+' approved</div>';
+        h+='</div>';
+        h+='<div class="table-wrap"><table><thead><tr><th>Investor</th><th>Mode</th><th>Contracts</th><th>Today</th><th>This Week</th><th>This Month</th><th>All Time</th><th>Trades</th><th>Win Rate</th><th>Open</th></tr></thead><tbody>';
+        allApproved.sort(function(a,b){return ((b.stats||{}).today_pnl||0)-((a.stats||{}).today_pnl||0);});
+        allApproved.forEach(function(inv){
+          var s=inv.stats||{};
+          var todayPnl=s.today_pnl||0;
+          var weekPnl=s.week_pnl||0;
+          var monthPnl=s.month_pnl||0;
+          var totalPnl=s.total_pnl||0;
+          var totalTrades=s.total_trades||0;
+          var wr=s.win_rate||0;
+          var openP=s.open_positions||0;
+          var isConn=inv.is_connected;
+          var isLive=inv.use_live;
+          var pos=inv.mode==='fixed'?(inv.fixed_contracts||1)+'ct':Math.max(1,Math.round(8*(inv.multiplier||0.25)))+'ct';
+
+          var rowOpacity=isConn?'':'opacity:.45;';
+          h+='<tr style="'+rowOpacity+'">';
+          h+='<td style="color:var(--white);font-weight:600">'+(inv.name||inv.email.split('@')[0])+'</td>';
+          h+='<td>';
+          if(isConn){
+            if(isLive) h+='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(255,68,102,.08);color:var(--red)">LIVE</span>';
+            else h+='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(240,192,64,.08);color:var(--gold)">DEMO</span>';
+          } else {
+            h+='<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(64,80,96,.15);color:var(--muted)">OFF</span>';
+          }
+          h+='</td>';
+          h+='<td style="font-family:var(--mono);font-size:12px;color:var(--white)">'+pos+'</td>';
+          h+='<td style="font-weight:700;color:'+(todayPnl>=0?'var(--green)':'var(--red)')+'">'+( todayPnl>=0?'+':'')+fmtD(todayPnl)+'</td>';
+          h+='<td style="color:'+(weekPnl>=0?'var(--green)':'var(--red)')+'">'+( weekPnl>=0?'+':'')+fmtD(weekPnl)+'</td>';
+          h+='<td style="color:'+(monthPnl>=0?'var(--green)':'var(--red)')+'">'+( monthPnl>=0?'+':'')+fmtD(monthPnl)+'</td>';
+          h+='<td style="font-weight:600;color:'+(totalPnl>=0?'var(--green)':'var(--red)')+'">'+( totalPnl>=0?'+':'')+fmtD(totalPnl)+'</td>';
+          h+='<td style="font-family:var(--mono);font-size:11px;color:var(--text)">'+totalTrades+'</td>';
+          h+='<td style="font-family:var(--mono);font-size:11px;color:var(--white)">'+wr+'%</td>';
+          h+='<td style="font-family:var(--mono);font-size:12px;color:'+(openP>0?'var(--cyan)':'var(--muted)')+'">'+openP+'</td>';
+          h+='</tr>';
+        });
+        h+='</tbody></table></div></div>';
       }
     }
 
