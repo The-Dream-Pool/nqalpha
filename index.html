@@ -3061,7 +3061,7 @@ async function doFlattenAll(){
 }
 
 function renderAdminTabs(){
-  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'daily',l:'Daily P&L'},{id:'pending',l:'Pending'},{id:'billing',l:'Billing'},{id:'promos',l:'Promos'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'daily',l:'Daily P&L'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'billing',l:'Billing'},{id:'pending',l:'Pending'},{id:'promos',l:'Promos'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold);background:linear-gradient(135deg,rgba(240,192,64,.08),rgba(240,192,64,.03));box-shadow:0 0 15px rgba(240,192,64,.05)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
