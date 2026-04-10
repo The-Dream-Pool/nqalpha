@@ -3450,7 +3450,7 @@ async function renderAdminContent(){
       h+='</div>';
 
       // Needs attention — live but no subscription
-      var liveNoSub=investors.filter(function(i){return i.is_approved && i.use_live && i.subscription_status!=='active' && i.subscription_status!=='trialing';});
+      var liveNoSub=investors.filter(function(i){return i.is_approved && i.use_live && i.subscription_status!=='active' && i.subscription_status!=='trialing' && !(i.promo_code && i.promo_sub_discount_pct>=100);});
       if(liveNoSub.length>0){
         h+='<div style="background:rgba(255,68,102,.04);border:1px solid rgba(255,68,102,.2);border-radius:14px;padding:24px;margin-bottom:24px">';
         h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:20px">⚠️</span><div><div style="font-size:16px;font-weight:700;color:var(--red)">Action Required — Live But No Subscription</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">These investors are on live accounts but don\'t have an active subscription</div></div></div>';
