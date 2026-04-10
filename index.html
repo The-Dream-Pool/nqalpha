@@ -1117,7 +1117,7 @@ async function copyShareCard(){
 }
 function showLoginError(msg){var el=document.getElementById('loginError');if(el){el.textContent=msg;el.style.display='block';}}
 function hideLoginError(){var el=document.getElementById('loginError');if(el)el.style.display='none';}
-function calcEffective(pos){if(!pos||!pos.mode)return '—';if(pos.mode==='fixed')return pos.fixed_contracts+' contracts';return Math.max(1,Math.round(8*(pos.multiplier||0.25)))+' contracts ('+(Math.round((pos.multiplier||0.25)*100))+'%)';}
+function calcEffective(pos){if(!pos)return '—';return (pos.fixed_contracts||1)+' contract'+(pos.fixed_contracts!==1?'s':'');}
 
 function buildLogin(){
 var h='<div class="login-wrap"><div class="login-box">';
@@ -2081,11 +2081,8 @@ h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));b
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.3),transparent)"></div>';
 h+='<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:18px;padding:14px 16px;background:rgba(0,232,162,.02);border:1px solid rgba(0,232,162,.08);border-radius:10px">';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1.5px;margin-bottom:8px">HOW IT WORKS</div>';
-h+='<span style="color:var(--white);font-weight:600">Multiplier</span> — trades a percentage of the master\'s 8 contracts. Set 0.25 for 2 contracts, 0.5 for 4, or 1.0 to match the master exactly.<br>';
-h+='<span style="color:var(--white);font-weight:600">Fixed</span> — always trades the exact number of contracts you set, regardless of what the master trades.</div>';
-h+='<div class="field"><label>MODE</label><select id="posMode" onchange="updatePosPreview()" style="width:100%;padding:12px 16px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;color:var(--white);font-size:14px;font-family:var(--font);outline:none"><option value="multiplier"'+(pos.mode==='multiplier'?' selected':'')+'>Multiplier (% of master)</option><option value="fixed"'+(pos.mode==='fixed'?' selected':'')+'>Fixed Contracts</option></select></div>';
-h+='<div id="mField" class="field" style="'+(pos.mode==='fixed'?'display:none':'')+'"><label>MULTIPLIER (0.25 = 2 contracts, 0.5 = 4, 1.0 = 8)</label><input id="posMult" type="number" step="0.05" min="0.05" max="5" value="'+(pos.multiplier||0.25)+'" oninput="updatePosPreview()"></div>';
-h+='<div id="fField" class="field" style="'+(pos.mode==='multiplier'?'display:none':'')+'"><label>FIXED CONTRACTS (1–50)</label><input id="posFixed" type="number" min="1" max="50" value="'+(pos.fixed_contracts||2)+'" oninput="updatePosPreview()"></div>';
+h+='Choose how many contracts NQ Alpha trades on your account per signal. Check the Account Requirements table to see the minimum balance for your contract size.</div>';
+h+='<div class="field"><label>CONTRACTS PER TRADE (1–50)</label><input id="posFixed" type="number" min="1" max="50" value="'+(pos.fixed_contracts||1)+'" oninput="updatePosPreview()"></div>';
 h+='<div id="posPreview" style="font-family:var(--mono);font-size:12px;color:var(--green);margin-bottom:16px;padding:12px 16px;background:rgba(0,232,162,.06);border-radius:10px;border:1px solid rgba(0,232,162,.15)"></div>';
 h+='<div id="posErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div>';
 h+='<div style="flex:1"></div>';
@@ -2102,7 +2099,7 @@ h+='<table style="width:100%;font-family:var(--mono);border-collapse:collapse">'
 h+='<thead><tr><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">CONTRACTS</th><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">MIN. BALANCE</th></tr></thead>';
 h+='<tbody>';
 var reqData=[{c:1,b:3000},{c:2,b:6000},{c:3,b:10000},{c:4,b:13000},{c:5,b:16000},{c:6,b:19000},{c:7,b:22000},{c:8,b:25000}];
-var effContracts=pos.mode==="fixed"?pos.fixed_contracts:Math.max(1,Math.round(8*pos.multiplier));
+var effContracts=pos.fixed_contracts||1;
 reqData.forEach(function(r){
   var isActive=r.c===effContracts;
   var rowBg=isActive?"background:linear-gradient(90deg,rgba(0,232,162,.06),rgba(0,232,162,.02));":"";
@@ -2524,7 +2521,7 @@ var faqs=[
 {cat:'Position Sizing',color:'var(--cyan)',items:[
 {q:'How many contracts will I trade?',a:'You control this in the Connect tab. You can choose <strong>Multiplier mode</strong> (a percentage of the master account) or <strong>Fixed mode</strong> (always trade a set number of contracts). The minimum is always 1 contract.'},
 {q:'What position size should I start with?',a:'Start conservative. A good rule of thumb is to risk no more than <strong>1–2% of your account</strong> on any single trade. If your account is $10,000 and max loss per contract is around $130, that\'s roughly 1 contract. You can always increase later once you\'re comfortable with the system.'},
-{q:'Can I change my position size?',a:'Yes, anytime. Go to the <strong>Connect</strong> tab and adjust your multiplier or fixed contract count. Changes take effect on the next trade — any open positions will keep their original size.'},
+{q:'Can I change my position size?',a:'Yes, anytime. Go to the <strong>Connect</strong> tab and change your contract count. Changes take effect on the next trade — any open positions will keep their original size.'},
 {q:'What\'s the difference between Multiplier and Fixed mode?',a:'<strong>Multiplier mode</strong> scales your contracts as a percentage of the master account. If the master trades more contracts, your size scales up proportionally. <strong>Fixed mode</strong> always trades the exact number of contracts you specify, regardless of what the master does. Fixed mode gives you more predictable risk.'},
 ]},
 {cat:'Tradovate Connection',color:'var(--green)',items:[
@@ -2607,13 +2604,9 @@ setTimeout(initDualScrollbars,50);
 }catch(e){m.innerHTML='<div style="padding:40px;text-align:center;color:var(--red);font-family:var(--mono);font-size:12px">'+e.message+'</div>';}
 }
 function updatePosPreview(){
-var mode=(document.getElementById('posMode')||{}).value||'multiplier';
-var mf=document.getElementById('mField');var ff=document.getElementById('fField');
-if(mf)mf.style.display=mode==='multiplier'?'':'none';
-if(ff)ff.style.display=mode==='fixed'?'':'none';
 var p=document.getElementById('posPreview');if(!p)return;
-if(mode==='multiplier'){var m=parseFloat((document.getElementById('posMult')||{}).value||0.25);var q=Math.max(1,Math.round(8*m));p.textContent='→ You will trade '+q+' contract'+(q!==1?'s':'')+' per signal ('+(Math.round(m*100))+'% of master)';}
-else{var f=parseInt((document.getElementById('posFixed')||{}).value||2);p.textContent='→ You will always trade '+f+' contract'+(f!==1?'s':'')+' per signal';}
+var f=parseInt((document.getElementById('posFixed')||{}).value||1);
+p.textContent='→ You will trade '+f+' contract'+(f!==1?'s':'')+' per signal';
 }
 function toggleFaq(id){
   var body=document.getElementById(id);
@@ -2653,7 +2646,7 @@ async function doDisconnect(){if(!confirm('Disconnect your Tradovate account? Tr
 async function savePosSettings(){
 var btn=document.getElementById('posBtn');var err=document.getElementById('posErr');err.style.display='none';
 btn.textContent='Saving...';btn.disabled=true;
-try{var mode=document.getElementById('posMode').value;var body={mode:mode};if(mode==='multiplier')body.multiplier=parseFloat(document.getElementById('posMult').value);else body.fixed_contracts=parseInt(document.getElementById('posFixed').value);
+try{var body={mode:'fixed',fixed_contracts:parseInt(document.getElementById('posFixed').value)};
 await apiCall('PUT','/investor/position-settings',body);btn.textContent='✓ Saved!';setTimeout(function(){btn.textContent='Save Position Settings';btn.disabled=false;},2000);}
 catch(e){err.textContent=e.message;err.style.display='block';btn.textContent='Save Position Settings';btn.disabled=false;}
 }
@@ -3256,7 +3249,7 @@ async function renderAdminContent(){
           var openP=s.open_positions||0;
           var isConn=inv.is_connected;
           var isLive=inv.use_live;
-          var pos=inv.mode==='fixed'?(inv.fixed_contracts||1)+'ct':Math.max(1,Math.round(8*(inv.multiplier||0.25)))+'ct';
+          var pos=(inv.fixed_contracts||1)+'ct';
 
           var rowOpacity=isConn?'':'opacity:.45;';
           h+='<tr style="'+rowOpacity+'">';
@@ -3726,7 +3719,7 @@ async function renderAdminContent(){
           followers.forEach(function(f){
             var isConn=f.is_connected;
             var isLive=f.use_live;
-            var pos=f.mode==='fixed'?(f.fixed_contracts||1)+'ct fixed':Math.max(1,Math.round(8*(f.multiplier||0.25)))+'ct ('+(Math.round((f.multiplier||0.25)*100))+'%)';
+            var pos=(f.fixed_contracts||1)+'ct';
             var bal=f.account_balance||0;
             h+='<tr>';
             h+='<td style="color:var(--white);font-weight:600">'+(f.name||f.email)+'</td>';
@@ -3797,7 +3790,7 @@ function renderInvestorTable(investors, mode){
     var isLive=inv.use_live;
     var liveSince=inv.live_since?(inv.live_since||'').split('T')[0]:'—';
     var pnl=inv.stats?inv.stats.total_pnl:0;
-    var pos=inv.mode==='fixed'?inv.fixed_contracts+'ct fixed':Math.max(1,Math.round(8*(inv.multiplier||0.25)))+'ct ('+(Math.round((inv.multiplier||0.25)*100))+'%)';
+    var pos=(inv.fixed_contracts||1)+'ct';
     h+='<tr>';
     h+='<td style="color:var(--muted)">#'+inv.id+'</td>';
     h+='<td style="color:var(--white);font-weight:600">'+(inv.name||'—')+'</td>';
