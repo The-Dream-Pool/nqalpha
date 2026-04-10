@@ -2081,7 +2081,7 @@ h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));b
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.3),transparent)"></div>';
 h+='<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:18px;padding:14px 16px;background:rgba(0,232,162,.02);border:1px solid rgba(0,232,162,.08);border-radius:10px">';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1.5px;margin-bottom:8px">HOW IT WORKS</div>';
-h+='Choose how many contracts NQ Alpha trades on your account per signal. Check the Account Requirements table to see the minimum balance for your contract size.</div>';
+h+='Choose how many contracts NQ Alpha trades on your account per signal. Check the Recommended Sizing table for suggested balances per contract size.</div>';
 h+='<div class="field"><label>CONTRACTS PER TRADE (1–50)</label><input id="posFixed" type="number" min="1" max="50" value="'+(pos.fixed_contracts||1)+'" oninput="updatePosPreview()"></div>';
 h+='<div id="posPreview" style="font-family:var(--mono);font-size:12px;color:var(--green);margin-bottom:16px;padding:12px 16px;background:rgba(0,232,162,.06);border-radius:10px;border:1px solid rgba(0,232,162,.15)"></div>';
 h+='<div id="posErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div>';
@@ -2091,12 +2091,12 @@ h+='</div></div>';
 
 // ── RIGHT: CONTRACT REQUIREMENTS ──
 h+='<div style="display:flex;flex-direction:column">';
-h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:20px">📊</div><div style="font-size:18px;font-weight:700;color:var(--white)">Account Requirements</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.12);border-radius:5px">MNQ</div></div>';
-h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Minimum balance required per contract size</div>';
+h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:20px">📊</div><div style="font-size:18px;font-weight:700;color:var(--white)">Recommended Sizing</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.12);border-radius:5px">MNQ</div></div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Suggested balance per contract size · not financial advice</div>';
 h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;overflow:hidden;position:relative;transition:border-color .3s;flex:1;display:flex;flex-direction:column" onmouseover="this.style.borderColor=\'rgba(0,196,255,.15)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,196,255,.3),transparent)"></div>';
 h+='<table style="width:100%;font-family:var(--mono);border-collapse:collapse">';
-h+='<thead><tr><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">CONTRACTS</th><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">MIN. BALANCE</th></tr></thead>';
+h+='<thead><tr><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">CONTRACTS</th><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">REC. BALANCE</th></tr></thead>';
 h+='<tbody>';
 var reqData=[{c:1,b:3000},{c:2,b:6000},{c:3,b:10000},{c:4,b:13000},{c:5,b:16000},{c:6,b:19000},{c:7,b:22000},{c:8,b:25000}];
 var effContracts=pos.fixed_contracts||1;
@@ -2111,7 +2111,7 @@ reqData.forEach(function(r){
   h+="</tr>";
 });
 h+='</tbody></table>';
-h+='<div style="margin-top:auto;padding:14px 20px;border-top:1px solid var(--bd);background:rgba(10,16,24,.3);display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)">Your setting: <span style="color:var(--green);font-weight:700">'+effContracts+'x</span> <span style="color:var(--bd)">|</span> <span style="color:var(--cyan);font-weight:700">$'+(reqData.find(function(r){return r.c===effContracts;})||{b:3000}).b.toLocaleString()+'</span> minimum</div>';
+h+='<div style="margin-top:auto;padding:14px 20px;border-top:1px solid var(--bd);background:rgba(10,16,24,.3);display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)">Your setting: <span style="color:var(--green);font-weight:700">'+effContracts+'x</span> <span style="color:var(--bd)">|</span> <span style="color:var(--cyan);font-weight:700">$'+(reqData.find(function(r){return r.c===effContracts;})||{b:3000}).b.toLocaleString()+'</span> recommended</div>';
 h+='</div></div>';
 
 h+='</div>'; // close pos-layout grid
