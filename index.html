@@ -49,6 +49,82 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 4
 .admin-wrap .how-box:hover{border-color:rgba(240,192,64,.15)!important;}
 .admin-wrap table tr:hover td{background:rgba(240,192,64,.015)!important;}
 .admin-wrap .btn:hover{border-color:var(--gold)!important;color:var(--gold)!important;}
+/* ── Master Account tab ───────────────────────────────────────────── */
+.ma-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;}
+.ma-title{font-size:24px;font-weight:700;color:var(--white);line-height:1.2;}
+.ma-subtitle{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.ma-refresh-btn{font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s;flex-shrink:0;}
+.ma-refresh-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.ma-card{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:16px;}
+.ma-card-danger{border-color:rgba(255,68,102,.2);}
+.ma-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:10px;}
+.ma-card-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;}
+.ma-card-desc{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.ma-badge{font-family:var(--mono);font-size:9px;color:var(--gold);background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);padding:5px 10px;border-radius:5px;letter-spacing:1px;flex-shrink:0;}
+
+.ma-mc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px;}
+.ma-mc-tile{background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px;position:relative;overflow:hidden;}
+.ma-mc-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+.ma-mc-label{font-family:var(--mono);font-size:9px;letter-spacing:1px;margin-bottom:4px;}
+.ma-mc-desc{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:10px;}
+.ma-mc-input{width:100%;background:#04080D;border:1px solid var(--bd);color:var(--white);padding:10px 12px;border-radius:6px;font-size:18px;font-weight:700;font-family:var(--mono);text-align:center;-webkit-appearance:none;-moz-appearance:textfield;box-sizing:border-box;}
+.ma-mc-input::-webkit-outer-spin-button,.ma-mc-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.ma-mc-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,192,64,.08);}
+.ma-mc-range{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;text-align:center;}
+
+.ma-save-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.ma-save-status{font-family:var(--mono);font-size:11px;color:var(--muted);}
+
+.ma-btn{font-family:var(--mono);font-size:11px;padding:12px 20px;border-radius:8px;cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s;border:1px solid;background:transparent;}
+.ma-btn-row{display:flex;flex-wrap:wrap;gap:10px;}
+.ma-btn-save{background:rgba(0,232,162,.08);border-color:rgba(0,232,162,.3);color:var(--green);padding:10px 20px;font-size:10px;}
+.ma-btn-save:hover{background:rgba(0,232,162,.15);border-color:var(--green);}
+.ma-btn-resume{background:rgba(0,232,162,.08);border-color:rgba(0,232,162,.3);color:var(--green);}
+.ma-btn-resume:hover{border-color:var(--green);background:rgba(0,232,162,.15);}
+.ma-btn-danger{background:rgba(255,68,102,.06);border-color:rgba(255,68,102,.3);color:var(--red);}
+.ma-btn-danger:hover{border-color:var(--red);background:rgba(255,68,102,.12);}
+.ma-btn-warn{background:rgba(240,192,64,.06);border-color:rgba(240,192,64,.3);color:var(--gold);}
+.ma-btn-warn:hover{border-color:var(--gold);background:rgba(240,192,64,.12);}
+
+.ma-danger-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.ma-danger-dot{width:8px;height:8px;border-radius:50%;background:var(--red);}
+
+.ma-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.ma-status-tile{background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px;}
+.ma-status-label{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;}
+.ma-status-val{font-size:20px;font-weight:700;font-family:var(--mono);}
+
+@media(max-width:768px){
+  .ma-header{margin-bottom:16px;gap:10px;}
+  .ma-title{font-size:20px;}
+  .ma-subtitle{font-size:11px;}
+  .ma-refresh-btn{font-size:9px;padding:7px 13px;}
+  .ma-card{padding:18px 16px;border-radius:12px;margin-bottom:12px;}
+  .ma-card-head{margin-bottom:6px;}
+  .ma-card-desc{font-size:11px;margin-bottom:14px;}
+  .ma-badge{font-size:8px;padding:4px 8px;}
+  .ma-mc-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .ma-mc-tile{padding:12px 10px;}
+  .ma-mc-input{font-size:20px;padding:12px 8px;}
+  .ma-mc-label{font-size:10px;}
+  .ma-mc-desc{font-size:9px;margin-bottom:8px;}
+  .ma-save-row{flex-direction:column;align-items:stretch;gap:8px;}
+  .ma-btn-save{width:100%;padding:14px;font-size:11px;}
+  .ma-save-status{text-align:center;}
+  .ma-btn-row{flex-direction:column;gap:8px;}
+  .ma-btn{width:100%;padding:14px;font-size:11px;}
+  .ma-status-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .ma-status-tile{padding:12px 8px;}
+  .ma-status-label{font-size:8px;}
+  .ma-status-val{font-size:16px;}
+}
+@media(max-width:359px){
+  .ma-mc-grid{grid-template-columns:1fr;}
+  .ma-mc-tile{padding:14px;}
+  .ma-mc-input{font-size:22px;}
+}
+
 .logo{display:flex;align-items:center;gap:12px;}.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(0,232,162,.4);animation:pulse 2s ease infinite;}.logo-text{font-size:18px;font-weight:800;color:var(--white);letter-spacing:-.5px;}.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-left:4px;}
 .btn{font-family:var(--mono);font-size:11px;padding:10px 28px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);cursor:pointer;transition:all .2s;}.btn:hover{border-color:var(--green);color:var(--green);}
 .btn-primary{background:linear-gradient(135deg,var(--green),#00c968);border:none;color:var(--bg);font-family:var(--font);font-weight:700;font-size:14px;padding:14px 36px;border-radius:10px;box-shadow:0 4px 20px rgba(0,232,162,.2);transition:all .2s;}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,232,162,.35);}
@@ -3085,10 +3161,10 @@ async function renderAdminContent(){
       var maVwapPaused = maStrat && maStrat.vwap_paused;
 
       // Header
-      h+='<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px">';
-      h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Account</div>';
-      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Master-only controls — followers are not affected by changes on this tab</div></div>';
-      h+='<button onclick="switchAdminTab(\'master_account\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.color=\'var(--gold)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='<div class="ma-header">';
+      h+='<div><div class="ma-title">Master Account</div>';
+      h+='<div class="ma-subtitle">Master-only controls — followers are not affected by changes on this tab</div></div>';
+      h+='<button class="ma-refresh-btn" onclick="switchAdminTab(\'master_account\')">↻ Refresh</button>';
       h+='</div>';
 
       // Status banners
@@ -3103,13 +3179,13 @@ async function renderAdminContent(){
       }
 
       // ── CONTRACT SIZES CARD ──
-      h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px">';
-      h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:10px">';
+      h+='<div class="ma-card">';
+      h+='<div class="ma-card-head">';
       h+='<div><div class="card-title" style="margin:0">CONTRACT SIZES</div>';
-      h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px" id="mcUpdatedAt">Loading…</div></div>';
-      h+='<div style="font-family:var(--mono);font-size:9px;color:var(--gold);background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);padding:5px 10px;border-radius:5px;letter-spacing:1px">MASTER ONLY</div>';
+      h+='<div class="ma-card-meta" id="mcUpdatedAt">Loading…</div></div>';
+      h+='<div class="ma-badge">MASTER ONLY</div>';
       h+='</div>';
-      h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Adjust how many contracts the master account trades per strategy. Changes take effect on the <span style="color:var(--white);font-weight:600">next signal</span> — no restart needed. Followers continue on their own fixed contract settings.</div>';
+      h+='<div class="ma-card-desc">Adjust how many contracts the master account trades per strategy. Changes take effect on the <span style="color:var(--white);font-weight:600">next signal</span> — no restart needed. Followers continue on their own fixed contract settings.</div>';
 
       if(!maMc){
         h+='<div style="padding:20px;text-align:center;color:var(--red);font-family:var(--mono);font-size:11px">Failed to load master contract settings</div>';
@@ -3123,21 +3199,21 @@ async function renderAdminContent(){
           {id:'VWAP25', label:'VWAP25', desc:'2.5σ · 40pt TP', color:'var(--gold)'},
           {id:'SMA25',  label:'SMA25',  desc:'2.5σ · 40pt TP', color:'var(--green)'}
         ];
-        h+='<div class="admin-grid-4" style="margin-bottom:16px">';
+        h+='<div class="ma-mc-grid">';
         STRATS.forEach(function(s){
           var curVal = (typeof mcVals[s.id]==='number') ? mcVals[s.id] : 4;
-          h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px;position:relative;overflow:hidden">';
-          h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+s.color+'"></div>';
-          h+='<div style="font-family:var(--mono);font-size:9px;color:'+s.color+';letter-spacing:1px;margin-bottom:4px">'+s.label+'</div>';
-          h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:10px">'+s.desc+'</div>';
-          h+='<input id="mc_'+s.id+'" type="number" min="'+mcMin+'" max="'+mcMax+'" step="1" value="'+curVal+'" style="width:100%;background:#04080D;border:1px solid var(--bd);color:var(--white);padding:10px 12px;border-radius:6px;font-size:18px;font-weight:700;font-family:var(--mono);text-align:center">';
-          h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;text-align:center">range: '+mcMin+'–'+mcMax+'</div>';
+          h+='<div class="ma-mc-tile">';
+          h+='<div class="ma-mc-bar" style="background:'+s.color+'"></div>';
+          h+='<div class="ma-mc-label" style="color:'+s.color+'">'+s.label+'</div>';
+          h+='<div class="ma-mc-desc">'+s.desc+'</div>';
+          h+='<input class="ma-mc-input" id="mc_'+s.id+'" type="number" inputmode="numeric" pattern="[0-9]*" min="'+mcMin+'" max="'+mcMax+'" step="1" value="'+curVal+'">';
+          h+='<div class="ma-mc-range">range: '+mcMin+'–'+mcMax+'</div>';
           h+='</div>';
         });
         h+='</div>';
-        h+='<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
-        h+='<button onclick="saveMasterContracts()" style="font-family:var(--mono);font-size:10px;padding:10px 20px;background:rgba(0,232,162,.08);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(0,232,162,.15)\';this.style.borderColor=\'var(--green)\'" onmouseout="this.style.background=\'rgba(0,232,162,.08)\';this.style.borderColor=\'rgba(0,232,162,.3)\'">💾 SAVE CONTRACTS</button>';
-        h+='<span id="mcStatus" style="font-family:var(--mono);font-size:11px;color:var(--muted)"></span>';
+        h+='<div class="ma-save-row">';
+        h+='<button class="ma-btn ma-btn-save" onclick="saveMasterContracts()">💾 SAVE CONTRACTS</button>';
+        h+='<span id="mcStatus" class="ma-save-status"></span>';
         h+='</div>';
         // Update timestamp
         setTimeout(function(){
@@ -3149,49 +3225,49 @@ async function renderAdminContent(){
       h+='</div>';
 
       // ── STRATEGY CONTROLS CARD ──
-      h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px">';
+      h+='<div class="ma-card">';
       h+='<div class="card-title" style="margin-bottom:6px">STRATEGY CONTROLS</div>';
-      h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Pause or resume the master bot entirely, or pause a single strategy family. Signals arriving while paused are dropped — existing positions are left alone.</div>';
-      h+='<div style="display:flex;flex-wrap:wrap;gap:10px">';
+      h+='<div class="ma-card-desc">Pause or resume the master bot entirely, or pause a single strategy family. Signals arriving while paused are dropped — existing positions are left alone.</div>';
+      h+='<div class="ma-btn-row">';
       // Master pause/resume
       if(maPaused){
-        h+='<button onclick="resumeTrading()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(0,232,162,.08);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.background=\'rgba(0,232,162,.15)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.3)\';this.style.background=\'rgba(0,232,162,.08)\'">▶ RESUME MASTER</button>';
+        h+='<button class="ma-btn ma-btn-resume" onclick="resumeTrading()">▶ RESUME MASTER</button>';
       } else {
-        h+='<button onclick="pauseTrading()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(255,68,102,.12)\'" onmouseout="this.style.borderColor=\'rgba(255,68,102,.3)\';this.style.background=\'rgba(255,68,102,.06)\'">⏸ PAUSE MASTER</button>';
+        h+='<button class="ma-btn ma-btn-danger" onclick="pauseTrading()">⏸ PAUSE MASTER</button>';
       }
       // SMA
       if(maSmaPaused){
-        h+='<button onclick="resumeSMA()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px">▶ RESUME SMA</button>';
+        h+='<button class="ma-btn ma-btn-resume" onclick="resumeSMA()">▶ RESUME SMA</button>';
       } else {
-        h+='<button onclick="pauseSMA()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;font-weight:700;letter-spacing:1px">⏸ PAUSE SMA</button>';
+        h+='<button class="ma-btn ma-btn-warn" onclick="pauseSMA()">⏸ PAUSE SMA</button>';
       }
       // VWAP
       if(maVwapPaused){
-        h+='<button onclick="resumeVWAP()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px">▶ RESUME VWAP</button>';
+        h+='<button class="ma-btn ma-btn-resume" onclick="resumeVWAP()">▶ RESUME VWAP</button>';
       } else {
-        h+='<button onclick="pauseVWAP()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;font-weight:700;letter-spacing:1px">⏸ PAUSE VWAP</button>';
+        h+='<button class="ma-btn ma-btn-warn" onclick="pauseVWAP()">⏸ PAUSE VWAP</button>';
       }
       h+='</div>';
       h+='</div>';
 
       // ── DANGER ZONE CARD ──
-      h+='<div style="background:var(--sf);border:1px solid rgba(255,68,102,.2);border-radius:14px;padding:24px;margin-bottom:20px">';
-      h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div><div class="card-title" style="margin:0;color:var(--red)">DANGER ZONE</div></div>';
-      h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Immediate account-wide actions. <span style="color:var(--red);font-weight:600">Flatten All</span> closes every open position on the master and all followers. <span style="color:var(--gold);font-weight:600">Reconcile P&L</span> re-computes trade results against broker fills.</div>';
-      h+='<div style="display:flex;flex-wrap:wrap;gap:10px">';
-      h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:11px;padding:12px 24px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(255,68,102,.18)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
-      h+='<button onclick="reconcileTrades()" id="reconcileBtn" style="font-family:var(--mono);font-size:11px;padding:12px 24px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'rgba(240,192,64,.08)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.background=\'transparent\'">⚡ RECONCILE P&L</button>';
+      h+='<div class="ma-card ma-card-danger">';
+      h+='<div class="ma-danger-head"><div class="ma-danger-dot"></div><div class="card-title" style="margin:0;color:var(--red)">DANGER ZONE</div></div>';
+      h+='<div class="ma-card-desc">Immediate account-wide actions. <span style="color:var(--red);font-weight:600">Flatten All</span> closes every open position on the master and all followers. <span style="color:var(--gold);font-weight:600">Reconcile P&L</span> re-computes trade results against broker fills.</div>';
+      h+='<div class="ma-btn-row">';
+      h+='<button class="ma-btn ma-btn-danger" onclick="confirmFlattenAll()">⚠ FLATTEN ALL</button>';
+      h+='<button class="ma-btn ma-btn-warn" id="reconcileBtn" onclick="reconcileTrades()">⚡ RECONCILE P&L</button>';
       h+='</div>';
       h+='</div>';
 
       // ── OPEN POSITIONS SUMMARY ──
       if(maHealth && maHealth.trades && (maHealth.trades.open_positions||0)>0){
-        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:20px">';
-        h+='<div class="card-title" style="margin-bottom:8px">LIVE MASTER STATUS</div>';
-        h+='<div style="display:flex;gap:24px;flex-wrap:wrap">';
-        h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">OPEN POSITIONS</div><div style="font-size:18px;font-weight:700;color:var(--cyan)">'+(maHealth.trades.open_positions||0)+'</div></div>';
-        h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">TRADES TODAY</div><div style="font-size:18px;font-weight:700;color:var(--white)">'+(maHealth.trades.today||0)+'</div></div>';
-        h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">ACTIVE FOLLOWERS</div><div style="font-size:18px;font-weight:700;color:var(--cyan)">'+((maHealth.investors||{}).connected||0)+'</div></div>';
+        h+='<div class="ma-card">';
+        h+='<div class="card-title" style="margin-bottom:12px">LIVE MASTER STATUS</div>';
+        h+='<div class="ma-status-grid">';
+        h+='<div class="ma-status-tile"><div class="ma-status-label">OPEN POSITIONS</div><div class="ma-status-val" style="color:var(--cyan)">'+(maHealth.trades.open_positions||0)+'</div></div>';
+        h+='<div class="ma-status-tile"><div class="ma-status-label">TRADES TODAY</div><div class="ma-status-val" style="color:var(--white)">'+(maHealth.trades.today||0)+'</div></div>';
+        h+='<div class="ma-status-tile"><div class="ma-status-label">ACTIVE FOLLOWERS</div><div class="ma-status-val" style="color:var(--cyan)">'+((maHealth.investors||{}).connected||0)+'</div></div>';
         h+='</div>';
         h+='</div>';
       }
