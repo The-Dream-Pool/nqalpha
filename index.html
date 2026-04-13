@@ -3047,14 +3047,14 @@ async function doFlattenAll(){
   if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">⏳</div><div style="font-family:var(--mono);font-size:12px;color:var(--muted)">Flattening all positions...</div></div></div>';
   try{
     var result=await adminApi('POST','/admin/flatten-all');
-    if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid rgba(0,232,162,.2);border-radius:16px;padding:40px;text-align:center;cursor:pointer" onclick="document.getElementById(\'flattenModal\').remove();switchAdminTab(\'master\')"><div style="font-size:32px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:8px">All Positions Flattened</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(result.message||'Done')+' — tap to close</div></div></div>';
+    if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid rgba(0,232,162,.2);border-radius:16px;padding:40px;text-align:center;cursor:pointer" onclick="document.getElementById(\'flattenModal\').remove();switchAdminTab(\'master_account\')"><div style="font-size:32px;margin-bottom:12px">✅</div><div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:8px">All Positions Flattened</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(result.message||'Done')+' — tap to close</div></div></div>';
   }catch(e){
     if(modal) modal.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="background:var(--sf);border:1px solid rgba(255,68,102,.2);border-radius:16px;padding:40px;text-align:center;cursor:pointer" onclick="document.getElementById(\'flattenModal\').remove()"><div style="font-size:32px;margin-bottom:12px">❌</div><div style="font-size:16px;font-weight:700;color:var(--red);margin-bottom:8px">Flatten Failed</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(e.message||'Unknown error')+' — tap to close</div></div></div>';
   }
 }
 
 function renderAdminTabs(){
-  var tabs=[{id:'health',l:'System Health'},{id:'master',l:'Master Trades'},{id:'daily',l:'Daily P&L'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'billing',l:'Billing'},{id:'pending',l:'Pending'},{id:'promos',l:'Promos'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'master_account',l:'Master Account'},{id:'master',l:'Master Trades'},{id:'daily',l:'Daily P&L'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'billing',l:'Billing'},{id:'pending',l:'Pending'},{id:'promos',l:'Promos'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold);background:linear-gradient(135deg,rgba(240,192,64,.08),rgba(240,192,64,.03));box-shadow:0 0 15px rgba(240,192,64,.05)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
@@ -3072,6 +3072,130 @@ async function renderAdminContent(){
     var inv=await adminApi('GET','/admin/investors');
     var investors=inv.investors||[];
     var h='';
+
+    if(adminTab==='master_account'){
+      // Fetch trading status + strategy pause state + current contract sizes
+      var maTrading={paused:false}, maStrat={sma_paused:false,vwap_paused:false}, maMc=null, maHealth=null;
+      try{ maTrading = await adminApi('GET','/admin/trading-status'); }catch(e){}
+      try{ maStrat = await adminApi('GET','/admin/strategy-status'); }catch(e){}
+      try{ maMc = await adminApi('GET','/admin/master-contracts'); }catch(e){}
+      try{ maHealth = await adminApi('GET','/admin/system-health'); }catch(e){}
+      var maPaused = maTrading && maTrading.paused;
+      var maSmaPaused = maStrat && maStrat.sma_paused;
+      var maVwapPaused = maStrat && maStrat.vwap_paused;
+
+      // Header
+      h+='<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px">';
+      h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Account</div>';
+      h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Master-only controls — followers are not affected by changes on this tab</div></div>';
+      h+='<button onclick="switchAdminTab(\'master_account\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.color=\'var(--gold)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+      h+='</div>';
+
+      // Status banners
+      if(maPaused){
+        h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:12px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);font-size:14px;font-weight:600;color:var(--red)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s ease infinite"></div>⏸ TRADING IS PAUSED — No signals will be executed</div>';
+      }
+      if(maSmaPaused){
+        h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;margin-bottom:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:600;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>⏸ SMA25 PAUSED — SMA signals will be ignored</div>';
+      }
+      if(maVwapPaused){
+        h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;margin-bottom:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:600;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>⏸ VWAP PAUSED — All VWAP signals will be ignored</div>';
+      }
+
+      // ── CONTRACT SIZES CARD ──
+      h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px">';
+      h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:10px">';
+      h+='<div><div class="card-title" style="margin:0">CONTRACT SIZES</div>';
+      h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px" id="mcUpdatedAt">Loading…</div></div>';
+      h+='<div style="font-family:var(--mono);font-size:9px;color:var(--gold);background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);padding:5px 10px;border-radius:5px;letter-spacing:1px">MASTER ONLY</div>';
+      h+='</div>';
+      h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Adjust how many contracts the master account trades per strategy. Changes take effect on the <span style="color:var(--white);font-weight:600">next signal</span> — no restart needed. Followers continue on their own fixed contract settings.</div>';
+
+      if(!maMc){
+        h+='<div style="padding:20px;text-align:center;color:var(--red);font-family:var(--mono);font-size:11px">Failed to load master contract settings</div>';
+      } else {
+        var mcVals = maMc.contracts || {};
+        var mcMin = maMc.min || 1;
+        var mcMax = maMc.max || 50;
+        var STRATS = [
+          {id:'VWAP30', label:'VWAP30', desc:'3.0σ · 75pt TP', color:'#00C4FF'},
+          {id:'VWAP28', label:'VWAP28', desc:'2.8σ · 60pt TP', color:'#B070FF'},
+          {id:'VWAP25', label:'VWAP25', desc:'2.5σ · 40pt TP', color:'var(--gold)'},
+          {id:'SMA25',  label:'SMA25',  desc:'2.5σ · 40pt TP', color:'var(--green)'}
+        ];
+        h+='<div class="admin-grid-4" style="margin-bottom:16px">';
+        STRATS.forEach(function(s){
+          var curVal = (typeof mcVals[s.id]==='number') ? mcVals[s.id] : 4;
+          h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px;position:relative;overflow:hidden">';
+          h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+s.color+'"></div>';
+          h+='<div style="font-family:var(--mono);font-size:9px;color:'+s.color+';letter-spacing:1px;margin-bottom:4px">'+s.label+'</div>';
+          h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:10px">'+s.desc+'</div>';
+          h+='<input id="mc_'+s.id+'" type="number" min="'+mcMin+'" max="'+mcMax+'" step="1" value="'+curVal+'" style="width:100%;background:#04080D;border:1px solid var(--bd);color:var(--white);padding:10px 12px;border-radius:6px;font-size:18px;font-weight:700;font-family:var(--mono);text-align:center">';
+          h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;text-align:center">range: '+mcMin+'–'+mcMax+'</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+        h+='<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
+        h+='<button onclick="saveMasterContracts()" style="font-family:var(--mono);font-size:10px;padding:10px 20px;background:rgba(0,232,162,.08);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(0,232,162,.15)\';this.style.borderColor=\'var(--green)\'" onmouseout="this.style.background=\'rgba(0,232,162,.08)\';this.style.borderColor=\'rgba(0,232,162,.3)\'">💾 SAVE CONTRACTS</button>';
+        h+='<span id="mcStatus" style="font-family:var(--mono);font-size:11px;color:var(--muted)"></span>';
+        h+='</div>';
+        // Update timestamp
+        setTimeout(function(){
+          var ts = mcVals.updated_at;
+          var el = document.getElementById('mcUpdatedAt');
+          if(el) el.textContent = ts ? ('Last updated '+new Date(ts).toLocaleString()) : 'Never updated';
+        }, 10);
+      }
+      h+='</div>';
+
+      // ── STRATEGY CONTROLS CARD ──
+      h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px">';
+      h+='<div class="card-title" style="margin-bottom:6px">STRATEGY CONTROLS</div>';
+      h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Pause or resume the master bot entirely, or pause a single strategy family. Signals arriving while paused are dropped — existing positions are left alone.</div>';
+      h+='<div style="display:flex;flex-wrap:wrap;gap:10px">';
+      // Master pause/resume
+      if(maPaused){
+        h+='<button onclick="resumeTrading()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(0,232,162,.08);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.background=\'rgba(0,232,162,.15)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.3)\';this.style.background=\'rgba(0,232,162,.08)\'">▶ RESUME MASTER</button>';
+      } else {
+        h+='<button onclick="pauseTrading()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(255,68,102,.12)\'" onmouseout="this.style.borderColor=\'rgba(255,68,102,.3)\';this.style.background=\'rgba(255,68,102,.06)\'">⏸ PAUSE MASTER</button>';
+      }
+      // SMA
+      if(maSmaPaused){
+        h+='<button onclick="resumeSMA()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px">▶ RESUME SMA</button>';
+      } else {
+        h+='<button onclick="pauseSMA()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;font-weight:700;letter-spacing:1px">⏸ PAUSE SMA</button>';
+      }
+      // VWAP
+      if(maVwapPaused){
+        h+='<button onclick="resumeVWAP()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;font-weight:700;letter-spacing:1px">▶ RESUME VWAP</button>';
+      } else {
+        h+='<button onclick="pauseVWAP()" style="font-family:var(--mono);font-size:11px;padding:12px 20px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;font-weight:700;letter-spacing:1px">⏸ PAUSE VWAP</button>';
+      }
+      h+='</div>';
+      h+='</div>';
+
+      // ── DANGER ZONE CARD ──
+      h+='<div style="background:var(--sf);border:1px solid rgba(255,68,102,.2);border-radius:14px;padding:24px;margin-bottom:20px">';
+      h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div><div class="card-title" style="margin:0;color:var(--red)">DANGER ZONE</div></div>';
+      h+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">Immediate account-wide actions. <span style="color:var(--red);font-weight:600">Flatten All</span> closes every open position on the master and all followers. <span style="color:var(--gold);font-weight:600">Reconcile P&L</span> re-computes trade results against broker fills.</div>';
+      h+='<div style="display:flex;flex-wrap:wrap;gap:10px">';
+      h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:11px;padding:12px 24px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.background=\'rgba(255,68,102,.18)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
+      h+='<button onclick="reconcileTrades()" id="reconcileBtn" style="font-family:var(--mono);font-size:11px;padding:12px 24px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'rgba(240,192,64,.08)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.background=\'transparent\'">⚡ RECONCILE P&L</button>';
+      h+='</div>';
+      h+='</div>';
+
+      // ── OPEN POSITIONS SUMMARY ──
+      if(maHealth && maHealth.trades && (maHealth.trades.open_positions||0)>0){
+        h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:20px">';
+        h+='<div class="card-title" style="margin-bottom:8px">LIVE MASTER STATUS</div>';
+        h+='<div style="display:flex;gap:24px;flex-wrap:wrap">';
+        h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">OPEN POSITIONS</div><div style="font-size:18px;font-weight:700;color:var(--cyan)">'+(maHealth.trades.open_positions||0)+'</div></div>';
+        h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">TRADES TODAY</div><div style="font-size:18px;font-weight:700;color:var(--white)">'+(maHealth.trades.today||0)+'</div></div>';
+        h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">ACTIVE FOLLOWERS</div><div style="font-size:18px;font-weight:700;color:var(--cyan)">'+((maHealth.investors||{}).connected||0)+'</div></div>';
+        h+='</div>';
+        h+='</div>';
+      }
+    }
 
     if(adminTab==='master'){
       var mt;
@@ -3098,9 +3222,7 @@ async function renderAdminContent(){
         h+='<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:16px">';
         h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Master Trades</div>';
         h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live trade log from the master account</div></div>';
-        h+='<div class="master-btns" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-        h+='<button onclick="confirmFlattenAll()" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:rgba(255,68,102,.08);border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s;text-align:center" onmouseover="this.style.background=\'rgba(255,68,102,.15)\';this.style.borderColor=\'var(--red)\'" onmouseout="this.style.background=\'rgba(255,68,102,.08)\';this.style.borderColor=\'rgba(255,68,102,.3)\'">⚠ FLATTEN ALL</button>';
-        h+='<button onclick="reconcileTrades()" id="reconcileBtn" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'rgba(240,192,64,.06)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.background=\'transparent\'">⚡ Reconcile P&L</button>';
+        h+='<div class="master-btns" style="display:flex;flex-wrap:wrap;gap:8px">';
         h+='<button onclick="generateMasterDailyCard(window._masterStats.todayPnl,window._masterStats.winRate,window._masterStats.totalTrades,window._masterStats.openPositions,window._masterStats.strats)" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↗ Share Daily</button>';
         h+='<button onclick="switchAdminTab(\'master\')" style="font-family:var(--mono);font-size:10px;padding:10px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s;text-align:center" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
         h+='</div>';
@@ -3586,36 +3708,11 @@ async function renderAdminContent(){
       var isSmaPaused=stratStatus&&stratStatus.sma_paused;
       var isVwapPaused=stratStatus&&stratStatus.vwap_paused;
 
-      // ── PAUSE BANNER ──
-      if(isPaused){
-        h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);font-size:14px;font-weight:600;color:var(--red)"><div style="width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s ease infinite"></div>⏸ TRADING IS PAUSED — No signals will be executed</div>';
-      }
-      if(isSmaPaused){
-        h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;margin-bottom:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:600;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>⏸ SMA25 PAUSED — SMA signals will be ignored</div>';
-      }
-      if(isVwapPaused){
-        h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;margin-bottom:12px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);font-size:13px;font-weight:600;color:var(--gold)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>⏸ VWAP PAUSED — All VWAP signals will be ignored</div>';
-      }
 
       h+='<div class="health-header" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px">';
       h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">System Health</div>';
       h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Live system status and copier monitoring</div></div>';
       h+='<div class="health-btns" style="display:flex;flex-wrap:wrap;gap:8px">';
-      if(isPaused){
-        h+='<button onclick="resumeTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.background=\'rgba(0,232,162,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,232,162,.3)\';this.style.background=\'transparent\'">▶ Resume</button>';
-      } else {
-        h+='<button onclick="pauseTrading()" id="pauseBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(255,68,102,.3);border-radius:8px;color:var(--red);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--red)\';this.style.background=\'rgba(255,68,102,.06)\'" onmouseout="this.style.borderColor=\'rgba(255,68,102,.3)\';this.style.background=\'transparent\'">⏸ Pause</button>';
-      }
-      if(isSmaPaused){
-        h+='<button onclick="resumeSMA()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer">▶ Resume SMA</button>';
-      } else {
-        h+='<button onclick="pauseSMA()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer">⏸ Pause SMA</button>';
-      }
-      if(isVwapPaused){
-        h+='<button onclick="resumeVWAP()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,232,162,.3);border-radius:8px;color:var(--green);cursor:pointer">▶ Resume VWAP</button>';
-      } else {
-        h+='<button onclick="pauseVWAP()" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(240,192,64,.3);border-radius:8px;color:var(--gold);cursor:pointer">⏸ Pause VWAP</button>';
-      }
       h+='<button onclick="refreshBalances()" id="balanceBtn" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid rgba(0,196,255,.3);border-radius:8px;color:var(--cyan);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.background=\'rgba(0,196,255,.06)\'" onmouseout="this.style.borderColor=\'rgba(0,196,255,.3)\';this.style.background=\'transparent\'">💰 Refresh Balances</button>';
       h+='<button onclick="switchAdminTab(\'health\')" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
       h+='</div>';
@@ -3891,6 +3988,34 @@ async function resumeTrading(){
     alert('▶ Trading RESUMED — bot is active');
     await switchAdminTab('health');
   }catch(e){alert('Error: '+e.message);}
+}
+
+async function saveMasterContracts(){
+  var STRATS=['VWAP30','VWAP28','VWAP25','SMA25'];
+  var payload={};
+  for(var i=0;i<STRATS.length;i++){
+    var s=STRATS[i];
+    var el=document.getElementById('mc_'+s);
+    if(!el) return;
+    var v=parseInt(el.value,10);
+    if(isNaN(v)||v<1||v>50){
+      var st=document.getElementById('mcStatus');
+      if(st){st.textContent=s+' must be 1–50';st.style.color='var(--red)';}
+      return;
+    }
+    payload[s]=v;
+  }
+  var summary=STRATS.map(function(s){return s+'='+payload[s];}).join(', ');
+  if(!confirm('Update master contracts to:\n'+summary+'\n\nFollowers will NOT be affected.'))return;
+  var st=document.getElementById('mcStatus');
+  if(st){st.textContent='Saving…';st.style.color='var(--muted)';}
+  try{
+    await adminApi('POST','/admin/master-contracts',payload);
+    if(st){st.textContent='✅ Saved — effective on next signal';st.style.color='var(--green)';}
+    setTimeout(function(){switchAdminTab('master_account');},800);
+  }catch(e){
+    if(st){st.textContent='Save failed: '+(e.message||'error');st.style.color='var(--red)';}
+  }
 }
 
 async function refreshBalances(){
