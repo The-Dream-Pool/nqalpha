@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NQ Alpha &mdash; Algorithmic Futures Trading</title>
 <meta name="description" content="Three proprietary mean-reversion strategies on Micro E-Mini Nasdaq futures. Fully automated. 5-year track record.">
@@ -4224,7 +4227,7 @@ if(_qs.includes('card=added')||_qs.includes('status=success')||_qs.includes('sta
 window.addEventListener('resize',function(){drawEqChart();if(dashTab==='pnl'){drawLiveEqChart();drawDailyPnlChart();}});
 </script>
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});if(typeof caches!=='undefined'){caches.keys().then(function(k){k.forEach(function(n){caches.delete(n);});});}}
 document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});
 document.addEventListener('gesturechange',function(e){e.preventDefault();},{passive:false});
 document.addEventListener('gestureend',function(e){e.preventDefault();},{passive:false});
