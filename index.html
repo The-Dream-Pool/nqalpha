@@ -42,6 +42,7 @@ input::placeholder{color:var(--muted);}
 @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes shimmer{0%{left:-100%}100%{left:200%}}
+@keyframes rwdShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .page{display:none;}.page.active{display:block;}
 nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:none;position:sticky;top:0;background:rgba(4,8,13,.92);backdrop-filter:blur(16px);z-index:100;}nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.2),rgba(0,196,255,.15),transparent);}
 .nav-admin::after{background:linear-gradient(90deg,transparent,rgba(240,192,64,.3),rgba(240,192,64,.15),transparent)!important;}
@@ -233,6 +234,11 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .login-form{padding:24px 20px;border-radius:14px;}.login-box{width:100%;}
   .conn-box{max-width:100%;padding:20px;}
   .ob-step{gap:12px;padding:12px;}
+  .rewards-bal-grid{grid-template-columns:1fr!important;}
+  .rewards-aff-grid{grid-template-columns:repeat(2,1fr)!important;}
+  .rewards-pioneer-grid{grid-template-columns:1fr!important;text-align:center;}
+  .rewards-pioneer-grid > div:last-child{text-align:center!important;}
+  .rewards-pioneer-grid > div:first-child{justify-content:center;}
 }
 @media(max-width:900px){
   .conn-grid-2col{grid-template-columns:1fr!important;}
@@ -1441,7 +1447,7 @@ var tabs;
 if(!inv.is_approved){
   tabs=[{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 } else {
-  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'billing',l:'Billing'},{id:'connect',l:'Connect'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'billing',l:'Billing'},{id:'connect',l:'Connect'},{id:'rewards',l:'Rewards'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 }
 var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
 document.getElementById('dashSide').innerHTML=h;
@@ -2575,6 +2581,140 @@ h+='<div class="how-item">• <strong>$1,000/month subscription starts when you 
 h+='<div class="how-item">• <strong>No charge if bot isn\'t profitable</strong> — subscription is skipped for months with zero or negative profit</div>';
 h+='<div class="how-item">• <strong>Cancel anytime</strong> — no lock-in contracts or cancellation fees</div>';
 h+='<div class="how-item">• <strong>Secure payments</strong> — all payments handled by Stripe (PCI compliant)</div>';
+h+='</div>';
+}
+if(dashTab==='rewards'){
+// ── HEADER ──
+h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:14px">';
+h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Rewards</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">Thank-yous for the members building this with us</div></div>';
+h+='<div style="display:inline-flex;align-items:center;gap:8px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.3);color:var(--cyan);padding:7px 14px;border-radius:8px;font-family:var(--mono);font-size:10px;letter-spacing:2px;font-weight:500">';
+h+='<span style="width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite"></span>COMING SOON</div>';
+h+='</div>';
+
+// ── COMPACT INFO CARD ──
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:18px 22px;margin-bottom:22px">';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:2.5px;margin-bottom:8px">\u25C6 MEMBER REWARDS PROGRAM</div>';
+h+='<div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.3">A program built for long-term members</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7">Credits toward performance fees, a laser-etched desk plaque at six months, and affiliate rewards for members who help grow the community. Launching soon \u2014 existing members start at their correct journey milestone on day one.</div>';
+h+='</div>';
+
+// ── CREDIT BALANCE ──
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:32px;opacity:.8">';
+h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap;gap:12px">';
+h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:10px">CREDIT BALANCE</div>';
+h+='<div style="font-size:36px;font-weight:800;color:var(--white);line-height:1;font-family:var(--mono)">$0.00</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:10px;line-height:1.6">Credits apply to performance fees \u00b7 never to the $2,500 entry fee</div></div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.2);padding:5px 10px;border-radius:5px;letter-spacing:1px;align-self:flex-start">LEDGER LIVE AT LAUNCH</div>';
+h+='</div>';
+h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" class="rewards-bal-grid">';
+h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px">';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">FROM AFFILIATES</div>';
+h+='<div style="font-size:18px;font-weight:700;color:var(--white);font-family:var(--mono)">$0.00</div></div>';
+h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px">';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">FROM MILESTONES</div>';
+h+='<div style="font-size:18px;font-weight:700;color:var(--white);font-family:var(--mono)">$0.00</div></div>';
+h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px">';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">PROMOTIONAL</div>';
+h+='<div style="font-size:18px;font-weight:700;color:var(--white);font-family:var(--mono)">$0.00</div></div>';
+h+='</div></div>';
+
+// ── AFFILIATE SECTION ──
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:2.5px;margin-bottom:16px">\u25C6 AFFILIATE TIERS \u00B7 5 LEVELS</div>';
+
+h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px" class="rewards-aff-grid">';
+
+var affTiers=[
+  {num:1,name:'Advocate',  color:'var(--green)',bgC:'rgba(0,232,162,.08)', bdC:'rgba(0,232,162,.3)', hvr:'rgba(0,232,162,.3)',  refs:'1 REFERRAL',  main:'$250',             sub:'$250 per ref \u00B7 1\u20133'},
+  {num:2,name:'Recruiter', color:'var(--cyan)', bgC:'rgba(0,196,255,.08)', bdC:'rgba(0,196,255,.3)', hvr:'rgba(0,196,255,.3)',  refs:'3 REFERRALS', main:'$750 total',       sub:'+ early theme unlock'},
+  {num:3,name:'Ambassador',color:'var(--gold)', bgC:'rgba(240,192,64,.08)',bdC:'rgba(240,192,64,.3)',hvr:'rgba(240,192,64,.3)', refs:'5 REFERRALS', main:'$1,750 total',     sub:'$500 per ref \u00B7 4\u20135'},
+  {num:4,name:'Partner',   color:'var(--cyan)', bgC:'rgba(0,196,255,.08)', bdC:'rgba(0,196,255,.3)', hvr:'rgba(0,196,255,.3)',  refs:'10 REFERRALS',main:'$5,500 + product', sub:'$750 per ref \u00B7 6+'}
+];
+
+affTiers.forEach(function(t){
+  h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px;transition:border-color .25s,transform .25s;position:relative;overflow:hidden" onmouseover="this.style.borderColor=\''+t.hvr+'\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.transform=\'none\'">';
+  h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">';
+  h+='<div style="width:24px;height:24px;border-radius:50%;background:'+t.bgC+';border:1px solid '+t.bdC+';color:'+t.color+';display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;flex-shrink:0">'+t.num+'</div>';
+  h+='<span style="font-size:13px;font-weight:700;color:var(--white)">'+t.name+'</span></div>';
+  h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">'+t.refs+'</div>';
+  h+='<div style="font-size:16px;font-weight:700;color:var(--white);font-family:var(--mono);margin-bottom:6px">'+t.main+'</div>';
+  h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.5px">'+t.sub+'</div>';
+  h+='</div>';
+});
+h+='</div>';
+
+// Pioneer
+h+='<div style="background:linear-gradient(135deg,#0A0A0A,#1A1510);border:1px solid rgba(240,192,64,.25);border-radius:14px;padding:22px 24px;margin-bottom:36px;position:relative;overflow:hidden;transition:border-color .3s" onmouseover="this.style.borderColor=\'rgba(240,192,64,.5)\'" onmouseout="this.style.borderColor=\'rgba(240,192,64,.25)\'">';
+h+='<div style="position:absolute;top:-50%;right:-10%;width:340px;height:340px;background:radial-gradient(circle,rgba(240,192,64,.07),transparent 60%);pointer-events:none"></div>';
+h+='<div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(240,192,64,.6),transparent);background-size:200% 100%;animation:rwdShimmer 4s ease infinite"></div>';
+h+='<div style="display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;position:relative" class="rewards-pioneer-grid">';
+h+='<div style="display:flex;align-items:center;gap:12px">';
+h+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.4);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:700;flex-shrink:0">5</div>';
+h+='<span style="font-size:16px;font-weight:700;color:var(--gold);letter-spacing:2px">PIONEER</span>';
+h+='</div>';
+h+='<div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:rgba(240,192,64,.65);letter-spacing:1.5px;margin-bottom:5px">20 REFERRALS</div>';
+h+='<div style="font-size:13px;color:#C8B890;line-height:1.7">Zero performance fees for life \u00B7 all current and future products unlocked \u00B7 permanent name on the founders page</div>';
+h+='</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:rgba(240,192,64,.55);text-align:right;white-space:nowrap;letter-spacing:1px;line-height:1.8">$750 PER REF<br>6\u201319<br><span style="color:rgba(240,192,64,.35)">\u00B7 credit halts at 20</span></div>';
+h+='</div></div>';
+
+// ── JOURNEY SECTION ──
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:2.5px;margin-bottom:16px">\u25C6 YOUR JOURNEY \u00B7 7 MILESTONES \u00B7 WEEK 1 TO YEAR 2</div>';
+h+='<div style="position:relative;padding-left:28px;margin-bottom:36px">';
+h+='<div style="position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,rgba(0,196,255,.4),rgba(0,232,162,.3),var(--bd),rgba(240,192,64,.5))"></div>';
+
+var journeyStops=[
+  {label:'WEEK 1', color:'var(--cyan)',  alpha:'rgba(0,196,255,.3)', title:'Founder\'s welcome video',
+   desc:'A 5-minute welcome video from the founder plays on your first portal login. What the bot does, what to expect in the first 90 days, and a personal thank-you.'},
+  {label:'DAY 30', color:'var(--green)', alpha:'rgba(0,232,162,.3)', title:'Futures 101 study guide',
+   desc:'Members-only interactive guide covering how futures work \u2014 contract specs, tick values, margin, session hours, rollover mechanics, and the language every serious futures trader needs to know.'},
+  {label:'DAY 90', color:'var(--cyan)',  alpha:'rgba(0,196,255,.3)', title:'Full premium card set + themes',
+   desc:'Bullion and Emerald share cards join your Minimalist. Portal theme switcher goes live with Midnight, Bullion, and Emerald.'},
+  {label:'DAY 180',color:'var(--green)', alpha:'rgba(0,232,162,.3)', title:'Desk plaque &amp; $1,000 credit',
+   desc:'Laser-etched black aluminum plaque shipped to your door with your name and membership date. $1,000 credit applied to your performance fees.'},
+  {label:'DAY 270',color:'var(--cyan)',  alpha:'rgba(0,196,255,.3)', title:'$1,500 fee credit',
+   desc:'$1,500 credit applied to your performance fees. A major discount as you approach your first year.'},
+  {label:'DAY 365',color:'var(--green)', alpha:'rgba(0,232,162,.3)', title:'$2,000 credit + cross-product unlock',
+   desc:'$2,000 credit applied to your performance fees, plus the $2,500 entry fee waived on the other product (MES if you have MNQ, or vice versa). Year one, fully settled.'},
+  {label:'YEAR 2', color:'var(--gold)',  alpha:'rgba(240,192,64,.4)',title:'Founders Circle',
+   desc:'Permanent founding-member status \u00B7 gold plaque refresh shipped to your door \u00B7 name on the founders page \u00B7 strategic input channel with the founder.',
+   gold:true}
+];
+
+journeyStops.forEach(function(s,i){
+  var isGold=s.gold===true;
+  var isLast=(i===journeyStops.length-1);
+  var cardBg=isGold?'linear-gradient(135deg,var(--sf),rgba(26,21,16,.8))':'var(--sf)';
+  var cardBd=isGold?'rgba(240,192,64,.15)':'var(--bd)';
+  var titleColor=isGold?'var(--gold)':'var(--white)';
+  var titleStyle=isGold?';letter-spacing:.5px':'';
+  var comingStyle=isGold?'color:var(--gold);background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2)':'color:var(--muted);background:rgba(22,32,48,.6)';
+  var dotShadow=isGold?';box-shadow:0 0 12px rgba(240,192,64,.3)':'';
+
+  h+='<div style="position:relative;margin-bottom:'+(isLast?'0':'14px')+'">';
+  h+='<div style="position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid '+s.color+';display:flex;align-items:center;justify-content:center'+dotShadow+'">';
+  h+='<div style="width:6px;height:6px;border-radius:50%;background:'+s.color+'"></div></div>';
+  h+='<div style="background:'+cardBg+';border:1px solid '+cardBd+';border-radius:12px;padding:16px 18px;transition:border-color .2s;position:relative;overflow:hidden" onmouseover="this.style.borderColor=\''+s.alpha+'\'" onmouseout="this.style.borderColor=\''+cardBd+'\'">';
+  if(isGold){
+    h+='<div style="position:absolute;top:-30%;right:-5%;width:240px;height:240px;background:radial-gradient(circle,rgba(240,192,64,.06),transparent 60%);pointer-events:none"></div>';
+  }
+  h+='<div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">';
+  h+='<div style="flex:1;min-width:220px">';
+  h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;flex-wrap:wrap">';
+  h+='<span style="font-family:var(--mono);font-size:10px;color:'+s.color+';letter-spacing:1.5px;font-weight:500">'+s.label+'</span>';
+  h+='<span style="font-size:14px;font-weight:700;color:'+titleColor+titleStyle+'">'+s.title+'</span>';
+  h+='</div>';
+  h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7">'+s.desc+'</div>';
+  h+='</div>';
+  h+='<div style="font-family:var(--mono);font-size:8px;'+comingStyle+';letter-spacing:1.5px;padding:4px 9px;border-radius:4px;white-space:nowrap">COMING SOON</div>';
+  h+='</div></div></div>';
+});
+h+='</div>';
+
+// ── FOOTER (with grandfathering note) ──
+h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">';
+h+='<span style="color:var(--green);letter-spacing:1.5px">\u25C6 AT LAUNCH:</span> Existing members start at their correct journey milestone automatically. <span style="color:var(--cyan);font-weight:500">Already told friends about NQ Alpha?</span> You\'ll be grandfathered in \u2014 reach out after launch and we\'ll credit you for every qualifying signup you drove. Going forward, your unique referral link appears in this tab. All credits post 30 days after the referee\'s paid-membership start and apply only to performance fees, never to the $2,500 entry fee.';
 h+='</div>';
 }
 if(dashTab==='help'){
