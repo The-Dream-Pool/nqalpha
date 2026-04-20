@@ -1686,14 +1686,8 @@ h+='</div>';
 }
 
 h+='</div>'; // close onboarding container
-} else {
-// All done — show a compact success bar
-h+='<div style="display:flex;align-items:center;gap:12px;padding:14px 20px;background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.12);border-radius:10px;margin-bottom:24px">';
-h+='<div style="width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#04080D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
-h+='<div style="font-size:13px;font-weight:600;color:var(--green)">Setup Complete</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted)">— Your account is fully configured and copying trades</div>';
-h+='</div>';
 }
+// Setup Complete banner removed — once onboarded, go straight to dashboard content
 
 h+='<div style="position:relative;margin-bottom:28px">';
 h+='<div style="position:absolute;top:-20px;right:0;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,162,.03),transparent 70%);pointer-events:none"></div>';
@@ -2407,7 +2401,7 @@ var isPaid=billingData&&billingData.is_paid;
 var hasProduct=hasMnq||hasMes;
 
 h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:8px">Billing & Access</div>';
-h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Manage your product access and subscription</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:24px">Manage your product access and monthly contract fees</div>';
 
 // ── STATUS BANNER ──
 if(isPaid&&trialActive){
@@ -2415,7 +2409,7 @@ h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;borde
 } else if(isPaid&&subStatus==='active'){
 h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Active subscription</div>';
 } else if(isPaid){
-h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Product access active — subscription starts when you go live</div>';
+h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.2);font-size:13px;font-weight:500;color:var(--green)"><div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>Product access active — contract billing starts when you go live</div>';
 } else if(subStatus==='past_due'){
 h+='<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-radius:12px;margin-bottom:24px;background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.15);font-size:13px;font-weight:500;color:var(--red)"><div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>Payment past due — please update your payment method</div>';
 } else {
@@ -2559,14 +2553,14 @@ h+='<div style="display:flex;align-items:center;justify-content:space-between">'
 h+='<div style="display:flex;align-items:center;gap:14px">';
 h+='<div style="background:linear-gradient(135deg,#1a1f3c,#2d3561);border-radius:8px;padding:8px 14px"><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px">'+(SESSION.cardBrand||'CARD').toUpperCase()+'</span></div>';
 h+='<div><div style="font-family:var(--mono);font-size:14px;color:var(--white);letter-spacing:2px">•••• •••• •••• '+(SESSION.cardLast4||'')+'</div>';
-h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Expires '+(SESSION.cardExp||'')+' · Used for monthly subscription</div></div></div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">Expires '+(SESSION.cardExp||'')+' · Used for monthly contract fees</div></div></div>';
 h+='<button onclick="setupPaymentMethod()" style="padding:8px 18px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--cyan)\';this.style.color=\'var(--cyan)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--text)\'">Update</button>';
 h+='</div>';
 } else {
 h+='<div style="text-align:center;padding:8px 0">';
 h+='<div style="font-size:24px;margin-bottom:10px">💳</div>';
 h+='<div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px">Add a Payment Method</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Required before switching to Live mode. Your card will be charged automatically based on your subscription plan.</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.7">Required before switching to Live mode. Your card will be charged at the end of each 30-day cycle based on the highest number of contracts used.</div>';
 h+='<button onclick="setupPaymentMethod()" style="padding:12px 32px;background:linear-gradient(135deg,var(--green),#00c968);border:none;border-radius:10px;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(0,232,162,.2);transition:all .2s" onmouseover="this.style.transform=\'translateY(-1px)\'" onmouseout="this.style.transform=\'none\'">Add Card</button>';
 h+='</div>';
 }
@@ -2602,10 +2596,11 @@ h+='</div>';
 
 // ── HOW IT WORKS ──
 h+='<div class="how-box"><div class="how-title">HOW IT WORKS</div>';
-h+='<div class="how-item">• <strong>$2,500 one-time</strong> for MNQ access — unlocks the trading system</div>';
+h+='<div class="how-item">• <strong>$2,500 one-time</strong> for MNQ access — unlocks the trading system (per product)</div>';
 h+='<div class="how-item">• <strong>Demo mode is free</strong> — connect Tradovate in demo to test with paper money at no cost</div>';
-h+='<div class="how-item">• <strong>$1,000/month subscription starts when you go live</strong> — first charge 30 days after connecting. If you disconnect early, the $1,000 is still owed.</div>';
-h+='<div class="how-item">• <strong>No charge if bot isn\'t profitable</strong> — subscription is skipped for months with zero or negative profit</div>';
+h+='<div class="how-item">• <strong>$1,000 per contract, per 30 days</strong> — billing is based on the highest number of contracts you use in each 30-day cycle. Use 3 contracts? $3,000. Use 1? $1,000.</div>';
+h+='<div class="how-item">• <strong>Individual 30-day cycles</strong> — your first charge is 30 days after going live, and each cycle runs 30 days from your last invoice — no calendar-month pro-ration</div>';
+h+='<div class="how-item">• <strong>No trades, no charge</strong> — if the bot doesn\'t place a trade during your cycle (paused, disconnected, etc.), you pay $0</div>';
 h+='<div class="how-item">• <strong>Cancel anytime</strong> — no lock-in contracts or cancellation fees</div>';
 h+='<div class="how-item">• <strong>Secure payments</strong> — all payments handled by Stripe (PCI compliant)</div>';
 h+='</div>';
@@ -2623,15 +2618,15 @@ h+='</div>';
 h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:18px 22px;margin-bottom:22px">';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:2.5px;margin-bottom:8px">\u25C6 MEMBER REWARDS PROGRAM</div>';
 h+='<div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.3">A program built for long-term members</div>';
-h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7">Credits toward performance fees, a laser-etched desk plaque at six months, and affiliate rewards for members who help grow the community. Launching soon \u2014 existing members start at their correct journey milestone on day one.</div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7">Credits toward your monthly contract fees, a laser-etched desk plaque at six months, and affiliate rewards for members who help grow the community. Launching soon \u2014 existing members start at their correct journey milestone on day one.</div>';
 h+='</div>';
 
 // ── CREDIT BALANCE ──
-h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:32px;opacity:.8">';
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:12px;opacity:.8">';
 h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;flex-wrap:wrap;gap:12px">';
 h+='<div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:10px">CREDIT BALANCE</div>';
 h+='<div style="font-size:36px;font-weight:800;color:var(--white);line-height:1;font-family:var(--mono)">$0.00</div>';
-h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:10px;line-height:1.6">Credits apply to performance fees \u00b7 never to the $2,500 entry fee</div></div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:10px;line-height:1.6">Credits apply to monthly contract fees \u00b7 never to the $2,500 entry fee</div></div>';
 h+='<div style="font-family:var(--mono);font-size:9px;color:var(--cyan);background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.2);padding:5px 10px;border-radius:5px;letter-spacing:1px;align-self:flex-start">LEDGER LIVE AT LAUNCH</div>';
 h+='</div>';
 h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" class="rewards-bal-grid">';
@@ -2645,6 +2640,12 @@ h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-r
 h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">PROMOTIONAL</div>';
 h+='<div style="font-size:18px;font-weight:700;color:var(--white);font-family:var(--mono)">$0.00</div></div>';
 h+='</div></div>';
+
+// ── HOW CREDITS WORK (contextual note) ──
+h+='<div style="background:rgba(0,196,255,.03);border:1px solid rgba(0,196,255,.12);border-radius:10px;padding:12px 16px;margin-bottom:32px;display:flex;align-items:flex-start;gap:10px">';
+h+='<div style="width:4px;align-self:stretch;background:rgba(0,196,255,.4);border-radius:2px;flex-shrink:0"></div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--text);line-height:1.7"><span style="color:var(--cyan);font-weight:500">How credits work:</span> Credits apply automatically to your next 30-day contract invoice. <span style="color:var(--white)">$1,000 covers one contract for one cycle.</span> Any leftover credit rolls to the next cycle until exhausted.</div>';
+h+='</div>';
 
 // ── AFFILIATE SECTION ──
 h+='<div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:2.5px;margin-bottom:16px">\u25C6 AFFILIATE TIERS \u00B7 5 LEVELS</div>';
@@ -2681,7 +2682,7 @@ h+='<span style="font-size:16px;font-weight:700;color:var(--gold);letter-spacing
 h+='</div>';
 h+='<div>';
 h+='<div style="font-family:var(--mono);font-size:9px;color:rgba(240,192,64,.65);letter-spacing:1.5px;margin-bottom:5px">20 REFERRALS</div>';
-h+='<div style="font-size:13px;color:#C8B890;line-height:1.7">Zero performance fees for life \u00B7 all current and future products unlocked \u00B7 permanent name on the founders page</div>';
+h+='<div style="font-size:13px;color:#C8B890;line-height:1.7">Zero contract fees for life \u00B7 all current and future products unlocked \u00B7 permanent name on the founders page</div>';
 h+='</div>';
 h+='<div style="font-family:var(--mono);font-size:9px;color:rgba(240,192,64,.55);text-align:right;white-space:nowrap;letter-spacing:1px;line-height:1.8">$750 PER REF<br>6\u201319<br><span style="color:rgba(240,192,64,.35)">\u00B7 credit halts at 20</span></div>';
 h+='</div></div>';
@@ -2699,11 +2700,11 @@ var journeyStops=[
   {label:'DAY 90', color:'var(--cyan)',  alpha:'rgba(0,196,255,.3)', title:'Full premium card set + themes',
    desc:'Bullion and Emerald share cards join your Minimalist. Portal theme switcher goes live with Midnight, Bullion, and Emerald.'},
   {label:'DAY 180',color:'var(--green)', alpha:'rgba(0,232,162,.3)', title:'Desk plaque &amp; $1,000 credit',
-   desc:'Laser-etched black aluminum plaque shipped to your door with your name and membership date. $1,000 credit applied to your performance fees.'},
+   desc:'Laser-etched black aluminum plaque shipped to your door with your name and membership date. $1,000 credit applied to your monthly contract fees.'},
   {label:'DAY 270',color:'var(--cyan)',  alpha:'rgba(0,196,255,.3)', title:'$1,500 fee credit',
-   desc:'$1,500 credit applied to your performance fees. A major discount as you approach your first year.'},
+   desc:'$1,500 credit applied to your monthly contract fees. A major discount as you approach your first year.'},
   {label:'DAY 365',color:'var(--green)', alpha:'rgba(0,232,162,.3)', title:'$2,000 credit + cross-product unlock',
-   desc:'$2,000 credit applied to your performance fees, plus the $2,500 entry fee waived on the other product (MES if you have MNQ, or vice versa). Year one, fully settled.'},
+   desc:'$2,000 credit applied to your monthly contract fees, plus the $2,500 entry fee waived on the other product (MES if you have MNQ, or vice versa). Year one, fully settled.'},
   {label:'YEAR 2', color:'var(--gold)',  alpha:'rgba(240,192,64,.4)',title:'Founders Circle',
    desc:'Permanent founding-member status \u00B7 gold plaque refresh shipped to your door \u00B7 name on the founders page \u00B7 strategic input channel with the founder.',
    gold:true}
@@ -2741,7 +2742,7 @@ h+='</div>';
 
 // ── FOOTER (with grandfathering note) ──
 h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">';
-h+='<span style="color:var(--green);letter-spacing:1.5px">\u25C6 AT LAUNCH:</span> Existing members start at their correct journey milestone automatically. <span style="color:var(--cyan);font-weight:500">Already told friends about NQ Alpha?</span> You\'ll be grandfathered in \u2014 reach out after launch and we\'ll credit you for every qualifying signup you drove. Going forward, your unique referral link appears in this tab. All credits post 30 days after the referee\'s paid-membership start and apply only to performance fees, never to the $2,500 entry fee.';
+h+='<span style="color:var(--green);letter-spacing:1.5px">\u25C6 AT LAUNCH:</span> Existing members start at their correct journey milestone automatically. <span style="color:var(--cyan);font-weight:500">Already told friends about NQ Alpha?</span> You\'ll be grandfathered in \u2014 reach out after launch and we\'ll credit you for every qualifying signup you drove. Going forward, your unique referral link appears in this tab. All credits post 30 days after the referee\'s paid-membership start and apply only to monthly contract fees, never to the $2,500 entry fee.';
 h+='</div>';
 }
 if(dashTab==='help'){
@@ -2778,12 +2779,13 @@ var faqs=[
 {q:'Do I need a funded Tradovate account?',a:'For <strong>Demo mode</strong>, no — Tradovate provides a simulated account with paper money. For <strong>Live mode</strong>, yes — you\'ll need a funded account with enough margin to cover your position size. Check with Tradovate for their current margin requirements on MNQ contracts.'},
 ]},
 {cat:'Billing & Fees',color:'var(--cyan)',items:[
-{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) A $1,000/month flat subscription</strong> that starts automatically when you connect a live Tradovate account. Your first charge is 30 days after going live — giving you time to see profits before paying. Demo mode is completely free — test as long as you want. If the bot has zero or negative profit in a given month, you won\'t be charged.'},
+{q:'How does billing work?',a:'NQ Alpha has two components: <strong>1) A one-time access fee</strong> of $2,500 per product (MNQ and/or MES — $5,000 for both). <strong>2) $1,000 per contract, per 30-day cycle</strong>, billed based on the highest number of contracts you use during that cycle. If you run 3 contracts, you pay $3,000. If you run 1, you pay $1,000. Your first charge hits 30 days after going live, and each cycle runs 30 days from your last invoice. Demo mode is completely free — test as long as you want. If the bot doesn\'t place a trade during your 30-day cycle, you pay nothing.'},
 {q:'What are the one-time product fees?',a:'Each product (MNQ or MES) requires a <strong>$2,500 one-time access fee</strong> to unlock. You can purchase one or both. This fee grants you permanent access to that product\'s trading strategies. The $5,000 bundle gets you both MNQ and MES access.'},
-{q:'What if the bot loses money?',a:'If the bot has zero or negative profit for a billing month, <strong>you don\'t pay anything</strong> for that month. You only pay the $1,000 subscription when the bot is profitable. We believe in aligning our success with yours.'},
-{q:'What happens if I disconnect early?',a:'If you disconnect your live Tradovate account at any point, the <strong>$1,000 subscription fee is still owed</strong> and will be charged immediately to your card on file. This applies whether you disconnect on day 1 or day 29. After the first 30 days, your subscription renews monthly and you can cancel anytime with no additional charges.'},
-{q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account and cancel your subscription at any time. The one-time product access fees are non-refundable. There are no lock-in contracts or cancellation fees on the monthly subscription.'},
-{q:'Do you offer promo codes?',a:'Yes! If you have a promo code, you can apply it in the <strong>Billing</strong> tab. Promos can include free product access, subscription discounts, or both. Each investor can only use one promo code.'},
+{q:'What if the bot doesn\'t trade during my cycle?',a:'If there are no trades placed on your account during a 30-day cycle — whether because the bot was paused, your Tradovate was disconnected, or any other reason — <strong>you don\'t pay anything</strong> for that cycle. You only pay for contracts you actually used.'},
+{q:'How is the contract count determined?',a:'Your bill is based on the <strong>highest number of contracts</strong> used on any single trade within your 30-day cycle. If you traded 1 contract on most days but scaled to 3 contracts on one trade, you\'re billed for 3 contracts ($3,000) that cycle. You can adjust your max contract setting at any time from the Connect tab.'},
+{q:'What happens if I disconnect early?',a:'If you disconnect your Tradovate account mid-cycle, you\'re billed only for the highest number of contracts you actually used during that cycle. Disconnect before placing any trades? You pay $0. There are no penalties or "still owed" fees — you only pay for what you used.'},
+{q:'Can I cancel anytime?',a:'Yes. You can disconnect your Tradovate account at any time. The one-time product access fees are non-refundable, but there are no lock-in contracts or cancellation fees on the monthly billing. You only ever pay for contracts you actually used.'},
+{q:'Do you offer promo codes?',a:'Yes! If you have a promo code, you can apply it in the <strong>Billing</strong> tab. Promos can include free product access, contract fee credits, or both. Each investor can only use one promo code.'},
 {q:'Is my payment information secure?',a:'All payments are handled by <strong>Stripe</strong>, a PCI-compliant payment processor. NQ Alpha never sees or stores your full card number. All checkout happens securely through Stripe\'s hosted payment page.'},
 ]},
 {cat:'Account & Support',color:'var(--gold)',items:[
