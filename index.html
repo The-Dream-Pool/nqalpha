@@ -1586,6 +1586,12 @@ return; // Don't render the rest of the dashboard
 if(dashTab==='overview'){
 var mp=stats.month_pnl||0;
 
+// ── FETCH DASHBOARD DATA (for personal equity curve) ──
+var ovDash;
+try{ ovDash = await apiCall('GET','/investor/dashboard'); }
+catch(e){ ovDash = {stats:{},equity_curve:[],daily_pnl:[],open_positions:[]}; }
+var ovEqCurve = ovDash.equity_curve||[];
+
 // ── ONBOARDING WALKTHROUGH ──
 var ob1=true; // Account created (always true if they're here)
 var ob2=!!profile.is_approved;
@@ -1737,8 +1743,29 @@ h+='</div>';
 
 h+='</div>';
 
-// 4. Strategy chart
-h+='<div class="dash-card" style="position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(0,232,162,.5),rgba(0,196,255,.3),transparent)"></div><div class="dc-label" style="margin-bottom:14px">PORTFOLIO PERFORMANCE (5Y BACKTEST)</div><canvas id="dashEq" style="width:100%;height:180px;display:block"></canvas></div>';
+// 4. Your Equity Curve (replaces Portfolio Performance)
+h+='<div class="dash-card" style="position:relative;overflow:hidden">';
+h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(0,232,162,.5),rgba(0,196,255,.3),transparent)"></div>';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">';
+h+='<div><div class="dc-label" style="margin-bottom:4px">YOUR EQUITY CURVE</div>';
+h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Trade-by-trade cumulative P&amp;L</div></div>';
+if(ovEqCurve.length>0){
+  var ovLast=ovEqCurve[ovEqCurve.length-1].cumulative;
+  h+='<div style="text-align:right"><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:'+(ovLast>=0?'var(--green)':'var(--red)')+'">'+(ovLast>=0?'+':'')+fmtD(ovLast)+'</div></div>';
+}
+h+='</div>';
+if(ovEqCurve.length > 1){
+  h+='<canvas id="liveEqChart" style="width:100%;height:220px;display:block;cursor:crosshair"></canvas>';
+} else {
+  h+='<div style="height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-family:var(--mono);font-size:11px;gap:8px;text-align:center;padding:0 20px">';
+  h+='<div style="width:40px;height:40px;border-radius:50%;background:rgba(0,232,162,.04);border:1px solid rgba(0,232,162,.15);display:flex;align-items:center;justify-content:center;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite"></div></div>';
+  h+='<div style="color:var(--text);font-size:12px">Your equity curve will appear here</div>';
+  h+='<div>once you have closed trades</div></div>';
+}
+h+='</div>';
+
+// Store equity curve for chart renderer
+window._pnlEqCurve = ovEqCurve;
 
 }
 if(dashTab==='pnl'){
@@ -2815,7 +2842,7 @@ if(dashTab!=='billing' && dashTab!=='settings' && dashTab!=='help' && profile.is
     }
   }catch(e){}
 }
-if(dashTab==='overview')setTimeout(function(){drawDashEq();},50);
+if(dashTab==='overview')setTimeout(function(){drawLiveEqChart();},50);
 if(dashTab==='pnl')setTimeout(function(){drawLiveEqChart();drawDailyPnlChart();},50);
 if(dashTab==='connect')updatePosPreview();
 if(dashTab==='journey'&&window._triggerConfetti){window._triggerConfetti=false;setTimeout(fireConfetti,300);}
@@ -4364,7 +4391,7 @@ if(_qs.includes('card=added')||_qs.includes('status=success')||_qs.includes('sta
 } else {
   buildHome();
 }
-window.addEventListener('resize',function(){drawEqChart();if(dashTab==='pnl'){drawLiveEqChart();drawDailyPnlChart();}});
+window.addEventListener('resize',function(){drawEqChart();if(dashTab==='pnl'){drawLiveEqChart();drawDailyPnlChart();}else if(dashTab==='overview'){drawLiveEqChart();}});
 </script>
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});if(typeof caches!=='undefined'){caches.keys().then(function(k){k.forEach(function(n){caches.delete(n);});});}}
