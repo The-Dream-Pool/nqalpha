@@ -1605,16 +1605,16 @@ catch(e){ ovDash = {stats:{},equity_curve:[],daily_pnl:[],open_positions:[]}; }
 
 // ── MAINTENANCE MODE — show construction banner if backend is reconciling ──
 if(ovDash && ovDash.maintenance){
-  h+='<div style="min-height:60vh;display:flex;align-items:center;justify-content:center;padding:40px 20px">';
-  h+='<div style="max-width:520px;width:100%;text-align:center;background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.7));border:1px solid var(--bd);border-radius:20px;padding:56px 40px;position:relative;overflow:hidden">';
-  h+='<div style="position:absolute;inset:0;background:radial-gradient(circle at center top,rgba(240,192,64,.08),transparent 60%);pointer-events:none"></div>';
-  h+='<div style="position:relative;z-index:1">';
-  h+='<div style="font-size:72px;margin-bottom:24px;filter:drop-shadow(0 4px 12px rgba(240,192,64,.3))">\ud83d\udea7</div>';
-  h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:14px;letter-spacing:-.3px">Under Maintenance</div>';
-  h+='<div style="font-size:14px;color:rgba(184,200,216,.85);line-height:1.7;margin-bottom:24px">'+(ovDash.message||"We\u2019re currently reconciling P&amp;L data to ensure accuracy. Your dashboard will be back online shortly.")+'</div>';
-  h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding-top:20px;border-top:1px solid var(--bd)">Thank you for your patience</div>';
-  h+='</div></div></div>';
-  document.getElementById("dashContent").innerHTML = h;
+  var mh='<div style="min-height:60vh;display:flex;align-items:center;justify-content:center;padding:40px 20px">';
+  mh+='<div style="max-width:520px;width:100%;text-align:center;background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.7));border:1px solid var(--bd);border-radius:20px;padding:56px 40px;position:relative;overflow:hidden">';
+  mh+='<div style="position:absolute;inset:0;background:radial-gradient(circle at center top,rgba(240,192,64,.08),transparent 60%);pointer-events:none"></div>';
+  mh+='<div style="position:relative;z-index:1">';
+  mh+='<div style="font-size:72px;margin-bottom:24px;filter:drop-shadow(0 4px 12px rgba(240,192,64,.3))">\ud83d\udea7</div>';
+  mh+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:14px;letter-spacing:-.3px">Under Maintenance</div>';
+  mh+='<div style="font-size:14px;color:rgba(184,200,216,.85);line-height:1.7;margin-bottom:24px">'+(ovDash.message||"We\u2019re currently reconciling P&amp;L data to ensure accuracy. Your dashboard will be back online shortly.")+'</div>';
+  mh+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding-top:20px;border-top:1px solid var(--bd)">Thank you for your patience</div>';
+  mh+='</div></div></div>';
+  m.innerHTML = mh;
   return;
 }
 
