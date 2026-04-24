@@ -1602,6 +1602,22 @@ var mp=stats.month_pnl||0;
 var ovDash;
 try{ ovDash = await apiCall('GET','/investor/dashboard'); }
 catch(e){ ovDash = {stats:{},equity_curve:[],daily_pnl:[],open_positions:[]}; }
+
+// ── MAINTENANCE MODE — show construction banner if backend is reconciling ──
+if(ovDash && ovDash.maintenance){
+  h+='<div style="min-height:60vh;display:flex;align-items:center;justify-content:center;padding:40px 20px">';
+  h+='<div style="max-width:520px;width:100%;text-align:center;background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.7));border:1px solid var(--bd);border-radius:20px;padding:56px 40px;position:relative;overflow:hidden">';
+  h+='<div style="position:absolute;inset:0;background:radial-gradient(circle at center top,rgba(240,192,64,.08),transparent 60%);pointer-events:none"></div>';
+  h+='<div style="position:relative;z-index:1">';
+  h+='<div style="font-size:72px;margin-bottom:24px;filter:drop-shadow(0 4px 12px rgba(240,192,64,.3))">\ud83d\udea7</div>';
+  h+='<div style="font-size:24px;font-weight:700;color:var(--white);margin-bottom:14px;letter-spacing:-.3px">Under Maintenance</div>';
+  h+='<div style="font-size:14px;color:rgba(184,200,216,.85);line-height:1.7;margin-bottom:24px">'+(ovDash.message||"We\u2019re currently reconciling P&amp;L data to ensure accuracy. Your dashboard will be back online shortly.")+'</div>';
+  h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;padding-top:20px;border-top:1px solid var(--bd)">Thank you for your patience</div>';
+  h+='</div></div></div>';
+  document.getElementById("dashContent").innerHTML = h;
+  return;
+}
+
 var ovEqCurve = ovDash.equity_curve||[];
 
 // ── ONBOARDING WALKTHROUGH ──
@@ -3441,10 +3457,18 @@ async function renderAdminContent(){
       // ── DANGER ZONE CARD ──
       h+='<div class="ma-card ma-card-danger">';
       h+='<div class="ma-danger-head"><div class="ma-danger-dot"></div><div class="card-title" style="margin:0;color:var(--red)">DANGER ZONE</div></div>';
-      h+='<div class="ma-card-desc">Immediate account-wide actions. <span style="color:var(--red);font-weight:600">Flatten All</span> closes every open position on the master and all followers. <span style="color:var(--gold);font-weight:600">Reconcile P&L</span> re-computes trade results against broker fills.</div>';
+      h+='<div class="ma-card-desc">Immediate account-wide actions. <span style="color:var(--red);font-weight:600">Flatten All</span> closes every open position on the master and all followers. <span style="color:var(--gold);font-weight:600">Reconcile P&L</span> re-computes trade results against broker fills. <span style="color:var(--gold);font-weight:600">Maintenance Mode</span> hides investor dashboards while you fix data.</div>';
+      var maMaint={maintenance:false};
+      try{ maMaint = await adminApi('GET','/admin/maintenance-status'); }catch(e){}
+      var maIsMaint = maMaint && maMaint.maintenance;
       h+='<div class="ma-btn-row">';
       h+='<button class="ma-btn ma-btn-danger" onclick="confirmFlattenAll()">⚠ FLATTEN ALL</button>';
       h+='<button class="ma-btn ma-btn-warn" id="reconcileBtn" onclick="reconcileTrades()">⚡ RECONCILE P&L</button>';
+      if(maIsMaint){
+        h+='<button class="ma-btn ma-btn-warn" id="maintBtn" onclick="toggleMaintenance(false)" style="background:rgba(240,192,64,.15);border-color:rgba(240,192,64,.5);color:var(--gold)">🚧 MAINT ON — DISABLE</button>';
+      } else {
+        h+='<button class="ma-btn ma-btn-warn" id="maintBtn" onclick="toggleMaintenance(true)">🚧 MAINTENANCE MODE</button>';
+      }
       h+='</div>';
       h+='</div>';
 
@@ -4306,6 +4330,23 @@ async function refreshBalances(){
 }
 
 // ─── PROMO CODE MANAGEMENT ──────────────────────────────────────────
+async function toggleMaintenance(enable){
+  var confirmMsg = enable 
+    ? "🚧 Enable maintenance mode?\n\nAll investor dashboards will show an \"Under Maintenance\" banner. The bot will keep trading normally.\n\nContinue?"
+    : "Disable maintenance mode?\n\nInvestor dashboards will be restored immediately.\n\nContinue?";
+  if(!confirm(confirmMsg)) return;
+  var btn = document.getElementById('maintBtn');
+  if(btn){ btn.disabled = true; btn.textContent = enable ? "Enabling..." : "Disabling..."; }
+  try{
+    var endpoint = enable ? '/admin/maintenance-enable' : '/admin/maintenance-disable';
+    await adminApi('POST', endpoint, {});
+    await switchAdminTab('master_account');
+  }catch(e){
+    alert("Failed to toggle maintenance mode: " + e.message);
+    if(btn){ btn.disabled = false; btn.textContent = enable ? "🚧 MAINTENANCE MODE" : "🚧 MAINT ON — DISABLE"; }
+  }
+}
+
 async function reconcileTrades(){
   var btn=document.getElementById('reconcileBtn');
   if(btn){btn.textContent='⏳ Reconciling...';btn.disabled=true;}
