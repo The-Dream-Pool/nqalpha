@@ -205,6 +205,7 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .risk-modal-box > div:last-child > div:last-child button{width:100%;}
 }
 @media(max-width:480px){
+  .reg-banner{padding:7px 10px!important;font-size:8.5px!important;letter-spacing:.6px!important;gap:6px!important;}
   .tlog-toggle-new{padding:14px 14px!important;}
   .tlog-stats-grid{gap:8px!important;}
   .tlog-stat-tile{padding:8px 6px!important;}
@@ -216,7 +217,8 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
 @media(max-width:768px){
   nav{padding:12px 16px;flex-wrap:wrap;gap:8px;}
   .logo-sub{display:none;}.logo{gap:8px;}.logo-text{font-size:15px;}
-  .reg-banner{padding:8px 16px!important;font-size:9px!important;letter-spacing:1px!important;gap:8px!important;}
+  .reg-banner{padding:8px 14px!important;font-size:9px!important;letter-spacing:.8px!important;gap:10px!important;line-height:1.5!important;}
+  .reg-banner > span{flex-wrap:wrap;justify-content:center;gap:5px!important;}
   .reg-pill{display:none!important;}
   .nav-btn{font-size:9px!important;padding:6px 10px!important;}
   .btn{padding:8px 16px;font-size:10px;}.btn-primary{padding:12px 28px;font-size:13px;}.btn-ghost{padding:12px 24px;font-size:11px;}
@@ -246,6 +248,8 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .conn-grid-2col{grid-template-columns:1fr!important;}
 }
 @media(max-width:380px){
+  .reg-banner{flex-direction:column!important;padding:8px 10px!important;gap:4px!important;font-size:8px!important;letter-spacing:.5px!important;}
+  .reg-banner > span{gap:4px!important;}
   .hero h1{font-size:28px;}
   .pnl-grid-4{grid-template-columns:1fr;}.pnl-grid-6{grid-template-columns:repeat(2,1fr);}
   .grid4{grid-template-columns:1fr;gap:8px;}.chars{grid-template-columns:repeat(2,1fr);}.stat{min-height:auto;padding:14px 16px;}.stat-label{min-height:auto;}.stat-value{font-size:26px;}
@@ -323,7 +327,7 @@ function buildHome(){
   });
   h+='</div>';
   h+='<div style="margin-bottom:48px"><div class="tlog-toggle tlog-toggle-new" id="tlogToggle" onclick="toggleTradeLog()" style="padding:26px 30px;background:linear-gradient(135deg,rgba(0,232,162,.04),rgba(0,196,255,.03),rgba(14,22,32,.7));align-items:stretch;flex-wrap:wrap;gap:24px"><div class="tlog-header-info" style="flex:1;min-width:260px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s ease-in-out infinite"></span><div class="card-title" style="margin:0">HYPOTHETICAL TRADE LOG</div></div><div style="font-size:14px;color:var(--white);font-weight:600;margin-top:4px">Hypothetical · March 2026 sample month · 294 simulated trades on MNQ futures</div><div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:6px;letter-spacing:.5px">CLICK TO EXPAND \u00b7 ALL TIMES CST</div></div><div class="tlog-stats-grid" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><div class="tlog-stat-tile" style="text-align:center;padding:0 14px;border-left:1px solid var(--bd)"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">NET P&L</div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--green)">+$70,580</div></div><div class="tlog-stat-tile" style="text-align:center;padding:0 14px;border-left:1px solid var(--bd)"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">WIN RATE</div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--white)">73.5%</div></div><div class="tlog-stat-tile" style="text-align:center;padding:0 14px;border-left:1px solid var(--bd)"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">PROFIT FACTOR</div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--white)">1.88</div></div><div class="tlog-stat-tile" style="text-align:center;padding:0 14px;border-left:1px solid var(--bd)"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">GREEN / RED</div><div style="font-family:var(--mono);font-size:18px;font-weight:700"><span style="color:var(--green)">19</span><span style="color:var(--muted)"> / </span><span style="color:var(--red)">7</span></div></div><span class="tlog-arrow" id="tlogArrow" style="margin-left:8px">\u25bc</span></div></div><div class="tlog-body" id="tlogBody"><table class="tlog-table"><thead><tr><th>DATE</th><th>ENTRY</th><th>STRATEGY</th><th>DIR</th><th>ENTRY $</th><th>TP</th><th>SL</th><th>RESULT</th><th>P&L</th><th>EXIT</th></tr></thead><tbody id="tlogRows"></tbody></table><div class="tlog-count" id="tlogCount"></div></div></div>';
-  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join the Early Access Program</h2><p>Connect your Tradovate account and start receiving automated trade signals. Subscription billing begins June 1, 2026, following NFA acceptance of the firm's Disclosure Document.</p><button class="btn-primary" style="font-size:16px;padding:18px 56px;border-radius:14px;box-shadow:0 6px 30px rgba(0,232,162,.25)" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">Free trial through May 31, 2026 \u00b7 Subscription begins June 1, 2026 \u00b7 Cancel anytime</div></div>';
+  h+='<div class="cta"><div class="cta-tag">READY TO GET STARTED?</div><h2>Join the Early Access Program</h2><p>Connect your Tradovate account and start receiving automated trade signals. Subscription billing begins June 1, 2026, following NFA acceptance of the firm\'s Disclosure Document.</p><button class="btn-primary" style="font-size:16px;padding:18px 56px;border-radius:14px;box-shadow:0 6px 30px rgba(0,232,162,.25)" onclick="showPage(\'loginPage\');buildLogin()">Create Account</button><div class="fee">Free trial through May 31, 2026 \u00b7 Subscription begins June 1, 2026 \u00b7 Cancel anytime</div></div>';
   h+='<div class="card"><div class="card-title" style="margin-bottom:20px">PORTFOLIO CHARACTERISTICS (HYPOTHETICAL, 5-YR)</div><div class="chars"><div class="char"><div class="char-label">AVG MONTHLY P&L</div><div class="char-val">$33,673</div><div class="char-sub">Across 60 months</div></div><div class="char"><div class="char-label">PROFITABLE MONTHS</div><div class="char-val">100%</div><div class="char-sub">60 of 60 months</div></div><div class="char"><div class="char-label">BEST MONTH</div><div class="char-val">$61,938</div><div class="char-sub">March 2025</div></div><div class="char"><div class="char-label">WORST MONTH</div><div class="char-val" style="color:var(--green)">+$3,380</div><div class="char-sub">September 2023</div></div></div></div>';
   h+='</div>';
   h+='<div class="footer" style="padding:32px 40px 48px"><div style="max-width:760px;margin:0 auto;text-align:center">';
