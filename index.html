@@ -24,6 +24,7 @@
 <meta name="twitter:description" content="Automated mean-reversion trading on MNQ futures. Registered CTA, Member NFA.">
 <meta name="twitter:image" content="https://nqalpha.com/og_image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js" defer></script>
 <style>
 :root{--bg:#04080D;--sf:#0A1018;--sf2:#0E1620;--bd:#162030;--green:#00E8A2;--cyan:#00C4FF;--gold:#F0C040;--red:#FF4466;--text:#B8C8D8;--muted:#405060;--white:#F0F4F8;--font:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -34,6 +35,7 @@ input::placeholder{color:var(--muted);}
 ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes mnqGlow{0%,100%{box-shadow:0 0 20px rgba(0,196,255,.08),0 0 40px rgba(0,196,255,.03),inset 0 0 30px rgba(0,196,255,.02)}50%{box-shadow:0 0 35px rgba(0,196,255,.15),0 0 60px rgba(0,196,255,.06),inset 0 0 40px rgba(0,196,255,.04)}}
 @keyframes mesGlow{0%,100%{box-shadow:0 0 20px rgba(0,232,162,.06),0 0 40px rgba(0,232,162,.02)}50%{box-shadow:0 0 30px rgba(0,232,162,.1),0 0 50px rgba(0,232,162,.04)}}
 @keyframes borderPulse{0%,100%{border-color:rgba(0,196,255,.2)}50%{border-color:rgba(0,196,255,.4)}}
@@ -243,6 +245,9 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .rewards-pioneer-grid{grid-template-columns:1fr!important;text-align:center;}
   .rewards-pioneer-grid > div:last-child{text-align:center!important;}
   .rewards-pioneer-grid > div:first-child{justify-content:center;}
+  /* Live Chart tab — mobile */
+  #liveChartContainer{height:360px!important;}
+  .chart-legend-mobile-stack{flex-direction:column!important;align-items:flex-start!important;gap:12px!important;}
 }
 @media(max-width:900px){
   .conn-grid-2col{grid-template-columns:1fr!important;}
@@ -1460,19 +1465,19 @@ h+='<div class="dash"><div class="dash-side" id="dashSide"></div><div class="das
 document.getElementById('dashPage').innerHTML=h;
 dashTab='overview';renderDashTabs();await renderDashContent();
 }
-async function doLogout(){try{await apiCall('POST','/auth/logout');}catch(e){}clearToken();showPage('homePage');}
+async function doLogout(){try{destroyLiveChart();}catch(e){}try{await apiCall('POST','/auth/logout');}catch(e){}clearToken();showPage('homePage');}
 function renderDashTabs(){
 var inv=SESSION.investor||{};
 var tabs;
 if(!inv.is_approved){
   tabs=[{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 } else {
-  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'billing',l:'Billing'},{id:'connect',l:'Connect'},{id:'rewards',l:'Rewards'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'billing',l:'Billing'},{id:'connect',l:'Connect'},{id:'rewards',l:'Rewards'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 }
 var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
 document.getElementById('dashSide').innerHTML=h;
 }
-async function switchTab(tab){dashTab=tab;renderDashTabs();await renderDashContent();}
+async function switchTab(tab){if(dashTab==='chart'&&tab!=='chart'){try{destroyLiveChart();}catch(e){}}dashTab=tab;renderDashTabs();await renderDashContent();}
 async function renderDashContent(){
 var m=document.getElementById('dashMain');
 m.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px">Loading...</div>';
@@ -1967,6 +1972,50 @@ if(eqCurve.length > 0){
 // Store chart data for rendering after innerHTML set
 window._pnlEqCurve = eqCurve;
 window._pnlDailyPnl = dailyPnl;
+}
+if(dashTab==='chart'){
+// ── LIVE CHART TAB ── Real-time MNQ candlesticks with per-investor trade markers
+// Header — matches P&L Tracker header pattern
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">';
+h+='<div><div style="font-size:24px;font-weight:700;color:var(--white)">Live Chart</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px">MNQ futures · 5-minute candles · 8 hours · Refreshes every 60s</div></div>';
+h+='<div style="display:flex;gap:8px;align-items:center">';
+h+='<div id="chartStatus" style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;padding:6px 12px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;min-width:120px;text-align:center">— LOADING —</div>';
+h+='<button onclick="renderLiveChart(true)" style="font-family:var(--mono);font-size:10px;padding:8px 16px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor=\'var(--green)\';this.style.color=\'var(--green)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">↻ Refresh</button>';
+h+='</div></div>';
+
+// Chart container — matches EQUITY CURVE wrapper aesthetic exactly
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden">';
+// Subtle ambient gradient (matches dashboard ambient lighting)
+h+='<div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,255,.03),transparent 70%);pointer-events:none"></div>';
+h+='<div style="position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,162,.03),transparent 70%);pointer-events:none"></div>';
+
+// Mini-header matching site pattern (mono, small, letter-spaced)
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;position:relative">';
+h+='<div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px">MNQ FUTURES — JUNE 2026 CONTRACT</div>';
+h+='<div style="font-size:14px;font-weight:600;color:var(--white);margin-top:4px">Live Market Data · Your Executions</div></div>';
+h+='<div id="chartLivePill" style="display:flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(0,232,162,.06);border:1px solid rgba(0,232,162,.15);border-radius:20px"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,232,162,.6);animation:pulse 2s ease infinite"></div><span style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:1.5px">LIVE</span></div>';
+h+='</div>';
+
+// The actual chart mount point
+h+='<div id="liveChartContainer" style="width:100%;height:520px;position:relative;border-radius:10px;overflow:hidden;background:rgba(4,8,13,.4)">';
+h+='<div id="liveChartLoading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">';
+h+='<div style="width:32px;height:32px;border:2px solid var(--bd);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite"></div>';
+h+='<div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:1px">FETCHING MARKET DATA</div>';
+h+='</div>';
+h+='</div>';
+h+='</div>';
+
+// Legend card — matches dashboard card aesthetic
+h+='<div style="background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">';
+h+='<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px">LEGEND</div>';
+h+='<div style="display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:9px solid var(--green);filter:drop-shadow(0 0 4px rgba(0,232,162,.5))"></span><span style="font-family:var(--mono);font-size:11px;color:var(--text)">Entry</span></div>';
+h+='<div style="display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:9px solid var(--green);filter:drop-shadow(0 0 4px rgba(0,232,162,.5))"></span><span style="font-family:var(--mono);font-size:11px;color:var(--text)">Take Profit</span></div>';
+h+='<div style="display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:9px solid var(--red);filter:drop-shadow(0 0 4px rgba(255,68,102,.5))"></span><span style="font-family:var(--mono);font-size:11px;color:var(--text)">Stop Loss</span></div>';
+h+='</div>';
+h+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px">TIMES SHOWN IN YOUR LOCAL TIMEZONE</div>';
+h+='</div>';
 }
 if(dashTab==='journey'){
 // Fetch data
@@ -2886,6 +2935,7 @@ if(dashTab!=='billing' && dashTab!=='settings' && dashTab!=='help' && profile.is
 }
 if(dashTab==='overview')setTimeout(function(){drawLiveEqChart();},50);
 if(dashTab==='pnl')setTimeout(function(){drawLiveEqChart();drawDailyPnlChart();},50);
+if(dashTab==='chart')setTimeout(function(){renderLiveChart(false);},50);
 if(dashTab==='connect')updatePosPreview();
 if(dashTab==='journey'&&window._triggerConfetti){window._triggerConfetti=false;setTimeout(fireConfetti,300);}
 setTimeout(initDualScrollbars,50);
@@ -3002,6 +3052,166 @@ try{
 }catch(e){
   alert('Error: ' + e.message);
 }
+}
+
+// ─── LIVE CHART (TradingView Lightweight Charts) ─────────────────────────
+// Module state
+window._liveChart = null;
+window._liveCandleSeries = null;
+window._liveChartTimer = null;
+window._liveChartResizeHandler = null;
+
+// Clean up chart resources when switching away from the tab
+function destroyLiveChart(){
+  if(window._liveChartTimer){clearInterval(window._liveChartTimer);window._liveChartTimer=null;}
+  if(window._liveChartResizeHandler){window.removeEventListener('resize',window._liveChartResizeHandler);window._liveChartResizeHandler=null;}
+  if(window._liveChart){try{window._liveChart.remove();}catch(e){}window._liveChart=null;window._liveCandleSeries=null;}
+}
+
+// Set the chart status indicator text (top-right of chart tab)
+function setChartStatus(text,color){
+  var el=document.getElementById('chartStatus');if(!el)return;
+  el.textContent=text;
+  var c=color||'var(--muted)';
+  el.style.color=c;
+  // Match border to text color for cohesive look
+  if(c==='var(--green)'){el.style.borderColor='rgba(0,232,162,.25)';el.style.background='rgba(0,232,162,.04)';}
+  else if(c==='var(--cyan)'){el.style.borderColor='rgba(0,196,255,.25)';el.style.background='rgba(0,196,255,.04)';}
+  else if(c==='var(--red)'){el.style.borderColor='rgba(255,68,102,.25)';el.style.background='rgba(255,68,102,.04)';}
+  else{el.style.borderColor='var(--bd)';el.style.background='var(--sf)';}
+}
+
+// Main entry — fetches data from API and renders/updates the chart
+// userTriggered=true means user clicked refresh, so show "Refreshing..." briefly
+async function renderLiveChart(userTriggered){
+  // Bail if not on chart tab anymore
+  if(dashTab!=='chart')return;
+  var container=document.getElementById('liveChartContainer');
+  if(!container)return;
+
+  // Verify Lightweight Charts library loaded
+  if(typeof LightweightCharts==='undefined'){
+    setChartStatus('— LIBRARY ERROR —','var(--red)');
+    var loading=document.getElementById('liveChartLoading');
+    if(loading)loading.innerHTML='<div style="text-align:center;padding:0 32px"><div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:14px">LIBRARY ERROR</div><div style="font-size:14px;color:var(--white);margin-bottom:8px">Chart library failed to load</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Please refresh the page to try again</div></div>';
+    return;
+  }
+
+  if(userTriggered)setChartStatus('— REFRESHING —','var(--cyan)');
+  else if(!window._liveChart)setChartStatus('— LOADING —','var(--muted)');
+
+  // Fetch data from backend
+  var data;
+  try{
+    data=await apiCall('GET','/investor/chart-data');
+  }catch(e){
+    setChartStatus('— FETCH ERROR —','var(--red)');
+    var loading=document.getElementById('liveChartLoading');
+    if(loading)loading.innerHTML='<div style="text-align:center;padding:0 32px"><div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:2px;margin-bottom:14px">FETCH ERROR</div><div style="font-size:14px;color:var(--white);margin-bottom:8px">Could not load chart data</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(e.message||'Unknown error')+'</div></div>';
+    return;
+  }
+
+  // No data case (e.g. weekend, market closed, no bars in window)
+  if(!data.candles||data.candles.length===0){
+    setChartStatus('— NO DATA —','var(--muted)');
+    var loading=document.getElementById('liveChartLoading');
+    if(loading){loading.style.display='flex';loading.innerHTML='<div style="text-align:center;padding:0 32px"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:14px">MARKET CLOSED</div><div style="font-size:16px;font-weight:600;color:var(--white);margin-bottom:8px">No recent market data</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;max-width:320px;margin:0 auto">MNQ futures trade Sunday 5:00 PM CT through Friday 4:00 PM CT. Market data will resume when the session reopens.</div></div>';}
+    if(window._liveChart){destroyLiveChart();}
+    return;
+  }
+
+  // Create the chart if it doesn't exist yet
+  if(!window._liveChart){
+    var loading=document.getElementById('liveChartLoading');
+    if(loading)loading.style.display='none';
+    try{
+      window._liveChart=LightweightCharts.createChart(container,{
+        width:container.clientWidth,
+        height:container.clientHeight||520,
+        layout:{
+          background:{type:'solid',color:'transparent'},
+          textColor:'#B8C8D8',
+          fontFamily:"'DM Mono',monospace",
+          fontSize:11,
+        },
+        grid:{
+          vertLines:{color:'rgba(22,32,48,0.5)'},
+          horzLines:{color:'rgba(22,32,48,0.5)'},
+        },
+        rightPriceScale:{
+          borderColor:'#162030',
+          textColor:'#B8C8D8',
+        },
+        timeScale:{
+          borderColor:'#162030',
+          textColor:'#B8C8D8',
+          timeVisible:true,
+          secondsVisible:false,
+        },
+        crosshair:{
+          mode:LightweightCharts.CrosshairMode.Normal,
+          vertLine:{color:'#00C4FF',width:1,style:LightweightCharts.LineStyle.Dashed,labelBackgroundColor:'#00C4FF'},
+          horzLine:{color:'#00C4FF',width:1,style:LightweightCharts.LineStyle.Dashed,labelBackgroundColor:'#00C4FF'},
+        },
+        handleScroll:true,
+        handleScale:true,
+      });
+      window._liveCandleSeries=window._liveChart.addCandlestickSeries({
+        upColor:'#00E8A2',
+        downColor:'#FF4466',
+        borderUpColor:'#00E8A2',
+        borderDownColor:'#FF4466',
+        wickUpColor:'#00E8A2',
+        wickDownColor:'#FF4466',
+      });
+      // Handle window resize
+      window._liveChartResizeHandler=function(){
+        if(window._liveChart&&container){
+          window._liveChart.applyOptions({width:container.clientWidth,height:container.clientHeight||520});
+        }
+      };
+      window.addEventListener('resize',window._liveChartResizeHandler);
+    }catch(e){
+      setChartStatus('— INIT FAILED —','var(--red)');
+      console.error('Chart init error:',e);
+      return;
+    }
+  }
+
+  // Update candle data
+  try{
+    window._liveCandleSeries.setData(data.candles);
+  }catch(e){
+    setChartStatus('— RENDER ERROR —','var(--red)');
+    console.error('setData error:',e);
+    return;
+  }
+
+  // Update markers (entry/exit arrows on each trade)
+  try{
+    window._liveCandleSeries.setMarkers(data.markers||[]);
+  }catch(e){
+    console.error('setMarkers error:',e);
+  }
+
+  // Fit content on first render only — subsequent refreshes keep user's zoom/pan
+  if(userTriggered||!window._liveChartFitted){
+    window._liveChart.timeScale().fitContent();
+    window._liveChartFitted=true;
+  }
+
+  // Update status text
+  var n=data.candles.length;
+  var m=data.markers?data.markers.length:0;
+  setChartStatus(n+' BARS · '+m+' MARKERS','var(--green)');
+
+  // Set up auto-refresh on first render
+  if(!window._liveChartTimer){
+    window._liveChartTimer=setInterval(function(){
+      if(dashTab==='chart'){renderLiveChart(false);}
+      else{destroyLiveChart();}
+    },60000);
+  }
 }
 
 function drawLiveEqChart(){
