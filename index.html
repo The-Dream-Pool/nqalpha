@@ -2902,6 +2902,11 @@ var _icStats = { total_referred: 0, credited: 0, pending: 0, suspicious: 0, cred
 try {
   var _rs = await apiCall('GET', '/investor/referral-stats');
   if (_rs && typeof _rs === 'object') {
+    if (_rs.referral_code) {
+      _icCode = _rs.referral_code.toString();
+      _icHasCode = true;
+      _icLink = 'https://nqalpha.com/?ref=' + _icCode;
+    }
     _icStats.total_referred = _rs.total_referred || 0;
     _icStats.credited = _rs.credited || 0;
     _icStats.pending = _rs.pending || 0;
