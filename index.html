@@ -1630,7 +1630,7 @@ var tabs;
 if(!inv.is_approved){
   tabs=[{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 } else {
-  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'journey',l:'My Journey'},{id:'trades',l:'Trades'},{id:'billing',l:'Billing'},{id:'connect',l:'Connect'},{id:'rewards',l:'Inner Circle'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'rewards',l:'Inner Circle'},{id:'journey',l:'My Journey'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 }
 var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
 document.getElementById('dashSide').innerHTML=h;
