@@ -296,6 +296,20 @@ table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px
   .health-btns button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pos-layout{grid-template-columns:1fr!important;}
 }
+@media(max-width:600px){
+  /* Billing tab — NEXT PAYMENT card responsive layout */
+  .bs-next-header{flex-direction:column!important;align-items:stretch!important;}
+  .bs-next-pill{min-width:0!important;width:100%!important;text-align:left!important;display:flex!important;justify-content:space-between!important;align-items:center!important;}
+  .bs-next-pill > div{margin:0!important;}
+  .bs-next-stats{grid-template-columns:1fr 1fr!important;}
+  .bs-next-stats > div:nth-child(3){grid-column:1 / -1!important;}
+  .bs-next-amount{font-size:30px!important;}
+}
+@media(max-width:380px){
+  .bs-next-stats{grid-template-columns:1fr!important;}
+  .bs-next-stats > div:nth-child(3){grid-column:auto!important;}
+  .bs-next-amount{font-size:26px!important;}
+}
 </style>
 </head>
 <body style="overflow-x:hidden;touch-action:manipulation">
@@ -2854,13 +2868,13 @@ if(!hasProduct){
   h+='<div style="text-align:center;padding:16px 0"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:8px">LOCKED</div><div style="font-size:14px;color:var(--text)">Purchase product access to unlock contract fee billing</div></div>';
 } else {
   // Header row: title + date pill
-  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px">';
-  h+='<div><div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px">NEXT PAYMENT</div>';
-  h+='<div style="font-size:34px;font-weight:800;color:var(--white);line-height:1;letter-spacing:-1px">$'+_estAmt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>';
+  h+='<div class="bs-next-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px">';
+  h+='<div style="flex:1;min-width:0"><div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px">NEXT PAYMENT</div>';
+  h+='<div class="bs-next-amount" style="font-size:34px;font-weight:800;color:var(--white);line-height:1;letter-spacing:-1px">$'+_estAmt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>';
   if(_promoPct>0&&_promoPct<100){h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-top:6px">'+_promoPct+'% promo discount applied</div>';}
   h+='</div>';
   // Date pill
-  h+='<div style="text-align:right;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:12px;padding:12px 18px;min-width:160px"><div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:1.5px;margin-bottom:4px">DUE</div>';
+  h+='<div class="bs-next-pill" style="text-align:right;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:12px;padding:12px 18px;min-width:160px"><div style="font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:1.5px;margin-bottom:4px">DUE</div>';
   h+='<div style="font-size:15px;font-weight:700;color:var(--white)">'+_nextDate+'</div>';
   if(_daysUntil!==null){h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">in '+_daysUntil+' day'+(_daysUntil===1?'':'s')+'</div>';}
   h+='</div></div>';
@@ -2877,7 +2891,7 @@ if(!hasProduct){
   }
 
   // Stats grid: max contracts | gross pnl | per-contract fee
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">';
+  h+='<div class="bs-next-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">';
   h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">MAX CONTRACTS</div><div style="font-size:22px;font-weight:700;color:var(--white);font-family:var(--mono)">'+_maxCtr+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">used this cycle</div></div>';
   var pnlColor=_curPnl>0?'var(--green)':(_curPnl<0?'var(--red)':'var(--muted)');
   var pnlSign=_curPnl>0?'+':'';
