@@ -5712,6 +5712,20 @@ if(_qs.includes('card=added')||_qs.includes('status=success')||_qs.includes('sta
 window.addEventListener('resize',function(){drawEqChart();if(dashTab==='pnl'){drawLiveEqChart();drawDailyPnlChart();}else if(dashTab==='overview'){drawLiveEqChart();}});
 </script>
 <script>
+// ── one-time client reset: bump SITE_VERSION to force-clear cookies/storage for all visitors ──
+var SITE_VERSION='2026-08-29-1';
+try{
+  if(localStorage.getItem('nqaSiteVer')!==SITE_VERSION){
+    document.cookie.split(';').forEach(function(c){
+      var n=c.split('=')[0].trim();
+      document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain='+location.hostname;
+      document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.'+location.hostname;
+    });
+    localStorage.clear();sessionStorage.clear();
+    localStorage.setItem('nqaSiteVer',SITE_VERSION);
+  }
+}catch(e){}
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});if(typeof caches!=='undefined'){caches.keys().then(function(k){k.forEach(function(n){caches.delete(n);});});}}
 document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});
 document.addEventListener('gesturechange',function(e){e.preventDefault();},{passive:false});
