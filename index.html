@@ -626,6 +626,13 @@ requestAnimationFrame(frame);
 <div id="adminPage" class="page"></div>
 
 <script>
+// ─── SIZING REQUIREMENTS ($2,000 per contract, ±$200 tolerance) ───
+var REQ_PER_CONTRACT=2000;
+var BAL_TOLERANCE=200;
+function requiredFor(c){c=parseInt(c)||0;if(c<1)c=1;return c*REQ_PER_CONTRACT;}
+function meetsRequirement(equity,c){return (parseFloat(equity)||0) >= (requiredFor(c)-BAL_TOLERANCE);}
+function maxContractsFor(equity){var e=parseFloat(equity)||0;var m=Math.floor((e+BAL_TOLERANCE)/REQ_PER_CONTRACT);return m<0?0:m;}
+window._ACCT_EQUITY=0;window._ACCT_KNOWN=false;
 var D={
   eq:[14670, 29056, 41491, 60198, 91353, 106864, 114196, 132782, 153974, 184011, 208958, 245059, 280366, 284240, 309744, 326158, 356691, 376405, 393268, 423529, 441043, 455768, 476477, 502288, 528549, 532314, 559487, 580314, 596958, 614112, 616225, 631554, 648746, 664592, 680116, 699075, 709677, 735859, 758836, 782564, 801704, 836767, 858876, 874636, 892564, 913691, 943259, 955307, 994018, 1027409, 1056545, 1087035, 1108686, 1124604, 1146071, 1173292, 1190004, 1226521, 1237061, 1262741],
   monthly:{"2021-03": 14670, "2021-04": 14386, "2021-05": 12434, "2021-06": 18707, "2021-07": 31156, "2021-08": 15511, "2021-09": 7331, "2021-10": 18587, "2021-11": 21191, "2021-12": 30038, "2022-01": 24946, "2022-02": 36101, "2022-03": 35308, "2022-04": 3874, "2022-05": 25504, "2022-06": 16413, "2022-07": 30533, "2022-08": 19714, "2022-09": 16863, "2022-10": 30261, "2022-11": 17514, "2022-12": 14725, "2023-01": 20709, "2023-02": 25811, "2023-03": 26261, "2023-04": 3765, "2023-05": 27173, "2023-06": 20826, "2023-07": 16644, "2023-08": 17155, "2023-09": 2112, "2023-10": 15329, "2023-11": 17192, "2023-12": 15846, "2024-01": 15524, "2024-02": 18959, "2024-03": 10602, "2024-04": 26182, "2024-05": 22976, "2024-06": 23728, "2024-07": 19141, "2024-08": 35062, "2024-09": 22109, "2024-10": 15759, "2024-11": 17929, "2024-12": 21126, "2025-01": 29569, "2025-02": 12048, "2025-03": 38711, "2025-04": 33391, "2025-05": 29136, "2025-06": 30490, "2025-07": 21651, "2025-08": 15918, "2025-09": 21468, "2025-10": 27221, "2025-11": 16711, "2025-12": 36516, "2026-01": 10541, "2026-02": 25679},
@@ -3069,7 +3076,7 @@ h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));b
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.3),transparent)"></div>';
 h+='<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:18px;padding:14px 16px;background:rgba(0,232,162,.02);border:1px solid rgba(0,232,162,.08);border-radius:10px">';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1.5px;margin-bottom:8px">HOW IT WORKS</div>';
-h+='Choose how many contracts NQ Alpha trades on your account per signal. Check the Recommended Sizing table for suggested balances per contract size.</div>';
+h+='Choose how many contracts NQ Alpha trades on your account per signal. Each contract requires $2,000 of account equity. Your connected balance is checked before the setting is saved &mdash; it must be within $200 of the required amount for that tier.</div>';
 h+='<div class="field"><label>CONTRACTS PER TRADE (1–50)</label><input id="posFixed" type="number" min="1" max="50" value="'+(pos.fixed_contracts||1)+'" oninput="updatePosPreview()"></div>';
 h+='<div id="posPreview" style="font-family:var(--mono);font-size:12px;color:var(--green);margin-bottom:16px;padding:12px 16px;background:rgba(0,232,162,.06);border-radius:10px;border:1px solid rgba(0,232,162,.15)"></div>';
 h+='<div id="posErr" style="display:none;color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:12px"></div>';
@@ -3080,26 +3087,47 @@ h+='</div></div>';
 // ── RIGHT: CONTRACT REQUIREMENTS ──
 h+='<div style="display:flex;flex-direction:column">';
 h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:20px">📊</div><div style="font-size:18px;font-weight:700;color:var(--white)">Recommended Sizing</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 10px;background:rgba(0,196,255,.06);border:1px solid rgba(0,196,255,.12);border-radius:5px">MNQ</div></div>';
-h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">Suggested balance per contract size · not financial advice</div>';
+h+='<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px">$2,000 per contract · verified against your balance (±$200) · not financial advice</div>';
 h+='<div style="background:linear-gradient(160deg,var(--sf),rgba(14,22,32,.6));border:1px solid var(--bd);border-radius:16px;overflow:hidden;position:relative;transition:border-color .3s;flex:1;display:flex;flex-direction:column" onmouseover="this.style.borderColor=\'rgba(0,196,255,.15)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
 h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,196,255,.3),transparent)"></div>';
 h+='<table style="width:100%;font-family:var(--mono);border-collapse:collapse">';
 h+='<thead><tr><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">CONTRACTS</th><th style="padding:14px 24px;text-align:center;font-size:10px;letter-spacing:1.5px;color:var(--muted);background:rgba(10,16,24,.5)">REC. BALANCE</th></tr></thead>';
 h+='<tbody>';
-var reqData=[{c:1,b:3000},{c:2,b:6000},{c:3,b:10000},{c:4,b:13000},{c:5,b:16000},{c:6,b:19000},{c:7,b:22000},{c:8,b:25000}];
+var reqData=[];for(var _rc=1;_rc<=8;_rc++){reqData.push({c:_rc,b:_rc*REQ_PER_CONTRACT});}
 var effContracts=pos.fixed_contracts||1;
+var _acctBalObj=profile.account_balance||{};
+var _acctEquity=(_acctBalObj.balance||0)+(_acctBalObj.unrealized_pnl||0);
+window._ACCT_EQUITY=_acctEquity;
+var _balPresent=(_acctBalObj.balance!==undefined&&_acctBalObj.balance!==null);
+window._ACCT_KNOWN=((conn&&conn.connected&&_balPresent)||_acctEquity>0);
+var _maxAllowed=maxContractsFor(_acctEquity);
 reqData.forEach(function(r){
   var isActive=r.c===effContracts;
+  var locked=window._ACCT_KNOWN && !meetsRequirement(_acctEquity,r.c);
   var rowBg=isActive?"background:linear-gradient(90deg,rgba(0,232,162,.06),rgba(0,232,162,.02));":"";
-  var highlight=isActive?"color:var(--green);font-weight:700":"color:var(--white)";
+  var highlight=isActive?"color:var(--green);font-weight:700":(locked?"color:var(--muted)":"color:var(--white)");
   var leftBorder=isActive?"border-left:3px solid var(--green);":"border-left:3px solid transparent;";
-  h+="<tr style=\""+rowBg+"transition:all .2s\" onmouseover=\"this.style.background='rgba(0,196,255,.03)'\" onmouseout=\"this.style.background='"+(isActive?"linear-gradient(90deg,rgba(0,232,162,.06),rgba(0,232,162,.02))":"transparent")+"'\">";
+  var rowOp=locked?"opacity:.45;":"";
+  h+="<tr style=\""+rowBg+rowOp+"transition:all .2s\" onmouseover=\"this.style.background='rgba(0,196,255,.03)'\" onmouseout=\"this.style.background='"+(isActive?"linear-gradient(90deg,rgba(0,232,162,.06),rgba(0,232,162,.02))":"transparent")+"'\">";
   h+="<td style=\"padding:11px 24px;text-align:center;font-size:15px;"+highlight+";"+leftBorder+"\">"+r.c+"x</td>";
-  h+="<td style=\"padding:11px 24px;text-align:center;font-size:15px;"+highlight+"\">$"+r.b.toLocaleString()+"</td>";
+  h+="<td style=\"padding:11px 24px;text-align:center;font-size:15px;"+highlight+"\">"+(locked?"<span style=\"font-size:11px;margin-right:6px\">&#128274;</span>":"")+"$"+r.b.toLocaleString()+"</td>";
   h+="</tr>";
 });
 h+='</tbody></table>';
-h+='<div style="margin-top:auto;padding:14px 20px;border-top:1px solid var(--bd);background:rgba(10,16,24,.3);display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)">Your setting: <span style="color:var(--green);font-weight:700">'+effContracts+'x</span> <span style="color:var(--bd)">|</span> <span style="color:var(--cyan);font-weight:700">$'+(reqData.find(function(r){return r.c===effContracts;})||{b:3000}).b.toLocaleString()+'</span> recommended</div>';
+h+='<div style="margin-top:auto;padding:14px 20px;border-top:1px solid var(--bd);background:rgba(10,16,24,.3);display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)">Your setting: <span style="color:var(--green);font-weight:700">'+effContracts+'x</span> <span style="color:var(--bd)">|</span> <span style="color:var(--cyan);font-weight:700">$'+requiredFor(effContracts).toLocaleString()+'</span> required</div>';
+// ── Balance verification strip ──
+if(window._ACCT_KNOWN){
+  var _ok=meetsRequirement(_acctEquity,effContracts);
+  var _bc=_ok?'var(--green)':'var(--red)';
+  var _bbg=_ok?'rgba(0,232,162,.05)':'rgba(255,68,102,.05)';
+  var _bbd=_ok?'rgba(0,232,162,.15)':'rgba(255,68,102,.2)';
+  h+='<div style="padding:12px 20px;border-top:1px solid var(--bd);background:'+_bbg+';border-top:1px solid '+_bbd+';font-family:var(--mono);font-size:11px;color:'+_bc+';line-height:1.6;text-align:center">';
+  h+=(_ok?'&#10003; ':'&#9888; ')+'Account equity $'+Math.round(_acctEquity).toLocaleString()+' &middot; verified max '+_maxAllowed+'x';
+  h+='<div style="color:var(--muted);margin-top:4px">Balance must be within $'+BAL_TOLERANCE+' of the required amount for a tier.</div>';
+  h+='</div>';
+} else {
+  h+='<div style="padding:12px 20px;border-top:1px solid var(--bd);background:rgba(240,192,64,.04);font-family:var(--mono);font-size:11px;color:var(--gold);text-align:center;line-height:1.6">Connect your Tradovate account to verify your balance.<div style="color:var(--muted);margin-top:4px">Sizing is checked against live equity before every save.</div></div>';
+}
 h+='</div></div>';
 
 h+='</div>'; // close pos-layout grid
@@ -3804,7 +3832,26 @@ setTimeout(initDualScrollbars,50);
 function updatePosPreview(){
 var p=document.getElementById('posPreview');if(!p)return;
 var f=parseInt((document.getElementById('posFixed')||{}).value||1);
-p.textContent='→ You will trade '+f+' contract'+(f!==1?'s':'')+' per signal';
+if(!f||f<1)f=1;
+var req=requiredFor(f);
+var btn=document.getElementById('posBtn');
+var known=!!window._ACCT_KNOWN;
+var eq=window._ACCT_EQUITY||0;
+var ok=!known||meetsRequirement(eq,f);
+p.innerHTML='\u2192 You will trade '+f+' contract'+(f!==1?'s':'')+' per signal'
+  +'<div style="color:var(--muted);margin-top:6px">Required balance: <span style="color:var(--cyan)">$'+req.toLocaleString()+'</span>'
+  +(known?' &middot; your equity: <span style="color:'+(ok?'var(--green)':'var(--red)')+'">$'+Math.round(eq).toLocaleString()+'</span>':'')+'</div>';
+p.style.background=ok?'rgba(0,232,162,.06)':'rgba(255,68,102,.06)';
+p.style.borderColor=ok?'rgba(0,232,162,.15)':'rgba(255,68,102,.2)';
+p.style.color=ok?'var(--green)':'var(--red)';
+var err=document.getElementById('posErr');
+if(!ok){
+  if(err){err.textContent='Insufficient balance for '+f+'x. Need at least $'+(req-BAL_TOLERANCE).toLocaleString()+' (max allowed: '+maxContractsFor(eq)+'x).';err.style.display='block';}
+  if(btn){btn.disabled=true;btn.style.opacity='.5';btn.style.cursor='not-allowed';}
+}else{
+  if(err){err.style.display='none';}
+  if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';}
+}
 }
 function toggleFaq(id){
   var body=document.getElementById(id);
@@ -3843,8 +3890,14 @@ catch(e){err.textContent=e.message;err.style.display='block';btn.textContent='Co
 async function doDisconnect(){if(!confirm('Disconnect your Tradovate account? Trade copying will stop.'))return;await apiCall('POST','/investor/disconnect');await renderDashContent();}
 async function savePosSettings(){
 var btn=document.getElementById('posBtn');var err=document.getElementById('posErr');err.style.display='none';
+var _want=parseInt(document.getElementById('posFixed').value||1);
+if(!_want||_want<1){err.textContent='Enter at least 1 contract.';err.style.display='block';return;}
+if(window._ACCT_KNOWN && !meetsRequirement(window._ACCT_EQUITY||0,_want)){
+  err.textContent='Insufficient balance for '+_want+'x. Required $'+requiredFor(_want).toLocaleString()+' (\u00b1$'+BAL_TOLERANCE+'). Your equity: $'+Math.round(window._ACCT_EQUITY||0).toLocaleString()+'. Max allowed: '+maxContractsFor(window._ACCT_EQUITY||0)+'x.';
+  err.style.display='block';return;
+}
 btn.textContent='Saving...';btn.disabled=true;
-try{var body={mode:'fixed',fixed_contracts:parseInt(document.getElementById('posFixed').value)};
+try{var body={mode:'fixed',fixed_contracts:_want};
 await apiCall('PUT','/investor/position-settings',body);btn.textContent='✓ Saved!';setTimeout(function(){btn.textContent='Save Position Settings';btn.disabled=false;},2000);}
 catch(e){err.textContent=e.message;err.style.display='block';btn.textContent='Save Position Settings';btn.disabled=false;}
 }
