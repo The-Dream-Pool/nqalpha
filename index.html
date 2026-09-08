@@ -3447,6 +3447,7 @@ h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter
 
 // Compute display values (fall back to old billingData if bsum endpoint missing)
 var _nc=bsum&&bsum.next_cycle?bsum.next_cycle:null;
+var _comp=!_nc;   // no due cycle -> complimentary access, never billed
 var _hasHistory=bsum&&bsum.history&&bsum.history.length>0;
 var _nextDate='—',_daysUntil=null,_estAmt=0,_maxCtr=0,_curPnl=0,_willCharge=false,_skipReason=null,_promoPct=0,_perCtr=400;
 if(_nc){
@@ -3477,7 +3478,7 @@ if(!hasProduct){
 } else {
   // Header row: title + date pill
   h+='<div class="bs-next-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px">';
-  h+='<div style="flex:1;min-width:0"><div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px">NEXT PAYMENT</div>';
+  h+='<div style="flex:1;min-width:0"><div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px">'+(_comp?'CONTRACT FEES':'NEXT PAYMENT')+'</div>';
   h+='<div class="bs-next-amount" style="font-size:34px;font-weight:800;color:var(--white);line-height:1;letter-spacing:-1px">$'+_estAmt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>';
   if(_promoPct>0&&_promoPct<100){h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-top:6px">'+_promoPct+'% promo discount applied</div>';}
   h+='</div>';
@@ -3504,10 +3505,10 @@ if(!hasProduct){
   var pnlColor=_curPnl>0?'var(--green)':(_curPnl<0?'var(--red)':'var(--muted)');
   var pnlSign=_curPnl>0?'+':'';
   h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">CYCLE P&amp;L</div><div style="font-size:22px;font-weight:700;color:'+pnlColor+';font-family:var(--mono)">'+pnlSign+'$'+Math.abs(_curPnl).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">realized this cycle</div></div>';
-  h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">PER CONTRACT</div><div style="font-size:22px;font-weight:700;color:var(--white);font-family:var(--mono)">$'+_perCtr+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">if profitable</div></div>';
+  h+='<div style="background:rgba(10,16,24,.6);border:1px solid var(--bd);border-radius:10px;padding:14px"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px">PER CONTRACT</div><div style="font-size:22px;font-weight:700;color:'+(_comp?'var(--gold)':'var(--white)')+';font-family:var(--mono)">'+(_comp?'—':'$'+_perCtr)+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">'+(_comp?'complimentary':'if profitable')+'</div></div>';
   h+='</div>';
 
-  h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:16px;line-height:1.7;border-top:1px solid var(--bd);padding-top:14px">Fee = $'+_perCtr+' × max contracts used in cycle. <span style="color:var(--text)">Only charged if the cycle is profitable.</span> Updates in real time as the bot trades.</div>';
+  h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:16px;line-height:1.7;border-top:1px solid var(--bd);padding-top:14px">'+(_comp ? '<span style="color:var(--gold)">Complimentary access — no contract fees apply to this account.</span>' : 'Fee = $'+_perCtr+' \u00d7 max contracts used in cycle. <span style="color:var(--text)">Only charged if the cycle is profitable.</span> Updates in real time as the bot trades.')+'</div>';
 }
 
 h+='</div></div>';
