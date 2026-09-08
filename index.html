@@ -2092,7 +2092,7 @@ box+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px"><d
 box+='</div>';
 
 // ─ SCROLLING BODY ─
-box+='<div id="riskScrollBody" style="padding:24px 32px;overflow-y:auto;flex:1;font-size:13px;color:var(--text);line-height:1.75">';
+box+='<div id="riskScrollBody" style="padding:24px 32px;overflow-y:auto;flex:1 1 auto;min-height:0;-webkit-overflow-scrolling:touch;font-size:13px;color:var(--text);line-height:1.75">';
 
 // Top warning banner
 box+='<div style="background:rgba(255,68,102,.06);border:1px solid rgba(255,68,102,.2);border-left:4px solid var(--red);border-radius:8px;padding:16px 18px;margin-bottom:24px;font-size:12px;color:var(--white);font-weight:600;line-height:1.7;text-transform:uppercase;letter-spacing:.3px">The risk of loss in trading commodity futures contracts can be substantial. You should carefully consider whether such trading is suitable for you in light of your circumstances and financial resources. You may lose more than your initial deposit.</div>';
@@ -2169,7 +2169,8 @@ box+='</div>'; // end scrolling body
 box+='<div style="padding:20px 32px;border-top:1px solid var(--bd);background:rgba(14,22,32,.4)">';
 box+='<label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:12px;color:var(--text);line-height:1.6;margin-bottom:14px"><input type="checkbox" id="riskAcceptBox" style="margin-top:3px;width:18px;height:18px;accent-color:var(--green);flex-shrink:0;cursor:pointer"><span><b style="color:var(--white)">I have read, understood, and agree to all sections of this Risk Disclosure & Subscriber Agreement.</b> I confirm that I am trading with risk capital that I can afford to lose, that I understand all performance shown is simulated, and that I accept full responsibility for all trading activity in my account. I authorize NQ Alpha to execute automated trades in my connected Tradovate account until I revoke this authorization by disconnecting.</span></label>';
 box+='<div style="display:flex;gap:12px"><button onclick="closeRiskModal()" style="flex:1;padding:13px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--muted);font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s" onmouseover="this.style.borderColor=\'var(--text)\';this.style.color=\'var(--text)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.color=\'var(--muted)\'">Cancel</button>';
-box+='<button id="riskAcceptBtn" onclick="acceptRiskDisclosure()" style="flex:2;padding:13px;background:var(--green);opacity:0.4;border:none;border-radius:8px;color:var(--bg);font-weight:800;cursor:not-allowed;font-family:var(--font);transition:all .2s;font-size:13px;letter-spacing:.3px">I Agree & Accept the Risks</button></div>';
+box+='<button id="riskAcceptBtn" disabled onclick="acceptRiskDisclosure()" style="flex:2;padding:13px;background:var(--green);opacity:0.4;border:none;border-radius:8px;color:var(--bg);font-weight:800;cursor:not-allowed;font-family:var(--font);transition:all .2s;font-size:13px;letter-spacing:.3px">I Agree & Accept the Risks</button></div>';
+box+='<div id="riskAcceptWarn" style="display:none;font-family:var(--mono);font-size:11px;color:var(--red);text-align:center;margin-top:10px">Check the box above to continue.</div>';
 box+='<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:12px;letter-spacing:.5px">YOUR ACCEPTANCE WILL BE TIMESTAMPED AND RECORDED</div>';
 box+='</div></div>';
 overlay.innerHTML=box;
@@ -2178,21 +2179,35 @@ overlay.addEventListener('click',function(e){if(e.target===overlay)closeRiskModa
 setTimeout(function(){
   var cb=document.getElementById('riskAcceptBox');
   var btn=document.getElementById('riskAcceptBtn');
-  if(cb&&btn){cb.addEventListener('change',function(){btn.style.opacity=cb.checked?'1':'0.4';btn.style.cursor=cb.checked?'pointer':'not-allowed';});}
+  if(cb&&btn){cb.addEventListener('change',function(){btn.disabled=!cb.checked;btn.style.opacity=cb.checked?'1':'0.4';btn.style.cursor=cb.checked?'pointer':'not-allowed';});btn.disabled=!cb.checked;}
 },50);
 }
 function closeRiskModal(){var m=document.getElementById('riskModal');if(m)m.remove();}
 async function acceptRiskDisclosure(){
 var cb=document.getElementById('riskAcceptBox');
-if(!cb||!cb.checked)return;
 var btn=document.getElementById('riskAcceptBtn');
+if(!cb||!cb.checked){
+  if(cb){
+    try{cb.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}
+    var lbl=cb.parentElement;
+    if(lbl){lbl.style.transition='background .2s';lbl.style.background='rgba(255,68,102,.14)';
+      setTimeout(function(){lbl.style.background='transparent';},900);}
+  }
+  var w=document.getElementById('riskAcceptWarn');if(w)w.style.display='block';
+  return;
+}
 btn.textContent='Accepting...';btn.disabled=true;
 try{
-  await apiCall('POST','/investor/accept-risk-disclosure');
+  await apiCall('POST','/investor/accept-risk-disclosure',{accepted:true});
+  if(!SESSION.investor)SESSION.investor={};
   SESSION.investor.risk_disclosure_accepted_at=new Date().toISOString();
   closeRiskModal();
   await renderDashContent();
-}catch(e){alert('Error: '+e.message);btn.textContent='I Agree & Accept the Risks';btn.disabled=false;}
+}catch(e){
+  if((e.message||'').indexOf('Session expired')!==-1){closeRiskModal();return;}
+  alert('Error: '+e.message);
+  btn.textContent='I Agree & Accept the Risks';btn.disabled=false;
+}
 }
 
 var dashTab='overview';
