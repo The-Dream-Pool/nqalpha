@@ -48,7 +48,8 @@ input::placeholder{color:var(--muted);}
 .page{display:none;}
 html.lock-scroll,html.lock-scroll body{overflow:hidden!important;height:100%;overscroll-behavior:none;}
 .page.active.login-mode{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
-.page.active.login-mode .login-wrap{min-height:0;height:100%;width:100%;box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;}.page.active{display:block;}
+.page.active.login-mode .login-wrap{min-height:0;height:100%;width:100%;box-sizing:border-box;overflow:hidden;touch-action:none;overscroll-behavior:none;}
+.page.active.login-mode .login-box{transform-origin:center center;}.page.active{display:block;}
 nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:none;position:sticky;top:0;background:rgba(4,8,13,.92);backdrop-filter:blur(16px);z-index:100;}nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.2),rgba(0,196,255,.15),transparent);}
 .nav-admin::after{background:linear-gradient(90deg,transparent,rgba(240,192,64,.3),rgba(240,192,64,.15),transparent)!important;}
 .admin-wrap .dash-card:hover{border-color:rgba(240,192,64,.2)!important;box-shadow:0 8px 24px rgba(0,0,0,.2),0 0 15px rgba(240,192,64,.04)!important;}
@@ -455,12 +456,16 @@ var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
 function fmtD(n){return"$"+n.toLocaleString();}
 function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
-var CITY_BUILD='202610081634';
+var CITY_BUILD='202610081655';
 function showPage(id,fromHistory){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);syncLoginLock();
   // keep the browser/phone back button inside the site: back from a login page returns to the homepage
   try{ if(!fromHistory){ if(id==='homePage'){ history.replaceState({page:'homePage'},'',location.pathname); } else { history.pushState({page:id},'',location.pathname+'#'+id.replace('Page','')); } } }catch(e){}
 }
-function syncLoginLock(){var p=document.querySelector('.page.active');var isLogin=!!(p&&p.querySelector(':scope > .login-wrap'));document.documentElement.classList.toggle('lock-scroll',isLogin);document.querySelectorAll('.page').forEach(function(x){x.classList.toggle('login-mode',x===p&&isLogin);});}
+function syncLoginLock(){var p=document.querySelector('.page.active');var isLogin=!!(p&&p.querySelector(':scope > .login-wrap'));document.documentElement.classList.toggle('lock-scroll',isLogin);document.querySelectorAll('.page').forEach(function(x){x.classList.toggle('login-mode',x===p&&isLogin);});fitLoginBox();}
+function fitLoginBox(){var box=document.querySelector('.page.active.login-mode .login-box');if(!box)return;box.style.transform='';var avail=(window.visualViewport?window.visualViewport.height:window.innerHeight)-24;var need=box.getBoundingClientRect().height;var k=need>avail?Math.max(.6,avail/need):1;box.style.transform=k<1?'scale('+k.toFixed(3)+')':'';}
+window.addEventListener('resize',fitLoginBox);if(window.visualViewport)window.visualViewport.addEventListener('resize',fitLoginBox);
+document.addEventListener('touchmove',function(e){if(document.documentElement.classList.contains('lock-scroll')&&!e.target.closest('input,textarea,select'))e.preventDefault();},{passive:false});
+document.addEventListener('wheel',function(e){if(document.documentElement.classList.contains('lock-scroll'))e.preventDefault();},{passive:false});
 window.addEventListener('popstate',function(e){var pg=(e.state&&e.state.page)||'homePage';if(document.getElementById(pg)){if(pg==='loginPage'){buildLogin();}else if(pg==='adminPage'){buildAdminLogin();}showPage(pg,true);}});
 var STRAT_ALIAS={'VWAP30':'ALPHA','VWAP28':'BETA','SMA25':'GAMMA','VWAP25':'DELTA'};
 function aliasStrat(s){return STRAT_ALIAS[s]||s;}
@@ -1800,7 +1805,8 @@ document.getElementById('loginPage').innerHTML=h;
 var token=getToken();
 if(token){apiCall('GET','/investor/profile').then(function(data){SESSION.investor=data;showPage('dashPage');buildDash(data.email);}).catch(function(){clearToken();});}
 }
-function toggleLogin(mode){
+function toggleLogin(){var r=toggleLogin_.apply(this,arguments);setTimeout(fitLoginBox,30);return r;}
+function toggleLogin_(mode){
 document.getElementById('ltLogin').className=mode==='login'?'active':'inactive';
 document.getElementById('ltSignup').className=mode==='signup'?'active':'inactive';
 document.getElementById('signupFields').style.display=mode==='signup'?'block':'none';
