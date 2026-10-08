@@ -297,7 +297,7 @@ function mockFeed(){
 async function api(path,opts={}){const h=Object.assign({},opts.headers||{});if(ADMIN)h['X-Admin-Key']=ADMIN;else if(TOKEN)h['Authorization']='Bearer '+TOKEN;const r=await fetch(API+path,Object.assign({},opts,{headers:h}));if(!r.ok)throw new Error(path+' '+r.status);return r.json();}
 async function loadLive(){
   const since=0; // the API bounds the window: master Jul 28–Aug 25 (CITY_MASTER_FROM/TO), investors from their connect date
-  if(!TOKEN&&!ADMIN){PUBLIC=true;const ev=await (await fetch(`${API}/city/public?since=${since}`)).json();return ev;}
+  if(!TOKEN&&!ADMIN){PUBLIC=true;Object.values(ALL_BOTS).forEach(b=>{b.sub=b.live?'MNQ':'in testing';});ALL_BOTS.nb.name='Epsilon';ALL_BOTS.king.name='Zeta';ME.demo=['nb','king'];const ev=await (await fetch(`${API}/city/public?since=${since}`)).json();return ev;}
   ME=await api('/city/me');
   const q=`since=${since}`+(ME.is_admin&&ACCT?`&account=${ACCT}`:'')+(ME.is_admin&&WANT_DEMO?'&demo=1':'');
   return api('/city/history?'+q);
@@ -308,7 +308,7 @@ function normalize(ev){ // lockout rows carry bot:'*' → one per live tower
 try{
   if(MOCK){BOTS=Object.values(ALL_BOTS);events=mockFeed();}
   else{const raw=await loadLive();
-    const ids=ME.is_admin?[...ME.strategies,...(WANT_DEMO?ME.demo:[])]:ME.strategies; BOTS=ids.map(id=>ALL_BOTS[id]).filter(Boolean);
+    const ids=ME.is_admin?[...ME.strategies,...(WANT_DEMO?ME.demo:[])]:[...ME.strategies,...(PUBLIC?ME.demo:[])]; BOTS=ids.map(id=>ALL_BOTS[id]).filter(Boolean);
     events=normalize(raw);}
 }catch(err){console.error(err);BOTS=Object.values(ALL_BOTS);events=mockFeed();window.__loadError=String(err);}
 { const first=events.length?events[0].t:Date.now()-7*86400e3; const lastT=events.length?events[events.length-1].t:Date.now(); const closed=Date.now()-lastT>3*86400e3; days=buildDays(first,closed?lastT:Date.now()); T_TOTAL=days.length*SESSION_S; window.__closedWindow=closed; }
@@ -539,6 +539,7 @@ function updateTag(tw){
   tw.tag.className='tag '+(tw.b.live?'':'demo ')+tw.state+(tw.b.live||showDemo?'':' hidden');
   tw.tag.querySelector('.st').textContent=STATE[tw.state];
   const wr=tw.n?Math.round(100*tw.wins/tw.n):0;
+  if(PUBLIC&&!tw.b.live){tw.tag.querySelector('.st').textContent='in development';tw.tag.querySelector('.pnl').innerHTML='<i>new strategy · coming soon</i>';return;}
   tw.tag.querySelector('.pnl').innerHTML=`<span style="color:${tw.pnl<0?'var(--red)':'var(--green)'}">${fmt$(tw.pnl)}</span> <i>· ${tw.n?wr+'% WR · ':''}${tw.b.sub}</i>`;
 }
 function push(html){tickerItems.push(html);if(tickerItems.length>6)tickerItems.shift();tickerEl.innerHTML=tickerItems.map(s=>`<span>${s}</span>`).join('');}
@@ -552,11 +553,12 @@ const togglePlay=()=>{if(sim>=T_TOTAL){seek(0);playing=true;}else playing=!playi
 playBtn.onclick=togglePlay;
 document.querySelectorAll('.spd').forEach(b=>b.onclick=()=>{document.querySelectorAll('.spd').forEach(x=>x.classList.remove('on'));b.classList.add('on');speed=+b.dataset.s;});
 const scrub=document.getElementById('scrub'); scrub.oninput=()=>seek(scrub.value/1000*T_TOTAL);
+if(PUBLIC) document.getElementById('demoToggle').style.display='none';
 document.getElementById('demoToggle').onclick=e=>{showDemo=!showDemo;e.target.textContent=showDemo?'Hide demo':'Show demo';towers.forEach(tw=>{if(!tw.b.live){tw.g.visible=showDemo;updateTag(tw);}});};
 /* ─── strategy drawer ─── */
 let drawerBot=null; const drawer=document.getElementById('drawer');
 const fmtTs=ms=>new Date(ms).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit',timeZone:'America/Chicago'});
-function openDrawer(id){drawerBot=id;renderDrawer(true);drawer.classList.add('open');document.getElementById('dClose').focus();}
+function openDrawer(id){if(PUBLIC&&!ALL_BOTS[id].live) return;drawerBot=id;renderDrawer(true);drawer.classList.add('open');document.getElementById('dClose').focus();}
 function closeDrawer(){drawerBot=null;drawer.classList.remove('open');}
 document.getElementById('dClose').onclick=closeDrawer;
 let drawerKey='';
@@ -758,7 +760,7 @@ function frame(){
 function fitCamera(){const a=innerWidth/innerHeight;camera.aspect=a;camera.updateProjectionMatrix();controls.maxDistance=a<1?210:96;if(a<1){const d=camera.position.length();if(d<160){camera.position.multiplyScalar(175/d);}}}
 addEventListener('resize',()=>{fitCamera();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 fitCamera();
-seek(0); applyUrlParams(); frame();
+towers.forEach(tw=>updateTag(tw)); seek(0); applyUrlParams(); frame();
 </script>
 </body>
 </html>
