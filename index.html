@@ -2020,16 +2020,16 @@ var h='';
 h+='<nav style="border-bottom:none;position:relative"><div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.2),rgba(0,196,255,.15),transparent)"></div><div class="logo"><div class="logo-dot" style="width:8px;height:8px;box-shadow:0 0 12px rgba(0,232,162,.5)"></div><span class="logo-text" style="font-size:16px">NQ ALPHA</span><span style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-left:6px;letter-spacing:2px">PORTAL</span></div><div style="display:flex;align-items:center;gap:16px"><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">'+(inv.email||email)+'</span><button class="btn" style="font-size:10px;padding:6px 16px" onclick="doLogout()">LOGOUT</button></div></nav>';
 h+='<div class="dash"><div class="dash-side" id="dashSide"></div><div class="dash-main" id="dashMain"></div></div>';
 document.getElementById('dashPage').innerHTML=h;
-dashTab='overview';renderDashTabs();await renderDashContent();
+dashTab='city';renderDashTabs();await renderDashContent();
 }
 async function doLogout(){try{destroyLiveChart();}catch(e){}try{await apiCall('POST','/auth/logout');}catch(e){}clearToken();showPage('homePage');}
 function renderDashTabs(){
 var inv=SESSION.investor||{};
 var tabs;
 if(!inv.is_approved){
-  tabs=[{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'city',l:'NQ Alpha City'},{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 } else {
-  tabs=[{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'rewards',l:'Inner Circle'},{id:'journey',l:'My Journey'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'city',l:'NQ Alpha City'},{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'rewards',l:'Inner Circle'},{id:'journey',l:'My Journey'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 }
 var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
 document.getElementById('dashSide').innerHTML=h;
@@ -2047,7 +2047,7 @@ var stats=profile.stats||{};var conn=profile.connection||{};var pos=profile.posi
 var h='';
 
 // ── WAITING ROOM — shown when investor is not yet approved ──
-if(!profile.is_approved && dashTab!=='settings'){
+if(!profile.is_approved && dashTab!=='settings' && dashTab!=='city'){
 
 // ── MEMBER VAULT GATE (once per session) ──
 var _vaultSeen=false;try{_vaultSeen=sessionStorage.getItem('nqaVault')==='1';}catch(e){}
@@ -2188,6 +2188,15 @@ h+='</div>'; // close relative wrapper
 
 m.innerHTML=h;
 return; // Don't render the rest of the dashboard
+}
+
+// ── NQ ALPHA CITY ──
+if(dashTab==='city'){
+  m.innerHTML='<div style="position:relative;height:calc(100vh - 140px);min-height:560px;border:1px solid var(--bd);border-radius:14px;overflow:hidden;background:#04080D">'
+    +'<iframe src="/city/?embed=1" title="NQ Alpha City" style="width:100%;height:100%;border:0;display:block" allow="fullscreen"></iframe>'
+    +'<a href="/city/" target="_blank" rel="noopener" style="position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:rgba(10,16,24,.8);border:1px solid var(--bd);border-radius:8px;padding:5px 9px;text-decoration:none">Open full screen</a>'
+    +'</div>';
+  return;
 }
 
 // ── REGULAR DASHBOARD (approved investors) ──
