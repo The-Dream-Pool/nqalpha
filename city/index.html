@@ -122,6 +122,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 #lErr{font-family:var(--mono);font-size:11px;color:var(--red);min-height:14px}
 body.public .tag{opacity:.6}
 html.embed #top .logo{visibility:hidden}
+html.embed #backBtn{display:none}
+#backBtn{border-color:rgba(0,232,162,.45);color:var(--white)}
 html.embed #whoOut{display:none}
 /* equity sparkline in bank tag */
 #eqPanel{position:fixed;right:20px;bottom:118px;width:260px;background:linear-gradient(160deg,rgba(10,16,24,.9),rgba(14,22,32,.8));border:1px solid var(--bd);border-radius:12px;padding:10px 12px 8px}
@@ -166,7 +168,7 @@ body.cine #exitCine{display:inline-flex}
 
 <div class="hud">
   <div id="top">
-    <div class="logo"><span class="logo-dot"></span><span class="logo-text">NQ Alpha</span><span class="logo-sub">CITY</span></div>
+    <div style="display:flex;align-items:center;gap:14px"><div class="logo"><span class="logo-dot"></span><span class="logo-text">NQ Alpha</span><span class="logo-sub">CITY</span></div><a class="btn" id="backBtn" href="/" style="text-decoration:none">← Back to site</a></div>
     <div style="display:flex;gap:10px;align-items:flex-start"><div id="who"></div><div id="clock"><b id="clockT">—</b><span id="clockD">—</span></div></div>
   </div>
   <div id="tags" class="tags-wrap"></div>
@@ -208,7 +210,7 @@ body.cine #exitCine{display:inline-flex}
       <div class="lbl">Sign in to see your city</div>
       <input id="lEmail" type="email" placeholder="Email" autocomplete="username">
       <input id="lPass" type="password" placeholder="Password" autocomplete="current-password">
-      <div class="row2"><button class="btn" type="submit">Log in</button><button class="btn" type="button" id="lAdmin">Admin</button><button class="btn" type="button" id="lSkip">Watch demo</button></div>
+      <div class="row2"><button class="btn" type="submit">Log in</button><button class="btn" type="button" id="lSkip">Watch demo</button></div>
       <div id="lErr"></div>
     </form>
   </div>
@@ -257,7 +259,7 @@ const ALL_BOTS={
 const QS=new URLSearchParams(location.search);
 const MOCK=QS.get('mock')==='1'; const EMBED=QS.get('embed')==='1'; if(EMBED) document.documentElement.classList.add('embed');
 const TOKEN=localStorage.getItem('nq_token'), ADMIN=localStorage.getItem('nq_admin_token');
-const ACCT=QS.get('account'); const WANT_DEMO=QS.get('demo')==='1';
+const ACCT=QS.get('account'); const WANT_DEMO=QS.get('demo')!=='0';
 let ME={is_admin:false,account_id:0,name:'Demo',connected:false,strategies:['alpha','beta','gamma','delta'],demo:[],investors:[]};
 let PUBLIC=false;
 
@@ -689,8 +691,8 @@ function updateOcclusion(){
   if(MOCK){ w.innerHTML='<b>Simulated feed</b><a href="?">switch to live</a>'; }
   else if(PUBLIC){ w.innerHTML='<b>Demo · 15 min delay</b><a href="#" id="whoLogin">Log in to see your city</a>'; document.body.classList.add('public'); }
   else if(ME.is_admin){ const opts=['<option value="">Master account</option>'].concat((ME.investors||[]).map(i=>`<option value="${i.id}" ${String(i.id)===String(ACCT)?'selected':''}>${i.name||i.email}${i.connected?'':' · not connected'}</option>`)).join('');
-    w.innerHTML=`<b>Admin</b><select id="acctSel">${opts}</select><label style="display:block;margin-top:4px"><input type="checkbox" id="demoChk" ${WANT_DEMO?'checked':''}> show demo towers</label>`;
-    const go=()=>{const u=new URL(location.href);const v=document.getElementById('acctSel').value;v?u.searchParams.set('account',v):u.searchParams.delete('account');document.getElementById('demoChk').checked?u.searchParams.set('demo','1'):u.searchParams.delete('demo');location.href=u;};
+    w.innerHTML=`<b>Admin</b><select id="acctSel">${opts}</select><label style="display:block;margin-top:4px"><input type="checkbox" id="demoChk" ${WANT_DEMO?'checked':''}> show towers in development</label>`;
+    const go=()=>{const u=new URL(location.href);const v=document.getElementById('acctSel').value;v?u.searchParams.set('account',v):u.searchParams.delete('account');document.getElementById('demoChk').checked?u.searchParams.delete('demo'):u.searchParams.set('demo','0');location.href=u;};
     document.getElementById('acctSel').onchange=go; document.getElementById('demoChk').onchange=go; }
   else { w.innerHTML=`<b>${ME.name||'Investor'}</b>${ME.connected?'Tradovate connected':'<span style="color:var(--gold)">not connected</span>'}${ME.since?' · since '+new Date(ME.since).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/Chicago'}):''} · <a href="#" id="whoOut">log out</a>`; }
   if(window.__loadError) w.innerHTML+='<div style="color:var(--red)">feed offline · showing simulation</div>';
@@ -699,7 +701,6 @@ function updateOcclusion(){
   document.getElementById('whoOut')?.addEventListener('click',e=>{e.preventDefault();localStorage.removeItem('nq_token');localStorage.removeItem('nq_admin_token');location.reload();});
   document.getElementById('lSkip').onclick=()=>login.style.display='none';
   document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();err.textContent='';try{const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('lEmail').value,password:document.getElementById('lPass').value})});const d=await r.json();if(!d.token)throw new Error(d.detail||'Login failed');localStorage.setItem('nq_token',d.token);location.reload();}catch(x){err.textContent=x.message;}};
-  document.getElementById('lAdmin').onclick=async()=>{err.textContent='';try{const r=await fetch(API+'/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:document.getElementById('lPass').value})});const d=await r.json();if(!d.token)throw new Error('Invalid admin password');localStorage.setItem('nq_admin_token',d.token);location.reload();}catch(x){err.textContent=x.message;}};
   if(PUBLIC&&!MOCK&&!QS.has('cine')&&!EMBED) login.style.display='flex';
 }
 
