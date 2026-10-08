@@ -527,7 +527,7 @@ const STATE={watching:'watching',armed:'armed',in_trade:'in trade',locked:'profi
 
 function applyEvent(e,now){
   const tw=towers.get(e.bot),b=tw.b;
-  if(e.type==='signal'){tw.state='armed';}
+  if(e.type==='signal'){tw.state='armed';tw.armT=e.t;if(e.px)push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="arm">limit resting @ ${(+e.px).toLocaleString()}</span>`);}
   else if(e.type==='fill'){tw.state='in_trade';if(now>=0){tw.burstT=now;tw.burstCol=C.green;}tw.n++;tw.open={t:e.t,qty:e.qty,px:e.px};push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="arm">bought ${e.qty} MNQ @ ${e.px.toLocaleString()}</span>`);}
   else if(e.type==='exit'){
     if(e.reason==='profit_lock'){tw.state='locked';push(`<b>${b.name}</b> <span class="lock">profit locked · done for the day</span>`);}
@@ -744,6 +744,7 @@ function frame(){
   const k=reduced?1:1-Math.pow(.001,dt);
   towers.forEach(tw=>{
     if(tw.state==='lockout'&&tw.lockT&&ms-tw.lockT>30*60e3){tw.state='watching';updateTag(tw);}
+    if(tw.state==='armed'&&tw.armT&&ms-tw.armT>20*60e3){tw.state='watching';updateTag(tw);}
     const s=tw.state, target=colFor[s]||tw.accent;
     tw.beam.material.color.lerp(target,k); tw.halo.material.color.copy(tw.beam.material.color);
     const pulse=s==='armed'?.55+.45*Math.sin(now*5):1;
