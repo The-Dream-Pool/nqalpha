@@ -193,6 +193,7 @@ body.cine #exitCine{display:inline-flex}
       <button class="btn spd" data-s="60">1m/s</button>
       <button class="btn spd on" data-s="900">15m/s</button>
       <button class="btn spd" data-s="7200">2h/s</button>
+      <button class="btn spd" id="spdDemo" data-s="7200" title="Play the whole period in about two minutes">2-min run</button>
       <button class="btn" id="demoToggle">Hide demo</button>
       <button class="btn" id="cineBtn" title="Hide the HUD and orbit slowly for recording">Cinematic</button>
       <button class="btn" id="liveBtn" title="Pin the clock to now and stream new trades">Live</button>
@@ -663,7 +664,8 @@ document.getElementById('exitCine').onclick=()=>setCine(false);
 
 /* ─── url params: ?day=14&bot=alpha&cine=1&speed=900&paused=1 ─── */
 function applyUrlParams(){ const u=new URLSearchParams(location.search);
-  if(PUBLIC&&!u.get('speed')) document.querySelector('.spd[data-s="7200"]').click();
+  const demoBtn=document.getElementById('spdDemo'); demoBtn.dataset.s=String(Math.ceil(T_TOTAL/120));
+  if((PUBLIC||FORCE_PUBLIC)&&!u.get('speed')) demoBtn.click();
   const sp=u.get('speed'); if(sp&&document.querySelector(`.spd[data-s="${sp}"]`)) document.querySelector(`.spd[data-s="${sp}"]`).click();
   const d=parseInt(u.get('day')); if(d>=1&&d<=days.length){ seek((d-1)*SESSION_S); lastDi=d-1; }
   const b=u.get('bot'); if(b&&towers.has(b)) openDrawer(b);
@@ -693,9 +695,9 @@ function updateOcclusion(){
   if(MOCK){ w.innerHTML='<b>Simulated feed</b><a href="?">switch to live</a>'; }
   else if(PUBLIC){ w.innerHTML='<b>Live account · Jul 28 – Aug 25</b>'+(FORCE_PUBLIC?'':'<a href="/">Log in on nqalpha.com to see your city</a>'); document.body.classList.add('public'); }
   else if(ME.is_admin){ const opts=['<option value="">Master account</option>'].concat((ME.investors||[]).map(i=>`<option value="${i.id}" ${String(i.id)===String(ACCT)?'selected':''}>${i.name||i.email}${i.connected?'':' · not connected'}</option>`)).join('');
-    w.innerHTML=`<b>Admin</b><select id="acctSel">${opts}</select><label style="display:block;margin-top:4px"><input type="checkbox" id="demoChk" ${WANT_DEMO?'checked':''}> show towers in development</label>`;
-    const go=()=>{const u=new URL(location.href);const v=document.getElementById('acctSel').value;v?u.searchParams.set('account',v):u.searchParams.delete('account');document.getElementById('demoChk').checked?u.searchParams.delete('demo'):u.searchParams.set('demo','0');location.href=u;};
-    document.getElementById('acctSel').onchange=go; document.getElementById('demoChk').onchange=go; }
+    w.innerHTML=`<b>Admin</b><select id="acctSel">${opts}</select>`;
+    const go=()=>{const u=new URL(location.href);const v=document.getElementById('acctSel').value;v?u.searchParams.set('account',v):u.searchParams.delete('account');location.href=u;};
+    document.getElementById('acctSel').onchange=go; }
   else { w.innerHTML=`<b>${ME.name||'Investor'}</b>${ME.connected?'Tradovate connected':'<span style="color:var(--gold)">not connected</span>'}${ME.since?' · since '+new Date(ME.since).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/Chicago'}):''} · <a href="#" id="whoOut">log out</a>`; }
   if(window.__loadError) w.innerHTML+='<div style="color:var(--red)">feed offline · showing simulation</div>';
   const login=document.getElementById('login'), err=document.getElementById('lErr');
