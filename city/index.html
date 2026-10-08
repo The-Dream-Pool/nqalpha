@@ -110,7 +110,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .tag{cursor:pointer} .tag:hover{border-color:var(--white)}
 #who{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:right;padding-top:6px}
 #who b{color:var(--white);font-weight:500;display:block}
-#who select{background:var(--sf);border:1px solid var(--bd);color:var(--text);font:inherit;border-radius:6px;padding:3px 6px;margin-top:4px}
+#controls select.btn{appearance:none;-webkit-appearance:none;padding-right:22px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 12px) 50%,calc(100% - 8px) 50%;background-size:4px 4px;background-repeat:no-repeat;max-width:200px;text-overflow:ellipsis}
 #who a{color:var(--green);text-decoration:none}
 #liveBtn.on{border-color:var(--red);color:var(--red)}
 #login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,8,13,.75);backdrop-filter:blur(10px);z-index:6}
@@ -695,7 +695,8 @@ function updateOcclusion(){
   if(MOCK){ w.innerHTML='<b>Simulated feed</b><a href="?">switch to live</a>'; }
   else if(PUBLIC){ w.innerHTML='<b>Live account · Jul 28 – Aug 25</b>'+(FORCE_PUBLIC?'':'<a href="/">Log in on nqalpha.com to see your city</a>'); document.body.classList.add('public'); }
   else if(ME.is_admin){ const opts=['<option value="">Master account</option>'].concat((ME.investors||[]).map(i=>`<option value="${i.id}" ${String(i.id)===String(ACCT)?'selected':''}>${i.name||i.email}${i.connected?'':' · not connected'}</option>`)).join('');
-    w.innerHTML=`<b>Admin</b><select id="acctSel">${opts}</select>`;
+    w.innerHTML=`<b>Admin</b>master view`;
+    const sel=document.createElement('select'); sel.id='acctSel'; sel.className='btn'; sel.innerHTML=opts; sel.title='Switch to an investor\'s city'; document.getElementById('controls').appendChild(sel);
     const go=()=>{const u=new URL(location.href);const v=document.getElementById('acctSel').value;v?u.searchParams.set('account',v):u.searchParams.delete('account');location.href=u;};
     document.getElementById('acctSel').onchange=go; }
   else { w.innerHTML=`<b>${ME.name||'Investor'}</b>${ME.connected?'Tradovate connected':'<span style="color:var(--gold)">not connected</span>'}${ME.since?' · since '+new Date(ME.since).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'America/Chicago'}):''} · <a href="#" id="whoOut">log out</a>`; }
