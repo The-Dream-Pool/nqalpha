@@ -45,7 +45,10 @@ input::placeholder{color:var(--muted);}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes shimmer{0%{left:-100%}100%{left:200%}}
 @keyframes rwdShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-.page{display:none;}.page.active{display:block;}
+.page{display:none;}
+html.lock-scroll,html.lock-scroll body{overflow:hidden!important;height:100%;overscroll-behavior:none;}
+#loginPage.active,#adminPage.active{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
+#loginPage.active .login-wrap,#adminPage.active .login-wrap{min-height:0;height:100%;width:100%;box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;}.page.active{display:block;}
 nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:none;position:sticky;top:0;background:rgba(4,8,13,.92);backdrop-filter:blur(16px);z-index:100;}nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,232,162,.2),rgba(0,196,255,.15),transparent);}
 .nav-admin::after{background:linear-gradient(90deg,transparent,rgba(240,192,64,.3),rgba(240,192,64,.15),transparent)!important;}
 .admin-wrap .dash-card:hover{border-color:rgba(240,192,64,.2)!important;box-shadow:0 8px 24px rgba(0,0,0,.2),0 0 15px rgba(240,192,64,.04)!important;}
@@ -452,7 +455,7 @@ var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
 function fmtD(n){return"$"+n.toLocaleString();}
 function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
-function showPage(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showPage(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);document.documentElement.classList.toggle('lock-scroll',id==='loginPage'||id==='adminPage');}
 var STRAT_ALIAS={'VWAP30':'ALPHA','VWAP28':'BETA','SMA25':'GAMMA','VWAP25':'DELTA'};
 function aliasStrat(s){return STRAT_ALIAS[s]||s;}
 
