@@ -455,7 +455,7 @@ var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
 function fmtD(n){return"$"+n.toLocaleString();}
 function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
-var CITY_BUILD='202610081600';
+var CITY_BUILD='202610081605';
 function showPage(id,fromHistory){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);syncLoginLock();
   // keep the browser/phone back button inside the site: back from a login page returns to the homepage
   try{ if(!fromHistory){ if(id==='homePage'){ history.replaceState({page:'homePage'},'',location.pathname); } else { history.pushState({page:id},'',location.pathname+'#'+id.replace('Page','')); } } }catch(e){}
@@ -2030,16 +2030,16 @@ h+='<nav style="border-bottom:none;position:relative"><div style="position:absol
 h+='<div class="dash"><div class="dash-side" id="dashSide"></div><div class="dash-main" id="dashMain"></div></div>';
 document.getElementById('dashPage').innerHTML=h;
 syncLoginLock();
-dashTab='city';renderDashTabs();await renderDashContent();
+dashTab='overview';renderDashTabs();await renderDashContent();
 }
 async function doLogout(){try{destroyLiveChart();}catch(e){}try{await apiCall('POST','/auth/logout');}catch(e){}clearToken();showPage('homePage');}
 function renderDashTabs(){
 var inv=SESSION.investor||{};
 var tabs;
 if(!inv.is_approved){
-  tabs=[{id:'city',l:'NQ Alpha City'},{id:'overview',l:'Overview'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'overview',l:'Overview'},{id:'city',l:'NQ Alpha City'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 } else {
-  tabs=[{id:'city',l:'NQ Alpha City'},{id:'overview',l:'Overview'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'rewards',l:'Inner Circle'},{id:'journey',l:'My Journey'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
+  tabs=[{id:'overview',l:'Overview'},{id:'city',l:'NQ Alpha City'},{id:'pnl',l:'P&L Tracker'},{id:'chart',l:'Live Chart'},{id:'rewards',l:'Inner Circle'},{id:'journey',l:'My Journey'},{id:'connect',l:'Connect'},{id:'billing',l:'Billing'},{id:'help',l:'Help'},{id:'settings',l:'Settings'}];
 }
 var h='';tabs.forEach(function(t){h+='<button class="dash-tab'+(dashTab===t.id?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.l+'</button>';});
 document.getElementById('dashSide').innerHTML=h;
@@ -4200,14 +4200,14 @@ async function adminApi(method,path,body){
   return data;
 }
 
-var adminTab='city';
+var adminTab='health';
 async function buildAdminDash(){
   showPage('adminPage');
   var h='<nav class="nav-admin" style="border-bottom:none;position:relative"><div class="logo"><div class="logo-dot" style="background:var(--gold);box-shadow:0 0 14px rgba(240,192,64,.5),0 0 30px rgba(240,192,64,.2);width:8px;height:8px"></div><span class="logo-text" style="font-size:16px">NQ ALPHA</span><span style="font-family:var(--mono);font-size:9px;color:var(--gold);margin-left:6px;letter-spacing:2px">ADMIN</span></div><button class="btn" style="font-size:10px;padding:6px 16px;border-color:rgba(240,192,64,.3);color:var(--gold)" onclick="adminLogout()">LOGOUT</button></nav>';
   h+='<div class="dash"><div class="dash-side" id="adminSide"></div><div class="dash-main" id="adminMain"></div></div>';
   document.getElementById('adminPage').innerHTML=h;
   syncLoginLock();
-  adminTab='city';
+  adminTab='health';
   renderAdminTabs();
   await renderAdminContent();
 }
@@ -4313,7 +4313,7 @@ async function doFlattenAll(){
 }
 
 function renderAdminTabs(){
-  var tabs=[{id:'city',l:'NQ Alpha City'},{id:'health',l:'System Health'},{id:'master_account',l:'Master Account'},{id:'master',l:'Master Trades'},{id:'daily',l:'Daily P&L'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'billing',l:'Billing'},{id:'pending',l:'Pending'},{id:'promos',l:'Promos'},{id:'referrals',l:'Referrals'}];
+  var tabs=[{id:'health',l:'System Health'},{id:'city',l:'NQ Alpha City'},{id:'master_account',l:'Master Account'},{id:'master',l:'Master Trades'},{id:'daily',l:'Daily P&L'},{id:'investor_pnl',l:'Investor P&L'},{id:'investors',l:'Investors'},{id:'billing',l:'Billing'},{id:'pending',l:'Pending'},{id:'promos',l:'Promos'},{id:'referrals',l:'Referrals'}];
   var h='';
   tabs.forEach(function(t){
     h+='<button class="dash-tab'+(adminTab===t.id?' active':'')+'" style="'+(adminTab===t.id?'color:var(--gold);background:linear-gradient(135deg,rgba(240,192,64,.08),rgba(240,192,64,.03));box-shadow:0 0 15px rgba(240,192,64,.05)':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.l+'</button>';
