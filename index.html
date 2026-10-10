@@ -46,6 +46,7 @@ input::placeholder{color:var(--muted);}
 @keyframes shimmer{0%{left:-100%}100%{left:200%}}
 @keyframes rwdShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .page{display:none;}
+@media (max-width:640px){.cityFull{display:none!important}}
 html.lock-scroll,html.lock-scroll body{overflow:hidden!important;height:100%;overscroll-behavior:none;}
 .page.active.login-mode{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);}
 .page.active.login-mode .login-wrap{min-height:0;height:100%;width:100%;box-sizing:border-box;overflow:hidden;touch-action:none;overscroll-behavior:none;}
@@ -456,7 +457,7 @@ var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
 function fmtD(n){return"$"+n.toLocaleString();}
 function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
-var CITY_BUILD='202610081655';
+var CITY_BUILD='202610082237';
 function showPage(id,fromHistory){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);syncLoginLock();
   // keep the browser/phone back button inside the site: back from a login page returns to the homepage
   try{ if(!fromHistory){ if(id==='homePage'){ history.replaceState({page:'homePage'},'',location.pathname); } else { history.pushState({page:id},'',location.pathname+'#'+id.replace('Page','')); } } }catch(e){}
@@ -2211,7 +2212,7 @@ return; // Don't render the rest of the dashboard
 if(dashTab==='city'){
   m.innerHTML='<div style="position:relative;height:calc(100vh - 140px);min-height:560px;border:1px solid var(--bd);border-radius:14px;overflow:hidden;background:#04080D">'
     +'<iframe src="/city/?embed=1&v='+CITY_BUILD+'" title="NQ Alpha City" style="width:100%;height:100%;border:0;display:block" allow="fullscreen"></iframe>'
-    +'<a href="/city/?v='+CITY_BUILD+'" target="_blank" rel="noopener" style="position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:rgba(10,16,24,.8);border:1px solid var(--bd);border-radius:8px;padding:5px 9px;text-decoration:none">Open full screen</a>'
+    +'<a href="/city/?v='+CITY_BUILD+'" target="_blank" rel="noopener" class="cityFull" style="position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:rgba(10,16,24,.8);border:1px solid var(--bd);border-radius:8px;padding:5px 9px;text-decoration:none">Open full screen</a>'
     +'</div>';
   return;
 }
@@ -4336,7 +4337,7 @@ async function renderAdminContent(){
   if(adminTab==='city'){
     m.innerHTML='<div style="position:relative;height:calc(100vh - 140px);min-height:560px;border:1px solid rgba(240,192,64,.25);border-radius:14px;overflow:hidden;background:#04080D">'
       +'<iframe src="/city/?embed=1&v='+CITY_BUILD+'" title="NQ Alpha City" style="width:100%;height:100%;border:0;display:block" allow="fullscreen"></iframe>'
-      +'<a href="/city/?v='+CITY_BUILD+'" target="_blank" rel="noopener" style="position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:rgba(10,16,24,.8);border:1px solid var(--bd);border-radius:8px;padding:5px 9px;text-decoration:none">Open full screen</a>'
+      +'<a href="/city/?v='+CITY_BUILD+'" target="_blank" rel="noopener" class="cityFull" style="position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:rgba(10,16,24,.8);border:1px solid var(--bd);border-radius:8px;padding:5px 9px;text-decoration:none">Open full screen</a>'
       +'</div>';
     return;
   }
