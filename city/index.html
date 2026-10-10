@@ -160,6 +160,38 @@ body.cine #exitCine{display:inline-flex}
   .btn{padding:6px 8px;font-size:9px}
   #drawer{width:100vw} #drawer .stats{grid-template-columns:repeat(3,1fr);gap:6px;padding:10px 16px} #drawer .hd,#drawer .list{padding-left:16px;padding-right:16px}
 }
+/* ── phone layout: chips instead of floating tags, equity in the bottom stack ── */
+#chips{display:none}
+@media (max-width:640px){
+  #top{top:10px;left:12px;right:12px;align-items:center}
+  html.embed #top .logo{display:none}
+  html.embed #top > div:first-child{display:none}
+  #top > div:last-child{width:100%;justify-content:space-between;align-items:center}
+  #who{text-align:left;padding-top:0;font-size:9px} #who b{font-size:11px}
+  #clock b{font-size:14px} #clock span{font-size:8px}
+  #tags{display:none}
+  #vaultTag{padding:5px 10px;border-radius:8px;transform:translate(-50%,-100%)}
+  #vaultTag b{font-size:13px;letter-spacing:-.3px} #vaultTag span{font-size:7px;letter-spacing:1px}
+  #vaultTag{padding:4px 9px}
+  #eqPanel{display:none}
+  #dayOv{bottom:auto;top:52px;left:12px;right:12px;transform:none;max-width:none} #dayOv.on{transform:none}
+  #dayOv .in{justify-content:center;padding:5px 10px} #dayOv .d{font-size:11px} #dayOv .k,#dayOv .p{font-size:9px}
+  #chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+  #chips::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--white);font-weight:600;white-space:nowrap}
+  .chip i{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+  .chip.demo{border-style:dashed;color:var(--text)}
+  .chip.armed i{background:var(--cyan)} .chip.in_trade i{background:var(--green);box-shadow:0 0 8px var(--green)} .chip.locked i{background:var(--gold)} .chip.lockout i{background:var(--red)}
+  .chip span{font-family:var(--mono);font-weight:500;font-size:10px}
+  .chip span.up{color:var(--green)} .chip span.dn{color:var(--red)}
+  #bottom{gap:6px;padding:0 12px 10px}
+  #days{padding:0} .day{font-size:9px;padding:4px 6px}
+  #ticker{font-size:10px;height:18px}
+  #controls{gap:5px} .btn{padding:5px 7px;font-size:9px;letter-spacing:.5px}
+  .spd[data-s="60"],.spd[data-s="7200"],#cineBtn{display:none}
+  #controls select.btn{flex-basis:100%;max-width:none}
+  #backBtn{padding:4px 7px;font-size:9px}
+}
 @media (prefers-reduced-motion:reduce){ .tag,.btn,#vaultTag{transition:none} .logo-dot{animation:none} }
 </style>
 </head>
@@ -185,6 +217,7 @@ body.cine #exitCine{display:inline-flex}
     <span><i style="background:var(--violet)"></i>in testing · under construction</span>
   </div>
   <div id="bottom">
+    <div id="chips"></div>
     <div id="days"></div>
     <div id="ticker"></div>
     <div id="controls">
@@ -539,7 +572,9 @@ function applyEvent(e,now){
   else if(e.type==='lockout'){tw.state='lockout';tw.lockT=e.t;tw.open=null;push(`<b>${b.name}</b> <span class="dn">2 stops in 10 min · filter b lockout</span>`);}
   updateTag(tw); if(drawerBot===e.bot) renderDrawer();
 }
-function updateTag(tw){
+function updateChip(tw){ if(!tw.chip) return; tw.chip.className='chip '+(tw.b.live?'':'demo ')+tw.state;
+  const pnlEl=tw.chip.querySelector('span'); if(PUBLIC&&!tw.b.live){pnlEl.textContent='building';pnlEl.className='';} else {pnlEl.textContent=fmt$(tw.pnl);pnlEl.className=tw.pnl<0?'dn':'up';} }
+function updateTag(tw){ updateChip(tw);
   tw.tag.className='tag '+(tw.b.live?'':'demo ')+tw.state+(tw.b.live||showDemo?'':' hidden');
   tw.tag.querySelector('.st').textContent=STATE[tw.state];
   const wr=tw.n?Math.round(100*tw.wins/tw.n):0;
@@ -735,7 +770,7 @@ function frame(){
     document.getElementById('clockT').textContent=fmtT(ms); document.getElementById('clockD').textContent=new Date(ms).toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric',timeZone:'America/Chicago'});
     scrub.value=Math.round(sim/T_TOTAL*1000);
     const vp=document.getElementById('vaultPnl'); vp.textContent=fmt$(total); vp.className=total<0?'dn':'up';
-    document.getElementById('vaultSub').textContent=`${di+1} trading days · tap for P&L`;
+    document.getElementById('vaultSub').textContent=innerWidth<=640?'tap for P&L':`${di+1} trading days · tap for P&L`;
     dayEls.forEach((el,i)=>{el.classList.toggle('future',i>di);el.classList.toggle('cur',i===di);el.classList.toggle('neg',perDayPnl[i]<0);el.querySelector('em').textContent=i<=di?fmt$(perDayPnl[i]):'—';});
     dayEls[di]?.scrollIntoView({inline:'center',block:'nearest',behavior:reduced?'auto':'smooth'});
     drawSpark(di);
@@ -756,7 +791,7 @@ function frame(){
   });
   updateTrucks(now);
   const bf=now-bank.userData.flashT; bank.userData.light.intensity=24+4*Math.sin(now*2)+(bf<.8?40*(1-bf/.8):0);
-  project(bank,vt,16.5);
+  project(bank,vt,innerWidth<=640?13.5:16.5);
   for(let i=0;i<40;i++){const a=now*.11+i*(Math.PI*2/40)*(i%2?1:-1);m.compose(v1.set(Math.cos(a)*35.6,1.6,Math.sin(a)*35.6),q,new THREE.Vector3(1,1,1));cars.setMatrixAt(i,m);} cars.instanceMatrix.needsUpdate=true;
   stars.material.uniforms.uT.value=now;
   controls.autoRotate=playing&&!reduced; controls.autoRotateSpeed=cine?.55:.3; controls.update();
@@ -766,6 +801,9 @@ function frame(){
 function fitCamera(){const a=innerWidth/innerHeight;camera.aspect=a;camera.updateProjectionMatrix();controls.maxDistance=a<1?210:96;if(a<1){const d=camera.position.length();if(d<160){camera.position.multiplyScalar(175/d);}}}
 addEventListener('resize',()=>{fitCamera();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);});
 fitCamera();
+{ const chips=document.getElementById('chips');
+  towers.forEach((tw,id)=>{ const c=document.createElement('button'); c.type='button'; c.className='chip'; c.innerHTML=`<i></i>${tw.b.name}<span>+$0</span>`; c.onclick=()=>openDrawer(id); chips.appendChild(c); tw.chip=c; });
+  const narrow=matchMedia('(max-width:640px)').matches; if(narrow){ const eq=document.getElementById('eqPanel'); const bottom=document.getElementById('bottom'); bottom.insertBefore(eq,chips); } }
 towers.forEach(tw=>updateTag(tw)); seek(0); applyUrlParams(); frame();
 </script>
 </body>
