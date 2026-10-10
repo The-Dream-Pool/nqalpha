@@ -287,8 +287,8 @@ const ALL_BOTS={
   beta: {id:'beta', name:'Beta', sub:'VWAP28 · MNQ',live:true,h:19},
   gamma:{id:'gamma',name:'Gamma',sub:'SMA25 · MNQ', live:true,h:17},
   delta:{id:'delta',name:'Delta',sub:'VWAP25 · MNQ',live:true,h:20},
-  nb:   {id:'nb',   name:'Node Bounce',     sub:'GEX · 3m',live:false,h:16},
-  king: {id:'king', name:'King Node Magnet',sub:'GEX · 3m',live:false,h:18},
+  mnq:  {id:'mnq',  name:'MNQ Book',sub:'node strategies · MNQ',live:false,h:16},
+  mes:  {id:'mes',  name:'MES Book',sub:'node strategies · MES',live:false,h:18},
 };
 const QS=new URLSearchParams(location.search);
 const MOCK=QS.get('mock')==='1'; const EMBED=QS.get('embed')==='1'; if(EMBED) document.documentElement.classList.add('embed');
@@ -334,7 +334,7 @@ function mockFeed(){
 async function api(path,opts={}){const h=Object.assign({},opts.headers||{});if(ADMIN)h['X-Admin-Key']=ADMIN;else if(TOKEN)h['Authorization']='Bearer '+TOKEN;const r=await fetch(API+path,Object.assign({},opts,{headers:h}));if(!r.ok)throw new Error(path+' '+r.status);return r.json();}
 async function loadLive(){
   const since=0; // the API bounds the window: master Jul 28–Aug 25 (CITY_MASTER_FROM/TO), investors from their connect date
-  if(!TOKEN&&!ADMIN){PUBLIC=true;Object.values(ALL_BOTS).forEach(b=>{b.sub=b.live?'MNQ':'in testing';});ALL_BOTS.nb.name='Epsilon';ALL_BOTS.king.name='Zeta';ME.demo=['nb','king'];const ev=await (await fetch(`${API}/city/public?since=${since}`)).json();return ev;}
+  if(!TOKEN&&!ADMIN){PUBLIC=true;Object.values(ALL_BOTS).forEach(b=>{b.sub=b.live?'MNQ':'in testing';});ALL_BOTS.mnq.name='Epsilon';ALL_BOTS.mes.name='Zeta';ME.demo=['mnq','mes'];const ev=await (await fetch(`${API}/city/public?since=${since}`)).json();return ev;}
   ME=await api('/city/me');
   const q=`since=${since}`+(ME.is_admin&&ACCT?`&account=${ACCT}`:'')+(ME.is_admin&&WANT_DEMO?'&demo=1':'');
   return api('/city/history?'+q);
@@ -560,11 +560,11 @@ const STATE={watching:'watching',armed:'armed',in_trade:'in trade',locked:'profi
 
 function applyEvent(e,now){
   const tw=towers.get(e.bot),b=tw.b;
-  if(e.type==='signal'){tw.state='armed';tw.armT=e.t;if(e.px)push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="arm">limit resting @ ${(+e.px).toLocaleString()}</span>`);}
-  else if(e.type==='fill'){tw.state='in_trade';if(now>=0){tw.burstT=now;tw.burstCol=C.green;}tw.n++;tw.open={t:e.t,qty:e.qty,px:e.px};push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="arm">bought ${e.qty} MNQ @ ${e.px.toLocaleString()}</span>`);}
+  if(e.type==='signal'){tw.state='armed';tw.armT=e.t;if(e.px)push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="arm">limit resting @ ${(+e.px).toLocaleString()}${e.strategy?' · '+e.strategy:''}</span>`);}
+  else if(e.type==='fill'){tw.state='in_trade';if(now>=0){tw.burstT=now;tw.burstCol=C.green;}tw.n++;tw.open={t:e.t,qty:e.qty,px:e.px,sym:e.sym||'MNQ',strategy:e.strategy||'',dir:e.dir||'LONG'};push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="arm">${(e.dir||'LONG')==='SHORT'?'sold':'bought'} ${e.qty} ${e.sym||'MNQ'} @ ${e.px.toLocaleString()}${e.strategy?' · '+e.strategy:''}</span>`);}
   else if(e.type==='exit'){
     if(e.reason==='profit_lock'){tw.state='locked';push(`<b>${b.name}</b> <span class="lock">profit locked · done for the day</span>`);}
-    else{tw.state='watching';tw.pnl+=e.pnl;if(e.pnl>0)tw.wins++;if(tw.open){tw.trades.push({entryT:tw.open.t,exitT:e.t,qty:tw.open.qty,entryPx:tw.open.px,exitPx:e.px,pts:e.pts,pnl:e.pnl,reason:e.reason});tw.open=null;}if(b.live){total+=e.pnl;perDayPnl[dayIdx(e.t)]+=e.pnl;}
+    else{tw.state='watching';tw.pnl+=e.pnl;if(e.pnl>0)tw.wins++;if(tw.open){tw.trades.push({entryT:tw.open.t,exitT:e.t,qty:tw.open.qty,entryPx:tw.open.px,exitPx:e.px,pts:e.pts,pnl:e.pnl,reason:e.reason,sym:tw.open.sym,strategy:tw.open.strategy,dir:tw.open.dir});tw.open=null;}if(b.live){total+=e.pnl;perDayPnl[dayIdx(e.t)]+=e.pnl;}
       if(e.pnl>0&&now>=0){tw.burstT=now;tw.burstCol=C.green;if(b.live||showDemo)dispatchTruck(tw,e.pnl,now);}
       if(e.pnl<0&&now>=0){ if(b.live||showDemo) dispatchTruck(tw,e.pnl,now,true); else {tw.burstT=now;tw.burstCol=C.red;} }
       push(`<b>${b.name}</b> ${fmtT(e.t)} <span class="${e.pnl>0?'up':'dn'}">${e.pnl>0?'target':'stop'} ${fmt$(e.pnl)} · ${e.pts>0?'+':''}${e.pts} pts</span>`);}
@@ -618,10 +618,10 @@ function renderDrawer(force){
   g.globalAlpha=1;g.fillStyle='#162030';g.fillRect(0,cv.height-5,cv.width,1);
   // trade list
   let html='',lastDay=-1;
-  if(tw.open){html+=`<div class="trade"><div class="l open">open · ${tw.open.qty} MNQ @ ${tw.open.px.toLocaleString()}</div><div class="r open">in trade</div><div class="m">entered ${fmtTs(tw.open.t)}</div><div class="m r">${fmtD(tw.open.t)}</div></div>`;}
+  if(tw.open){html+=`<div class="trade"><div class="l open">open · ${tw.open.qty} ${tw.open.sym||'MNQ'} @ ${tw.open.px.toLocaleString()}${tw.open.strategy?' · '+tw.open.strategy:''}</div><div class="r open">in trade</div><div class="m">entered ${fmtTs(tw.open.t)}</div><div class="m r">${fmtD(tw.open.t)}</div></div>`;}
   for(let i=T.length-1;i>=0;i--){const t=T[i];const d=dayIdx(t.exitT);if(d!==lastDay){html+=`<div class="trade" style="border:0;padding:0"><div class="day">${days[d].toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',timeZone:'UTC'})}</div></div>`;lastDay=d;}
     const up=t.pnl>0, hold=Math.round((t.exitT-t.entryT)/60000);
-    html+=`<div class="trade"><div class="l">${t.qty} MNQ · ${t.entryPx.toLocaleString()} → ${t.exitPx.toLocaleString()}</div><div class="r ${up?'up':'dn'}">${fmt$(t.pnl)}</div><div class="m">${fmtTs(t.entryT)} → ${fmtTs(t.exitT)} · ${hold}m · ${t.reason}</div><div class="m r ${up?'up':'dn'}">${t.pts>0?'+':''}${t.pts} pts</div></div>`;}
+    html+=`<div class="trade"><div class="l">${t.qty} ${t.sym||'MNQ'}${t.dir==='SHORT'?' short':''} · ${t.entryPx.toLocaleString()} → ${t.exitPx.toLocaleString()}${t.strategy?' <i style="color:var(--violet)">· '+t.strategy+'</i>':''}</div><div class="r ${up?'up':'dn'}">${fmt$(t.pnl)}</div><div class="m">${fmtTs(t.entryT)} → ${fmtTs(t.exitT)} · ${hold}m · ${t.reason}</div><div class="m r ${up?'up':'dn'}">${t.pts>0?'+':''}${t.pts} pts</div></div>`;}
   if(!html) html='<div class="trade"><div class="m">No trades yet today.</div></div>';
   document.getElementById('dList').innerHTML=html;
 }
