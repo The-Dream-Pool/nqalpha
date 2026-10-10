@@ -457,7 +457,7 @@ var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 function fmt(n){if(Math.abs(n)>=1e6)return(n/1e6).toFixed(2)+"M";if(Math.abs(n)>=1e3)return Math.round(n/1e3)+"K";return""+n;}
 function fmtD(n){return"$"+n.toLocaleString();}
 function fmtM(i){if(!ML[i])return"Month "+(i+1);var p=ML[i].split("-");return MN[parseInt(p[1])-1]+" "+p[0];}
-var CITY_BUILD='202610082237';
+var CITY_BUILD='202610100658';
 function showPage(id,fromHistory){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});document.getElementById(id).classList.add('active');window.scrollTo(0,0);syncLoginLock();
   // keep the browser/phone back button inside the site: back from a login page returns to the homepage
   try{ if(!fromHistory){ if(id==='homePage'){ history.replaceState({page:'homePage'},'',location.pathname); } else { history.pushState({page:id},'',location.pathname+'#'+id.replace('Page','')); } } }catch(e){}
