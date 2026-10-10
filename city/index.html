@@ -699,7 +699,7 @@ document.getElementById('exitCine').onclick=()=>setCine(false);
 
 /* ─── url params: ?day=14&bot=alpha&cine=1&speed=900&paused=1 ─── */
 function applyUrlParams(){ const u=new URLSearchParams(location.search);
-  const demoBtn=document.getElementById('spdDemo'); demoBtn.dataset.s=String(Math.ceil(T_TOTAL/120));
+  const demoBtn=document.getElementById('spdDemo'); const runSecs=FORCE_PUBLIC?60:120; demoBtn.dataset.s=String(Math.ceil(T_TOTAL/runSecs)); demoBtn.textContent=FORCE_PUBLIC?'1-min run':'2-min run';
   if((PUBLIC||FORCE_PUBLIC)&&!u.get('speed')) demoBtn.click();
   const sp=u.get('speed'); if(sp&&document.querySelector(`.spd[data-s="${sp}"]`)) document.querySelector(`.spd[data-s="${sp}"]`).click();
   const d=parseInt(u.get('day')); if(d>=1&&d<=days.length){ seek((d-1)*SESSION_S); lastDi=d-1; }
