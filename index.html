@@ -6792,7 +6792,8 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     bh.appendChild(chapterHead('03','The long-term data · simulated','Five years.<br><em>Every regime.</em>','The same four strategies, simulated across 60 months of historical MNQ data from 2021 to 2026.'));
     c3.appendChild(bh);
     if(secb)secb.style.display='none',c3.appendChild(secb);
-    [g4,s8,eq,mb,yr,simw,paper].forEach(function(n){if(n)c3.appendChild(n);});
+    if(s8){[].forEach.call(s8.querySelectorAll('.stat-sm'),function(b){var l=b.querySelector('.sl');if(l&&/^(AVG WINNER|AVG LOSER|WORST MONTH|BEST MONTH)$/.test(l.textContent.trim()))b.remove();});}
+    [g4,s8,eq,yr,mb,simw,paper].forEach(function(n){if(n)c3.appendChild(n);});
 
     /* 04 STRATEGIES */
     var c4=chapter('x-strats','x-c-strats');
@@ -6860,7 +6861,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     // equity curve draws itself left→right
     var eq=document.getElementById('eqChart');
     if(eq&&!eq.__rv){eq.__rv=true;eq.classList.add('x-eq-hide');
-      var io2=new IntersectionObserver(function(es){if(es[0].isIntersecting){io2.disconnect();eq.classList.add('x-eq-draw');}},{threshold:.35});io2.observe(eq);}
+      var io2=new IntersectionObserver(function(es){if(es[0].isIntersecting){io2.disconnect();eq.classList.add('x-eq-draw');}},{threshold:.3});io2.observe(eq.parentElement||eq);setTimeout(function(){if(!eq.classList.contains('x-eq-draw')){var r=eq.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0)eq.classList.add('x-eq-draw');}},4000);}
   }
   var io=null;
   function wire(root){
