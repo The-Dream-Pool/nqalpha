@@ -1021,6 +1021,61 @@ body::after{z-index:-1;}
 @media (max-width:640px){.x-qa summary{padding:16px 16px;font-size:15px;}.x-qa-a{padding:0 16px 18px;font-size:14px;}}
 .x-links a:focus{outline:none;}
 .x-links a:focus-visible{outline:1px solid rgba(0,232,162,.55);outline-offset:2px;}
+/* single membership panel */
+.x-perk-one{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:center;padding:36px 38px!important;}
+.x-perk-one h4{font-size:clamp(24px,2.4vw,32px)!important;margin-bottom:14px!important;}
+.x-perk-one p{margin:0!important;font-size:15px!important;max-width:620px;}
+.x-perk-one .x-one-r ul{border-top:none!important;padding:0 0 0 32px!important;border-left:1px solid rgba(255,255,255,.07);gap:16px!important;}
+.x-perk-one li{font-size:14.5px!important;}
+@media (max-width:900px){.x-perk-one{grid-template-columns:1fr;gap:22px;padding:26px 22px!important;}.x-perk-one .x-one-r ul{padding:18px 0 0!important;border-left:none;border-top:1px solid rgba(255,255,255,.07)!important;}}
+
+/* ── Private membership: "the circle" ── */
+.x-cs{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:56px;align-items:center;padding:20px 0 10px;}
+.x-cs .x-sub{max-width:560px;margin-top:18px;}
+.x-cs-list{list-style:none;margin:34px 0 0;padding:0;display:grid;gap:0;counter-reset:none;}
+.x-cs-list li{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:20px 0;border-top:1px solid rgba(255,255,255,.07);font-size:15px;line-height:1.7;color:#8FA3AC;}
+.x-cs-list li:last-child{border-bottom:1px solid rgba(255,255,255,.07);}
+.x-cs-list li span{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;line-height:1.3;letter-spacing:-.02em;background:linear-gradient(180deg,#7CFFD0,#00B97F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.x-cs-list li b{color:#F2F6F8;font-weight:700;}
+.x-cs-art{position:relative;aspect-ratio:1;width:100%;max-width:440px;justify-self:center;}
+.x-cs-glow{position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle,rgba(0,232,162,.22),rgba(0,232,162,.04) 55%,transparent 72%);filter:blur(10px);animation:xBreath 6s ease-in-out infinite;}
+@keyframes xBreath{0%,100%{transform:scale(.94);opacity:.8}50%{transform:scale(1.06);opacity:1}}
+.x-cs-art svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.x-cs-art circle{fill:none;stroke:rgba(255,255,255,.07);stroke-width:1;}
+.x-cs-art .r1{stroke:rgba(0,232,162,.18);stroke-dasharray:2 7;transform-origin:200px 200px;animation:xSpin 90s linear infinite;}
+.x-cs-art .r2{stroke:rgba(255,255,255,.09);}
+.x-cs-art .r3{stroke:rgba(0,232,162,.28);}
+@keyframes xSpin{to{transform:rotate(360deg)}}
+.x-orb{position:absolute;inset:0;animation:xSpin linear infinite;}
+.x-orb i{position:absolute;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:#00E8A2;box-shadow:0 0 0 3px rgba(0,232,162,.12),0 0 16px #00E8A2;}
+.x-orb.o1{animation-duration:38s}.x-orb.o1 i{top:4.5%}
+.x-orb.o2{animation-duration:38s;animation-delay:-19s}.x-orb.o2 i{top:4.5%;background:#B8FFE6}
+.x-orb.o3{animation-duration:26s;animation-direction:reverse}.x-orb.o3 i{top:17%;width:7px;height:7px;margin-left:-3.5px}
+.x-orb.o4{animation-duration:26s;animation-direction:reverse;animation-delay:-9s}.x-orb.o4 i{top:17%;width:7px;height:7px;margin-left:-3.5px;background:#7FD8FF;box-shadow:0 0 14px #00C4FF}
+.x-orb.o5{animation-duration:18s;animation-delay:-4s}.x-orb.o5 i{top:29%;width:6px;height:6px;margin-left:-3px}
+.x-cs-core{position:absolute;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:26px;padding:2px;background:linear-gradient(140deg,rgba(255,255,255,.3),rgba(0,232,162,.45) 45%,rgba(255,255,255,.04));box-shadow:0 20px 60px -10px rgba(0,232,162,.35);}
+.x-cs-core .logo-dot{display:block;width:100%!important;height:100%!important;border-radius:24px!important;animation:none!important;box-shadow:none!important;}
+.x-steps{margin-bottom:40px!important;}
+@media (max-width:900px){.x-cs{grid-template-columns:1fr;gap:28px;}.x-cs-art{max-width:300px;order:-1;}}
+@media (max-width:640px){.x-cs-art{max-width:240px;}.x-cs-list li{grid-template-columns:40px 1fr;font-size:14px;}.x-cs-list li span{font-size:18px;}}
+@media (prefers-reduced-motion:reduce){.x-orb,.x-cs-art .r1,.x-cs-glow{animation:none!important;}}
+.x-cs .x-sub strong{color:#F2F6F8;font-weight:700;}
+.x-c-access .cta h2{margin-bottom:28px!important;}
+/* mobile: tighter gap above footer, button centered between title and note */
+@media (max-width:640px){
+  .x-foot{margin-top:28px!important;padding-top:24px!important;}
+  .x-foot::before{height:110px!important;}
+  .x-c-access .cta{padding:44px 18px 40px!important;}
+  .x-c-access .cta h2{margin-bottom:24px!important;}
+  .x-c-access .cta .btn-primary{margin-top:0!important;margin-bottom:0!important;}
+  .x-c-access .cta .btn-primary + div{margin-top:24px!important;}
+}
+/* keep the footer fade behind the Request panel */
+.x-c-access{position:relative;z-index:2;}
+.x-foot{z-index:1;}
+/* keep the footer fade behind the Request panel */
+.x-c-access{position:relative;z-index:2;}
+.x-foot{z-index:1;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -6555,9 +6610,9 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
 
     /* 05 ACCESS */
     var c5=chapter('x-access','x-c-access');
-    var steps=el('div','x-steps','<div class="x-why"><div class="x-why-head"><div class="x-kicker">Why members stay</div><h3 class="x-why-h">Your account. <em class="x-why-em">Our algorithms.</em></h3><p class="x-sub">Plug the software into your own account, set your size, and let four strategies work the Nasdaq while you live your life.</p></div><div class="x-perks"><article class="x-perk"><div class="x-perk-top"><div class="x-perk-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="x-perk-n">01</div></div><div class="x-perk-tag">Self-directed</div><h4>Your account.<br>Your rules.</h4><p>Everything happens inside your own Tradovate account. You choose the size, you set the risk, and you can switch it off anytime.</p><ul><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Trades execute in <b>your</b> Tradovate account</span></li><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>You set contract size and risk</span></li><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Disconnect anytime and copying stops instantly</span></li></ul></article><article class="x-perk"><div class="x-perk-top"><div class="x-perk-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div class="x-perk-n">02</div></div><div class="x-perk-tag">MNQ · RTH + 24H</div><h4>Hands-off<br>execution.</h4><p>Four proprietary mean-reversion strategies watch Micro E-Mini Nasdaq futures and act the moment price dislocates.</p><ul><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Entries, targets and stops fully automated</span></li><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Four strategies running concurrently</span></li><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Built-in lockout: 2 stops in 10 min pauses entries for 30</span></li></ul></article><article class="x-perk"><div class="x-perk-top"><div class="x-perk-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l5-5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="x-perk-n">03</div></div><div class="x-perk-tag">Aligned incentives</div><h4>We win<br>when you win.</h4><p>After a one-time activation, the subscription is only charged on 30-day cycles that finish profitable.</p><ul><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>First month free</span></li><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Billed only on profitable cycles</span></li><li><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Cancel anytime, no lock-in</span></li></ul></article></div><div class="x-seats"><span class="x-seats-dot"></span><b>Membership is limited.</b><span>Seats are kept deliberately small to protect fill quality. Applications are reviewed in order, typical response under 24 hrs.</span></div></div>');
+    var steps=el('div','x-steps','<section class="x-cs"><div class="x-cs-copy"><div class="x-kicker">Private membership</div><h3 class="x-why-h">Not open to everyone. <em class="x-why-em">By design.</em></h3><p class="x-sub"><strong>We don\u2019t take every account.</strong> The circle stays deliberately exclusive to protect fill quality for the people inside it \u2014 new accounts are reviewed and admitted in order.</p><ol class="x-cs-list"><li><span>01</span><div><b>Earned, not bought.</b> Payment alone doesn’t open the door. Every account is approved before it goes live.</div></li><li><span>02</span><div><b>Built to last.</b> The circle grows slowly on purpose, so the system keeps working the way it was built to.</div></li><li><span>03</span><div><b>Reviewed personally.</b> Every application is read in order to make sure it’s the right fit. Typical response is under 24 hours.</div></li></ol></div><div class="x-cs-art" aria-hidden="true"><div class="x-cs-glow"></div><svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="182" class="r1"/><circle cx="200" cy="200" r="132" class="r2"/><circle cx="200" cy="200" r="84" class="r3"/></svg><div class="x-orb o1"><i></i></div><div class="x-orb o2"><i></i></div><div class="x-orb o3"><i></i></div><div class="x-orb o4"><i></i></div><div class="x-orb o5"><i></i></div><div class="x-cs-core"><span class="logo-dot"></span></div></div></section>');
     c5.appendChild(steps);
-    if(cta)c5.appendChild(cta);
+    if(cta){try{var ch2=cta.querySelector('h2');if(ch2)ch2.textContent='Request Your Seat';var cp=cta.querySelector(':scope > p');if(cp)cp.remove();}catch(e){}c5.appendChild(cta);}
     rest.forEach(function(n){c5.appendChild(n);});
 
     /* FOOTER */
@@ -6591,7 +6646,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     // count-ups: any big standalone number on the home page (skips the live replay)
     var RX=/^([+\-$\s]*)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?([%KM]?)$/;
     var nodes=[].slice.call(root.querySelectorAll('.x-shell *')).filter(function(n){
-      if(n.children.length||n.id||n.closest('#x-replay')||n.closest('canvas')||n.closest('.x-qa')||n.closest('.x-cnum')||n.closest('.x-perk-n'))return false;
+      if(n.children.length||n.id||n.closest('#x-replay')||n.closest('canvas')||n.closest('.x-qa')||n.closest('.x-cnum')||n.closest('.x-perk-n')||n.closest('.x-cs-list'))return false;
       var t=(n.textContent||'').trim();if(t.length>16||!RX.test(t))return false;
       var fs=parseFloat(getComputedStyle(n).fontSize)||0;return fs>=17;
     });
@@ -6636,7 +6691,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(io)io.disconnect();
     io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('x-in');io.unobserve(en.target);}});},{rootMargin:'0px 0px -8% 0px'});
-    root.querySelectorAll('.x-chead,.x-wrap > .card,.x-wrap > .grid4,.x-wrap > .stats8,.x-wrap > .grid3,.x-perk,.x-why-head,.x-wrap > .cta,.x-block-art,.x-terrain').forEach(function(n){
+    root.querySelectorAll('.x-chead,.x-wrap > .card,.x-wrap > .grid4,.x-wrap > .stats8,.x-wrap > .grid3,.x-cs-copy,.x-cs-art,.x-wrap > .cta,.x-block-art,.x-terrain').forEach(function(n){
       n.classList.add('x-rv');
       if(reduce||n.getBoundingClientRect().top<innerHeight)n.classList.add('x-in');else io.observe(n);
     });
