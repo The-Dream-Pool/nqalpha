@@ -702,6 +702,81 @@ nav::after{background:linear-gradient(90deg,transparent,rgba(0,232,162,.35),rgba
 .login-logo > div:first-child{display:none!important;}
 .login-logo > div:last-child{font-size:11px!important;letter-spacing:5px!important;margin-bottom:6px;}
 </style>
+<style id="nq-eng">/* ── 02 · How it works + Guardrails ── */
+.x-eng{position:relative;border-radius:26px;background:linear-gradient(180deg,rgba(12,18,20,.72),rgba(6,10,11,.78));border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:44px 40px 30px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+.x-eng-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:38px;}
+.x-eng-tag{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#7D919C;}
+.x-eng-tag i{width:7px;height:7px;border-radius:50%;background:#00E8A2;box-shadow:0 0 0 4px rgba(0,232,162,.12);animation:xEngPing 2s ease-in-out infinite;}
+@keyframes xEngPing{50%{box-shadow:0 0 0 7px rgba(0,232,162,0);}}
+.x-eng-live{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:#9DEFD2;padding:7px 12px;border-radius:999px;border:1px solid rgba(0,232,162,.2);background:rgba(0,232,162,.05);white-space:nowrap;}
+
+.x-flow{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.x-flow-rail{position:absolute;left:12.5%;right:12.5%;top:31px;height:2px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.1),rgba(255,255,255,.06));border-radius:2px;overflow:hidden;}
+.x-flow-fill{position:absolute;inset:0;transform-origin:left;transform:scaleX(var(--p,0));background:linear-gradient(90deg,rgba(0,232,162,.15),#00E8A2);transition:transform .9s cubic-bezier(.65,0,.35,1);}
+.x-flow-dot{position:absolute;top:50%;left:calc(var(--p,0)*100%);width:42px;height:6px;margin:-3px 0 0 -42px;border-radius:6px;background:linear-gradient(90deg,transparent,#B9FFE6);filter:blur(.4px);transition:left .9s cubic-bezier(.65,0,.35,1);}
+.x-node{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.x-node-ic{position:relative;z-index:1;width:64px;height:64px;border-radius:19px;display:grid;place-items:center;background:linear-gradient(180deg,#121A1C,#0A0F10);border:1px solid rgba(255,255,255,.09);color:#5E747D;transition:color .5s,border-color .5s,background .5s,transform .5s cubic-bezier(.22,1,.36,1);}
+.x-node-ic svg{width:26px;height:26px;}
+.x-node-n{font-family:var(--mono);font-size:10px;letter-spacing:2.5px;color:#4F636B;margin:20px 0 8px;transition:color .5s;}
+.x-node h4{font-family:'Archivo',sans-serif;font-stretch:110%;font-weight:800;font-size:18px;letter-spacing:-.01em;color:#C9D3D8;margin:0 0 10px;transition:color .5s;}
+.x-node p{font-size:13.5px;line-height:1.65;color:#71858F;margin:0 0 16px;max-width:240px;}
+.x-node-chip{margin-top:auto;font-family:var(--mono);font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#4F636B;padding:7px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);transition:all .5s;white-space:nowrap;}
+.x-node.on .x-node-ic{color:#02130D;background:linear-gradient(180deg,#6BFFCD,#00E8A2);border-color:rgba(124,255,208,.9);transform:translateY(-3px);}
+.x-node.on .x-node-n{color:#00E8A2;}
+.x-node.on h4{color:#F4F8FA;}
+.x-node.on .x-node-chip{color:#BFFBE6;border-color:rgba(0,232,162,.32);background:rgba(0,232,162,.08);}
+.x-node.done .x-node-ic{color:#00E8A2;border-color:rgba(0,232,162,.35);}
+.x-node.done .x-node-n{color:#2FA982;}
+.x-node.done h4{color:#E3EAED;}
+.x-eng-note{margin:30px 0 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.06);font-family:var(--mono);font-size:10px;letter-spacing:1.2px;line-height:1.7;color:#4C5F67;text-align:center;}
+
+.x-guard-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:72px 0 26px;}
+.x-guard-head .x-kicker{margin:0 0 12px;}
+.x-guard-h{font-family:'Archivo',sans-serif;font-stretch:108%;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.05;letter-spacing:-.03em;color:#F2F6F8;margin:0;}
+.x-guard-h em{font-style:normal;background:linear-gradient(90deg,#8CFFD6,#00E8A2 60%,#38C7B0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.x-guard-sub{font-size:14px;line-height:1.7;color:#7F939D;max-width:360px;margin:0;}
+.x-guards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.x-guard{position:relative;display:flex;flex-direction:column;padding:24px 22px 18px;border-radius:20px;background:linear-gradient(180deg,rgba(14,20,22,.7),rgba(7,11,12,.75));border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .5s cubic-bezier(.22,1,.36,1),border-color .4s;}
+.x-guard:hover{transform:translateY(-4px);border-color:rgba(0,232,162,.26);}
+.x-guard-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#00E8A2;background:rgba(0,232,162,.07);border:1px solid rgba(0,232,162,.18);margin-bottom:18px;}
+.x-guard-ic svg{width:19px;height:19px;}
+.x-guard h5{font-family:'Archivo',sans-serif;font-stretch:108%;font-weight:800;font-size:16px;letter-spacing:-.005em;color:#EEF3F5;margin:0 0 8px;}
+.x-guard p{font-size:13px;line-height:1.65;color:#768A93;margin:0 0 18px;}
+.x-guard-d{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);font-family:var(--mono);font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:#5FD9B1;}
+
+@media (max-width:1100px){.x-guards{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:900px){
+  .x-eng{padding:30px 22px 22px;border-radius:22px;}
+  .x-eng-top{margin-bottom:26px;}
+  .x-flow{grid-template-columns:1fr;gap:0;}
+  .x-flow-rail{left:31px;right:auto;top:32px;bottom:32px;width:2px;height:auto;}
+  .x-flow-fill{transform-origin:top;transform:scaleY(var(--p,0));background:linear-gradient(180deg,rgba(0,232,162,.15),#00E8A2);}
+  .x-flow-dot{display:none;}
+  .x-node{display:grid;grid-template-columns:64px 1fr;column-gap:18px;text-align:left;align-items:start;padding-bottom:26px;}
+  .x-node:last-child{padding-bottom:0;}
+  .x-node-ic{grid-row:1 / span 4;}
+  .x-node-n{margin:4px 0 6px;}
+  .x-node h4{font-size:17px;margin-bottom:6px;}
+  .x-node p{max-width:none;margin-bottom:12px;font-size:13.5px;}
+  .x-node-chip{justify-self:start;margin-top:0;}
+  .x-guard-head{display:block;margin:52px 0 20px;}
+  .x-guard-sub{margin-top:12px;}
+}
+@media (max-width:640px){
+  .x-eng-top{flex-direction:column;align-items:flex-start;gap:12px;}
+  .x-eng-live{font-size:9.5px;letter-spacing:1.6px;padding:6px 11px;}
+  .x-eng-sep{display:none;}.x-eng-br{display:block;margin-top:2px;}
+  .x-eng-note{line-height:1.8;}
+  .x-guards{grid-template-columns:1fr;gap:10px;}
+  .x-guard{display:grid;grid-template-columns:40px 1fr;column-gap:16px;padding:18px 18px 14px;}
+  .x-guard-ic{grid-row:1 / span 3;margin:0;}
+  .x-guard p{margin-bottom:12px;}
+  .x-guard-d{padding-top:10px;}
+}
+@media (prefers-reduced-motion:reduce){.x-flow-fill,.x-flow-dot,.x-node *{transition:none!important;}.x-eng-tag i{animation:none;}}
+
+.x-eng-ms{color:#5FD9B1;}
+</style>
 <style id="nq-home">/* ═══════════ NQ ALPHA · NEW HOMEPAGE ═══════════ */
 .x-home{--ink:#020605;--line:rgba(255,255,255,.07);--x-pad:clamp(20px,4vw,56px);--x-max:1240px;
   font-family:'Outfit',sans-serif;}
@@ -6572,6 +6647,58 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
   start();
 })();
 </script>
+<script id="nq-eng-js">/* NQ ALPHA · section 02: signal-to-account flow + guardrails */
+(function(){
+  var I={
+    signal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
+    master:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="M7 12l3-3 2 2 4-4"/></svg>',
+    copier:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="5" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.5 12h7M8 10.8l7.8-4.6M8 13.2l7.8 4.6"/></svg>',
+    you:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/></svg>',
+    bracket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 18h16"/><path d="M12 9v6M9.5 11.5L12 9l2.5 2.5"/></svg>',
+    stop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3h7L21 8.5v7L15.5 21h-7L3 15.5v-7z"/><path d="M8 12h8"/></svg>',
+    pause:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></svg>',
+    size:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>',
+    kill:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>',
+    vault:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+    lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 15v2"/></svg>',
+    unplug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7V3M15 7V3"/><path d="M7 7h10v4a5 5 0 0 1-10 0z"/><path d="M12 16v5"/></svg>'
+  };
+  var NODES=[
+    ['signal','01','Signal fires','Four strategies watch MNQ through the session. When price tags a level, the engine fires a signal.','Gamma · Long MNQ'],
+    ['master','02','Master account trades','The order executes first on NQ Alpha’s own live Tradovate account, with take-profit and stop-loss attached.','Bracket attached'],
+    ['copier','03','Copier mirrors it','The trade copier sends the same order to every connected account, sized to the contracts each member sets.','Mirrored · your size'],
+    ['you','04','It lands in your account','The trade opens and closes in your own Tradovate account on its own. You don\u2019t touch a thing.','Zero clicks from you']
+  ];
+  var GUARDS=[
+    ['bracket','Bracket on every order','Take-profit and stop-loss are attached the moment a trade opens. Exits are automatic.','TP + SL on entry'],
+    ['stop','Fixed stop-loss','The stop is fixed at 65 points across all four strategies. It is never widened.','SL · 65 points'],
+    ['pause','Cool-down filter','Two stop-outs inside any 10-minute window pause all new entries for 30 minutes.','2 stops → 30 min pause'],
+    ['size','You set the size','Choose how many contracts per trade, matched to your account. Change it any time.','Contracts · your call'],
+    ['kill','System kill switch','Trading can be paused per strategy or system-wide, and open positions flattened in one action.','Pause · flatten all'],
+    ['vault','Your funds stay put','Your money stays in your own brokerage account. NQ Alpha never holds or moves it.','Non-custodial'],
+    ['lock','Encrypted credentials','Tradovate API credentials are stored encrypted and decrypted in memory only to place a trade.','Encrypted at rest'],
+    ['unplug','Off in one click','Disconnect in the portal and copying stops immediately. Try it first on a free demo account.','Disconnect anytime']
+  ];
+  window.NQSection2=function(){
+    var w=document.createElement('div');w.className='x-eng-wrap';
+    var h='<div class="x-eng"><div class="x-eng-top"><div class="x-eng-tag"><i></i>Signal to fill</div><div class="x-eng-live">Fully automatic · hands-free</div></div><div class="x-flow"><div class="x-flow-rail"><div class="x-flow-fill"></div><div class="x-flow-dot"></div></div>';
+    NODES.forEach(function(n){h+='<div class="x-node"><div class="x-node-ic">'+I[n[0]]+'</div><div class="x-node-n">STEP '+n[1]+'</div><h4>'+n[2]+'</h4><p>'+n[3]+'</p><div class="x-node-chip">'+n[4]+'</div></div>';});
+    h+='</div><p class="x-eng-note"><span class="x-eng-ms">40 ms</span> average fill time<span class="x-eng-sep"> · </span><span class="x-eng-br">signal to your account</span></p></div>';
+    w.innerHTML=h;
+    var flow=w.querySelector('.x-flow'),nodes=w.querySelectorAll('.x-node'),step=-1,timer=0,vis=false;
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var rail=w.querySelector('.x-flow-rail');
+    function fitRail(){var ics=w.querySelectorAll('.x-node-ic');if(!ics.length)return;if(innerWidth>900){rail.style.top='';rail.style.bottom='';rail.style.height='';return;}
+      var fr=flow.getBoundingClientRect(),a=ics[0].getBoundingClientRect(),b=ics[ics.length-1].getBoundingClientRect();
+      rail.style.top=(a.top+a.height/2-fr.top)+'px';rail.style.height=((b.top+b.height/2)-(a.top+a.height/2))+'px';rail.style.bottom='auto';}
+    addEventListener('resize',fitRail);setTimeout(fitRail,60);setTimeout(fitRail,1200);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitRail);
+    function set(i){step=i;for(var k=0;k<nodes.length;k++){nodes[k].classList.toggle('on',k===i);nodes[k].classList.toggle('done',k<i);}flow.style.setProperty('--p',i<0?0:i/(nodes.length-1));}
+    function tick(){if(!vis)return;var nx=step+1;if(nx>=nodes.length){timer=setTimeout(function(){set(-1);timer=setTimeout(tick,700);},2400);return;}set(nx);timer=setTimeout(tick,nx===nodes.length-1?1600:1250);}
+    if(reduce){set(3);}else if('IntersectionObserver' in window){new IntersectionObserver(function(es){vis=es[0].isIntersecting;clearTimeout(timer);if(vis){set(-1);timer=setTimeout(tick,350);}},{threshold:.35}).observe(flow);}else set(3);
+    return w;
+  };
+})();
+</script>
 <script id="nq-home-js">/* NQ ALPHA · new homepage shell. Rearranges the original components (with their handlers/IDs intact) into the new layout. */
 (function(){
   var LOGO_SEL='.logo-dot';
@@ -6615,7 +6742,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     /* NAV */
     var xn=el('nav','x-nav');
     xn.innerHTML='<a class="x-brand" href="#" onclick="window.scrollTo({top:0,behavior:\'smooth\'});return false"><span class="logo-dot"></span><span class="x-word">NQ ALPHA</span></a>'+
-      '<div class="x-links"><a href="#x-live">Live</a><a href="#x-replay">Replay</a><a href="#x-backtest">Backtest</a><a href="#x-strats">Strategies</a><a href="#x-access">Access</a></div>';
+      '<div class="x-links"><a href="#x-live">Live</a><a href="#x-replay">'+(window.NQSection2?'How it works':'Replay')+'</a><a href="#x-backtest">Backtest</a><a href="#x-strats">Strategies</a><a href="#x-access">Access</a></div>';
     if(navBtns){navBtns.classList.add('x-navbtns');xn.appendChild(navBtns);}
     shell.appendChild(xn);
 
@@ -6649,9 +6776,15 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     /* 02 REPLAY */
     var c2=chapter('x-replay','x-c-replay');
     var split=el('div','x-split');
+    if(window.NQSection2){
+      split.appendChild(chapterHead('02','How it works','From signal<br><em>to your account.</em>','<b style="color:#E8F0F2;font-weight:600">Fully automatic, start to finish.</b> Every trade is found, placed and closed in your Tradovate account for you. You don\u2019t have to watch charts, click buttons or touch a thing.'));
+      c2.appendChild(split);c2.appendChild(window.NQSection2());
+      if(replay){replay.style.display='none';c2.appendChild(replay);}
+    }else{
     split.appendChild(chapterHead('02','Signal replay · simulated','Watch the<br><em>engine work.</em>','A real session replayed tick by tick. Gamma tracks MNQ and fires when price tags the line.'));
     c2.appendChild(split);
     if(replay)c2.appendChild(replay);
+    }
 
     /* 03 BACKTEST */
     var c3=chapter('x-backtest','x-c-backtest');
