@@ -1224,6 +1224,10 @@ body::after{z-index:-1;}
 @media (max-width:640px){.x-more-btn{flex-wrap:wrap;gap:6px 12px;padding:16px 18px;}.x-more-sub{order:3;width:100%;text-align:center;}}
 .x-more-in > *{margin-top:0!important;margin-bottom:22px!important;}
 .x-more-in > *:last-child{margin-bottom:4px!important;}
+/* CTA: button centered between heading and fine print */
+.x-c-access .cta > .btn-primary{display:block;margin:0 auto!important;}
+.x-c-access .cta > .btn-primary + div{margin-top:28px!important;}
+@media (max-width:640px){.x-c-access .cta > .btn-primary + div{margin-top:24px!important;}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -6811,10 +6815,10 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     if(secb)secb.style.display='none',c3.appendChild(secb);
     if(s8){[].forEach.call(s8.querySelectorAll('.stat-sm'),function(b){var l=b.querySelector('.sl');if(l&&/^(AVG WINNER|AVG LOSER|WORST MONTH|BEST MONTH)$/.test(l.textContent.trim()))b.remove();});}
     [g4,s8].forEach(function(n){if(n)c3.appendChild(n);});
-    if(eq||yr||mb){
+    if(eq||yr||mb||paper){
       var more=el('div','x-more');
-      more.innerHTML='<button type="button" class="x-more-btn" aria-expanded="false"><span class="x-more-lbl">View full historical data</span><span class="x-more-sub">Equity curve · annual · monthly</span><svg class="x-more-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="x-more-body"><div class="x-more-in"></div></div>';
-      var inn=more.querySelector('.x-more-in');[eq,yr,mb].forEach(function(n){if(n)inn.appendChild(n);});
+      more.innerHTML='<button type="button" class="x-more-btn" aria-expanded="false"><span class="x-more-lbl">View full historical data</span><span class="x-more-sub">Equity · annual · monthly · paper</span><svg class="x-more-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="x-more-body"><div class="x-more-in"></div></div>';
+      var inn=more.querySelector('.x-more-in');[eq,yr,mb,paper].forEach(function(n){if(n)inn.appendChild(n);});
       var btn=more.querySelector('.x-more-btn');
       btn.addEventListener('click',function(){var open=!more.classList.contains('open');more.classList.toggle('open',open);btn.setAttribute('aria-expanded',open);
         more.querySelector('.x-more-lbl').textContent=open?'Hide historical data':'View full historical data';
@@ -6822,7 +6826,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
       });
       c3.appendChild(more);
     }
-    [simw,paper].forEach(function(n){if(n)c3.appendChild(n);});
+    if(simw)c3.appendChild(simw);
 
     /* 04 STRATEGIES */
     var c4=chapter('x-strats','x-c-strats');
