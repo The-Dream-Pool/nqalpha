@@ -6742,7 +6742,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     /* NAV */
     var xn=el('nav','x-nav');
     xn.innerHTML='<a class="x-brand" href="#" onclick="window.scrollTo({top:0,behavior:\'smooth\'});return false"><span class="logo-dot"></span><span class="x-word">NQ ALPHA</span></a>'+
-      '<div class="x-links"><a href="#x-live">Live</a><a href="#x-replay">'+(window.NQSection2?'How it works':'Replay')+'</a><a href="#x-backtest">Backtest</a><a href="#x-strats">Strategies</a><a href="#x-access">Access</a></div>';
+      '<div class="x-links"><a href="#x-live">Live</a><a href="#x-replay">Execution</a><a href="#x-backtest">Backtest</a><a href="#x-strats">Strategies</a><a href="#x-access">Access</a></div>';
     if(navBtns){navBtns.classList.add('x-navbtns');xn.appendChild(navBtns);}
     shell.appendChild(xn);
 
