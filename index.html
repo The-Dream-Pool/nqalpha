@@ -1125,6 +1125,13 @@ body::after{z-index:-1;}
   .x-foot{margin-top:48px!important;}
 }
 .x-c-live .x-chead + div{margin-bottom:22px!important;}
+
+/* ── No green hover cloud ── */
+.card::after,.stat::after,.strat-card::after,.yr-card::after,.tlog-toggle::after,.dash-card::after,.login-form::after,.x-step::after,.x-perk::before{display:none!important;background:none!important;}
+.x-c-strats .strat-card.x-sc::before{display:none!important;}
+.stat:hover,.yr-card:hover,.stat-sm:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.07)!important;}
+.x-c-strats .strat-card.x-sc:hover{box-shadow:none!important;}
+.x-c-strats .strat-card.x-sc:hover .strat-name{text-shadow:none!important;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -6760,11 +6767,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     window.addEventListener('scroll',onS,{passive:true});onS();
   }
 
-  // Spotlight on glass surfaces (all pages)
-  document.addEventListener('pointermove',function(e){
-    var t=e.target&&e.target.closest?e.target.closest('.card,.stat,.strat-card,.yr-card,.tlog-toggle,.dash-card,.login-form,.x-step,.x-perk'):null;
-    if(!t)return;var r=t.getBoundingClientRect();t.style.setProperty('--mx',(e.clientX-r.left)+'px');t.style.setProperty('--my',(e.clientY-r.top)+'px');
-  },{passive:true});
+
 
 
   try{
