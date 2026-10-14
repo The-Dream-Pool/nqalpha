@@ -1207,6 +1207,23 @@ body::after{z-index:-1;}
 .stat:hover,.yr-card:hover,.stat-sm:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.07)!important;}
 .x-c-strats .strat-card.x-sc:hover{box-shadow:none!important;}
 .x-c-strats .strat-card.x-sc:hover .strat-name{text-shadow:none!important;}
+
+/* ── Historical data toggle ── */
+.x-more{margin:22px 0 22px;}
+.x-more-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:14px;padding:18px 22px;border-radius:18px;cursor:pointer;background:linear-gradient(180deg,rgba(14,20,22,.72),rgba(7,11,12,.78));border:1px solid rgba(0,232,162,.2);color:#EEF3F5;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:border-color .35s,transform .35s cubic-bezier(.22,1,.36,1);font:inherit;}
+.x-more-btn:hover{border-color:rgba(0,232,162,.45);transform:translateY(-2px);}
+.x-more-lbl{font-family:'Archivo',sans-serif;font-stretch:108%;font-weight:800;font-size:16px;letter-spacing:-.005em;}
+.x-more-sub{font-family:var(--mono);font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:#6E838C;}
+.x-more-ch{width:18px;height:18px;color:#00E8A2;transition:transform .45s cubic-bezier(.22,1,.36,1);}
+.x-more.open .x-more-ch{transform:rotate(180deg);}
+.x-more-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s cubic-bezier(.22,1,.36,1);}
+.x-more.open .x-more-body{grid-template-rows:1fr;}
+.x-more-in{overflow:hidden;min-height:0;}
+.x-more.open .x-more-in{padding-top:18px;}
+.x-more:not(.open) .x-more-in{visibility:hidden;transition:visibility 0s .6s;}
+@media (max-width:640px){.x-more-btn{flex-wrap:wrap;gap:6px 12px;padding:16px 18px;}.x-more-sub{order:3;width:100%;text-align:center;}}
+.x-more-in > *{margin-top:0!important;margin-bottom:22px!important;}
+.x-more-in > *:last-child{margin-bottom:4px!important;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -6793,7 +6810,19 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     c3.appendChild(bh);
     if(secb)secb.style.display='none',c3.appendChild(secb);
     if(s8){[].forEach.call(s8.querySelectorAll('.stat-sm'),function(b){var l=b.querySelector('.sl');if(l&&/^(AVG WINNER|AVG LOSER|WORST MONTH|BEST MONTH)$/.test(l.textContent.trim()))b.remove();});}
-    [g4,s8,eq,yr,mb,simw,paper].forEach(function(n){if(n)c3.appendChild(n);});
+    [g4,s8].forEach(function(n){if(n)c3.appendChild(n);});
+    if(eq||yr||mb){
+      var more=el('div','x-more');
+      more.innerHTML='<button type="button" class="x-more-btn" aria-expanded="false"><span class="x-more-lbl">View full historical data</span><span class="x-more-sub">Equity curve · annual · monthly</span><svg class="x-more-ch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="x-more-body"><div class="x-more-in"></div></div>';
+      var inn=more.querySelector('.x-more-in');[eq,yr,mb].forEach(function(n){if(n)inn.appendChild(n);});
+      var btn=more.querySelector('.x-more-btn');
+      btn.addEventListener('click',function(){var open=!more.classList.contains('open');more.classList.toggle('open',open);btn.setAttribute('aria-expanded',open);
+        more.querySelector('.x-more-lbl').textContent=open?'Hide historical data':'View full historical data';
+        if(open){setTimeout(function(){try{drawEqChart();}catch(e){}var c=document.getElementById('eqChart');if(c){c.classList.remove('x-eq-draw');void c.offsetWidth;c.classList.add('x-eq-hide');requestAnimationFrame(function(){c.classList.add('x-eq-draw');});}},80);}
+      });
+      c3.appendChild(more);
+    }
+    [simw,paper].forEach(function(n){if(n)c3.appendChild(n);});
 
     /* 04 STRATEGIES */
     var c4=chapter('x-strats','x-c-strats');
@@ -6841,7 +6870,7 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     // count-ups: any big standalone number on the home page (skips the live replay)
     var RX=/^([+\-$\s]*)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?([%KM]?)$/;
     var nodes=[].slice.call(root.querySelectorAll('.x-shell *')).filter(function(n){
-      if(n.children.length||n.id||n.closest('#x-replay')||n.closest('canvas')||n.closest('.x-qa')||n.closest('.x-cnum')||n.closest('.x-perk-n')||n.closest('.x-cs-list'))return false;
+      if(n.children.length||n.id||n.closest('#x-replay')||n.closest('.x-more')||n.closest('canvas')||n.closest('.x-qa')||n.closest('.x-cnum')||n.closest('.x-perk-n')||n.closest('.x-cs-list'))return false;
       var t=(n.textContent||'').trim();if(t.length>16||!RX.test(t))return false;
       var fs=parseFloat(getComputedStyle(n).fontSize)||0;return fs>=17;
     });
