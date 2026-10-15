@@ -701,6 +701,10 @@ nav::after{background:linear-gradient(90deg,transparent,rgba(0,232,162,.35),rgba
 /* login screens: no logo or wordmark, just the portal label */
 .login-logo > div:first-child{display:none!important;}
 .login-logo > div:last-child{font-size:11px!important;letter-spacing:5px!important;margin-bottom:6px;}
+/* ── Same galaxy as the homepage behind logins, vault and dashboards ── */
+.page.active.login-mode::before{display:none!important;}
+#loginPage,#adminPage,#dashPage{background:transparent!important;}
+#vaultGate{background:radial-gradient(ellipse 60% 50% at 50% 45%,rgba(0,232,162,.05),transparent 70%),rgba(2,3,3,.35)!important;}
 </style>
 <style id="nq-eng">/* ── 02 · How it works + Guardrails ── */
 .x-eng{position:relative;border-radius:26px;background:linear-gradient(180deg,rgba(12,18,20,.72),rgba(6,10,11,.78));border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:44px 40px 30px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
