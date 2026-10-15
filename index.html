@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://api.nqalpha.com; media-src 'self' data: blob:; connect-src 'self' https://api.nqalpha.com; frame-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -26,7 +28,7 @@
 <meta name="twitter:description" content="Automated mean-reversion trading software for MNQ futures.">
 <meta name="twitter:image" content="https://nqalpha.com/og_image.png?v=5">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js" defer></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js" integrity="sha384-JZigAjwiaZtkUbA44CWkPaT3iBb/mU5pO6QOANp+OqHd4q+1+7MG1kzp2OOP9ZfP" crossorigin="anonymous" defer></script>
 <style>
 :root{--bg:#04080D;--sf:#0A1018;--sf2:#0E1620;--bd:#162030;--green:#00E8A2;--cyan:#00C4FF;--gold:#F0C040;--red:#FF4466;--text:#B8C8D8;--muted:#405060;--white:#F0F4F8;--font:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -1255,6 +1257,51 @@ body::after{z-index:-1;}
 <div id="adminPage" class="page"></div>
 
 <script>
+/* nq-sec *//* NQ ALPHA · client-side hardening
+   1) Neutralise HTML/JS metacharacters in every API response before the app renders it (stops stored XSS
+      from signup names, referral text, promo data, server error messages, etc.).
+   2) Only allow redirects to Stripe-hosted checkout/billing pages.
+   3) Refuse to run inside a frame on another site (clickjacking). */
+(function(){
+  // typographic look-alikes: render normally everywhere (HTML, attributes, inline handlers, textContent, canvas)
+  // but can never open a tag, close an attribute or break out of a JS string.
+  var MAP={'<':'\u2039','>':'\u203A','"':'\u201D',"'":'\u2019','`':'\u2018','\\':'\u29F5'};
+  var RX=/[<>"'`\\]/g,HAS=/[<>"'`\\]/;
+  function esc(s){return String(s).replace(RX,function(c){return MAP[c];});}
+  var KEEP={token:1,checkout_url:1,url:1};
+  function clean(v,d,k){
+    if(d>14||v==null)return v;
+    if(typeof v==='string')return (k&&KEEP[k])?v:(HAS.test(v)?esc(v):v);
+    if(Array.isArray(v)){for(var i=0;i<v.length;i++)v[i]=clean(v[i],d+1);return v;}
+    if(typeof v==='object'){for(var p in v)if(Object.prototype.hasOwnProperty.call(v,p))v[p]=clean(v[p],d+1,p);}
+    return v;
+  }
+  function wrap(name){
+    var o=window[name];if(typeof o!=='function'||o.__nqSafe)return;
+    var w=async function(){
+      try{return clean(await o.apply(this,arguments),0);}
+      catch(e){if(e&&typeof e.message==='string'){try{e.message=esc(e.message);}catch(_){}}throw e;}
+    };
+    w.__nqSafe=true;window[name]=w;
+  }
+  wrap('apiCall');wrap('adminApi');
+  window.nqEsc=esc;
+
+  window.nqSafeNav=function(u){
+    try{
+      var x=new URL(u,location.href);
+      if(x.protocol==='https:'&&/(^|\.)stripe\.com$/i.test(x.hostname)){location.href=x.href;return;}
+    }catch(e){}
+    alert('This payment link could not be verified. Please contact support.');
+  };
+
+  if(window.top!==window.self){
+    try{if(window.top.location.hostname!==location.hostname)throw 0;}
+    catch(e){document.documentElement.style.display='none';try{window.top.location=location.href;}catch(_){}}
+  }
+})();
+
+
 // ─── SIZING REQUIREMENTS ($2,000 per contract, ±$200 tolerance) ───
 var REQ_PER_CONTRACT=2000;
 var BAL_TOLERANCE=200;
@@ -3005,7 +3052,7 @@ h+='<div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">Speed up your approval</div>';
 h+='</div>';
 
-h+='<a href="https://www.tradovate.com" target="_blank" style="background:linear-gradient(135deg,var(--sf),var(--sf2));border:1px solid var(--bd);border-radius:12px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.transform=\'none\'">';
+h+='<a href="https://www.tradovate.com" target="_blank" rel="noopener noreferrer" style="background:linear-gradient(135deg,var(--sf),var(--sf2));border:1px solid var(--bd);border-radius:12px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor=\'rgba(240,192,64,.3)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.transform=\'none\'">';
 h+='<div style="font-size:24px;margin-bottom:10px">◈</div>';
 h+='<div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px">Get Tradovate Ready</div>';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5">Set up API credentials</div>';
@@ -3814,7 +3861,7 @@ h+='<div style="font-size:13px;color:var(--text);line-height:1.8">';
 h+='<p style="margin-bottom:12px">To get started with NQ Alpha, you\'ll need a Tradovate brokerage account. Tradovate is a commission-free futures trading platform that supports API-based trading.</p>';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">HOW TO SIGN UP:</div>';
 h+='<div style="margin-bottom:8px;padding-left:16px;border-left:2px solid var(--bd)">';
-h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Go to <a href="https://www.tradovate.com" target="_blank" style="color:var(--cyan);text-decoration:underline">tradovate.com</a> and click <span style="color:var(--white);font-weight:600">"Open Account"</span></p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Go to <a href="https://www.tradovate.com" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:underline">tradovate.com</a> and click <span style="color:var(--white);font-weight:600">"Open Account"</span></p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">2.</span> Choose <span style="color:var(--white);font-weight:600">"Individual Account"</span> (most common for personal trading)</p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">3.</span> Fill in your personal information — name, address, Social Security number, and employment details</p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">4.</span> Complete the trading experience questionnaire honestly</p>';
@@ -3841,7 +3888,7 @@ h+='<p style="margin-bottom:0"><span style="color:var(--white);font-weight:600">
 h+='</div>';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin:14px 0 10px">HOW TO FUND:</div>';
 h+='<div style="margin-bottom:8px;padding-left:16px;border-left:2px solid var(--bd)">';
-h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">2.</span> Click on your <span style="color:var(--white);font-weight:600">Account</span> in the top-right corner</p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">3.</span> Select <span style="color:var(--white);font-weight:600">"Fund Account"</span> or <span style="color:var(--white);font-weight:600">"Deposit"</span></p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">4.</span> Choose ACH or Wire, enter your bank details</p>';
@@ -3862,7 +3909,7 @@ h+='<div style="font-size:13px;color:var(--text);line-height:1.8">';
 h+='<p style="margin-bottom:12px">The API allows NQ Alpha to place trades on your behalf. You must have a <span style="color:var(--gold);font-weight:600">funded live account with at least $1,000</span> to access API settings.</p>';
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">SUBSCRIBE TO API ACCESS:</div>';
 h+='<div style="margin-bottom:12px;padding-left:16px;border-left:2px solid var(--bd)">';
-h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">2.</span> Click the <span style="color:var(--white);font-weight:600">gear icon</span> (⚙️) in the top-right corner to open <span style="color:var(--white);font-weight:600">Application Settings</span></p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">3.</span> Navigate to <span style="color:var(--white);font-weight:600">"API Access"</span> in the sidebar</p>';
 h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">4.</span> Click <span style="color:var(--white);font-weight:600">"Subscribe"</span> to enable the API Access add-on ($25/month)</p>';
@@ -3930,7 +3977,7 @@ h+='</div>';
 
 h+='<div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px;margin-bottom:10px">STEP 2 — OPEN TRADOVATE:</div>';
 h+='<div style="margin-bottom:16px;padding-left:16px;border-left:2px solid var(--bd)">';
-h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
+h+='<p style="margin-bottom:8px"><span style="color:var(--white);font-weight:600">1.</span> Log in to the <a href="https://trader.tradovate.com" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:underline">Tradovate Web Trader</a></p>';
 h+='<p style="margin-bottom:0"><span style="color:var(--white);font-weight:600">2.</span> Make sure you\'re on the main trading screen with your chart visible</p>';
 h+='</div>';
 
@@ -4415,7 +4462,7 @@ var faqs=[
 {q:'What\'s the difference between Multiplier and Fixed mode?',a:'<strong>Multiplier mode</strong> scales your contracts as a percentage of the master account. If the master trades more contracts, your size scales up proportionally. <strong>Fixed mode</strong> always trades the exact number of contracts you specify, regardless of what the master does. Fixed mode gives you more predictable risk.'},
 ]},
 {cat:'Tradovate Connection',color:'var(--green)',items:[
-{q:'How do I get Tradovate API credentials?',a:'<strong>1)</strong> Log in to <a href="https://trader.tradovate.com" target="_blank" style="color:var(--cyan)">trader.tradovate.com</a>. <strong>2)</strong> Go to <strong>Settings → API Access</strong>. <strong>3)</strong> Create a new API key — you\'ll get a <em>Username</em>, <em>App ID</em>, <em>CID</em>, and <em>API Secret</em>. <strong>4)</strong> Copy all four values into the Connect tab in your NQ Alpha dashboard. Your password is your Tradovate account password.'},
+{q:'How do I get Tradovate API credentials?',a:'<strong>1)</strong> Log in to <a href="https://trader.tradovate.com" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">trader.tradovate.com</a>. <strong>2)</strong> Go to <strong>Settings → API Access</strong>. <strong>3)</strong> Create a new API key — you\'ll get a <em>Username</em>, <em>App ID</em>, <em>CID</em>, and <em>API Secret</em>. <strong>4)</strong> Copy all four values into the Connect tab in your NQ Alpha dashboard. Your password is your Tradovate account password.'},
 {q:'Should I use Demo or Live mode?',a:'We recommend starting on <strong>Demo</strong> to see the system in action with paper money. Once you\'re comfortable, switch to <strong>Live</strong> to trade with real capital. You can switch between modes at any time from the Connect tab.'},
 {q:'Are my Tradovate credentials secure?',a:'Yes. Your credentials are encrypted at rest using AES-256 encryption before being stored. They are only decrypted in memory when the trade copier needs to execute a trade on your behalf. We never store plaintext passwords.'},
 {q:'What happens if my connection drops?',a:'If your Tradovate session expires or disconnects, the copier automatically attempts to reconnect every 60 seconds. If it can\'t reconnect, no trades will be placed on your account until the connection is restored. You\'ll see your connection status on the Overview tab.'},
@@ -4581,7 +4628,7 @@ async function checkoutProduct(product){
 try{
   var resp = await apiCall('POST','/api/checkout/product',{investor_id:SESSION.investor.id,product:product});
   if(resp.checkout_url){
-    window.location.href = resp.checkout_url;
+    nqSafeNav(resp.checkout_url);
   } else if(resp.error){
     alert(resp.error);
   } else {
@@ -4595,7 +4642,7 @@ async function checkoutSubscription(){
 try{
   var resp = await apiCall('POST','/api/checkout/subscription',{investor_id:SESSION.investor.id});
   if(resp.checkout_url){
-    window.location.href = resp.checkout_url;
+    nqSafeNav(resp.checkout_url);
   } else if(resp.error){
     alert(resp.error);
   } else {
@@ -4626,7 +4673,7 @@ SESSION._cardChecked=false;
 try{
   var data = await apiCall('POST','/billing/setup-payment');
   if(data.url){
-    window.location.href = data.url;
+    nqSafeNav(data.url);
   } else {
     alert('Unable to set up payment. Please try again.');
   }
