@@ -708,6 +708,12 @@ nav::after{background:linear-gradient(90deg,transparent,rgba(0,232,162,.35),rgba
 
 #adminPage{--gold:#EAF2F5;}
 #adminPage button[onclick*="doAdminLogin"]{background:linear-gradient(180deg,#FFFFFF,#C9D5DB)!important;color:#0A1012!important;box-shadow:0 6px 26px rgba(234,242,245,.22)!important;}
+/* admin inputs: star white focus instead of green */
+#adminPage .field input:focus,#adminPage input:focus{border-color:rgba(234,242,245,.45)!important;box-shadow:0 0 0 4px rgba(234,242,245,.08)!important;outline:none!important;}
+/* no grain overlay: it read as a uniform dot grid over the galaxy */
+body::after{display:none!important;}
+/* investor login: button spacing matches the gap between fields */
+#loginPage #tosField[style*="none"] ~ .login-submit{margin-top:12px!important;}
 </style>
 <style id="nq-eng">/* ── 02 · How it works + Guardrails ── */
 .x-eng{position:relative;border-radius:26px;background:linear-gradient(180deg,rgba(12,18,20,.72),rgba(6,10,11,.78));border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:44px 40px 30px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
@@ -6591,8 +6597,8 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
     var vs='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     var fs=[
 'precision highp float;uniform vec2 r;uniform float t;uniform float s;uniform vec2 m;uniform float px;',
-'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
-'vec2 h2(vec2 p){return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);}',
+'float h(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}',
+'vec2 h2(vec2 p){vec3 q=fract(vec3(p.xyx)*vec3(.1031,.1030,.0973));q+=dot(q,q.yzx+33.33);return fract((q.xx+q.yz)*q.zy);}',
 'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
 'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*n(p);p=p*2.03+1.7;a*=.5;}return v;}',
 'vec3 stars(vec2 uv,float dens,float sz,float seed,float tw,float thr){',
@@ -6961,8 +6967,10 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
   }catch(e){console.error('[x-home]',e);}
 })();
 /* admin accent: star white */
-(function(){var C='234,242,245';function fix(root){if(!root)return;root.querySelectorAll('[style]').forEach(function(e){var s=e.getAttribute('style');if(s&&/240,\s*192,\s*64|#d4a830|#F0C040|#F5D57A/i.test(s))e.setAttribute('style',s.replace(/240,\s*192,\s*64/g,C).replace(/#d4a830/ig,'#C9D5DB').replace(/#F0C040|#F5D57A/ig,'#EAF2F5'));});}
-var ap=document.getElementById('adminPage');function run(){fix(ap);}
+(function(){var C='234,242,245',HX='#EAF2F5',DK='#C9D5DB',ATTR=['style','onmouseover','onmouseout','onfocus','onblur'];
+function rw(v){return v.replace(/240,\s*192,\s*64/g,C).replace(/#d4a830/ig,DK).replace(/#F0C040|#F5D57A/ig,HX);}
+function fix(root){if(!root)return;root.querySelectorAll('*').forEach(function(e){ATTR.forEach(function(a){var v=e.getAttribute(a);if(v&&/240,\s*192,\s*64|#d4a830|#F0C040|#F5D57A/i.test(v))e.setAttribute(a,rw(v));});});}
+var ap=document.getElementById('adminPage');var busy=false;function run(){if(busy)return;busy=true;fix(ap);busy=false;}
 new MutationObserver(run).observe(ap,{childList:true,subtree:true});run();})();
 </script>
 </body>
