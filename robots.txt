@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /city/
+
+Sitemap: https://nqalpha.com/sitemap.xml
