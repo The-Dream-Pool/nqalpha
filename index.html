@@ -6874,6 +6874,138 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
   window.NQVolLevel=level;
 })();
 </script>
+<script id="nq-bench-js">/* NQ ALPHA · equity curve with NASDAQ-100 benchmark line
+   GET /market/nasdaq -> { points: [["YYYY-MM-DD", close], ...] }
+   Benchmark $ = starting equity × NASDAQ-100 % change since the day before the first trade. */
+(function(){
+  var B={pts:null,loading:false,failed:false};
+  function loadBench(){
+    if(B.pts||B.loading||B.failed||typeof apiCall!=='function')return;
+    B.loading=true;
+    apiCall('GET','/market/nasdaq').then(function(d){
+      var p=(d&&d.points)||[];
+      B.pts=p.filter(function(x){return x&&typeof x[0]==='string'&&isFinite(+x[1]);}).map(function(x){return [x[0],+x[1]];});
+      if(!B.pts.length){B.pts=null;B.failed=true;}
+    }).catch(function(){B.failed=true;}).then(function(){B.loading=false;if(B.pts)drawLiveEqChart();});
+  }
+  function day(t){return String(t||'').slice(0,10);}
+  function closeOnOrBefore(d,strict){
+    var p=B.pts,lo=0,hi=p.length-1,ans=-1;
+    while(lo<=hi){var m=(lo+hi)>>1;if(strict?p[m][0]<d:p[m][0]<=d){ans=m;lo=m+1;}else hi=m-1;}
+    return ans<0?null:p[ans][1];
+  }
+  function startEquity(lastCum){
+    var inv=(window.SESSION&&SESSION.investor)||{},ab=inv.account_balance||{};
+    var bal=+ab.balance;
+    if(isFinite(bal)&&bal>0){var s=bal-lastCum;if(s>0)return s;}
+    return Math.max(1,+inv.contracts||1)*2000;
+  }
+  function benchSeries(data){
+    if(!B.pts||!data.length||!data[0].time)return null;
+    var base=closeOnOrBefore(day(data[0].time),true)||closeOnOrBefore(day(data[0].time),false);
+    if(!base)return null;
+    var eq=startEquity(data[data.length-1].cumulative||0);
+    var pct=[],usd=[];
+    for(var i=0;i<data.length;i++){
+      var c=closeOnOrBefore(day(data[i].time),false)||base;
+      var p=(c-base)/base*100;pct.push(p);usd.push(eq*p/100);
+    }
+    return {pct:pct,usd:usd};
+  }
+  function fmtP(p){return (p>=0?'+':'−')+Math.abs(p).toFixed(2)+'%';}
+
+  window.drawLiveEqChart=function(){
+    var c=document.getElementById('liveEqChart');if(!c)return;
+    var data=window._pnlEqCurve||[];if(data.length<2)return;
+    loadBench();
+    var x=c.getContext('2d');var dpr=window.devicePixelRatio||1;
+    var r=c.getBoundingClientRect();c.width=r.width*dpr;c.height=220*dpr;x.scale(dpr,dpr);
+    var W=r.width,H=220;
+    var vals=data.map(function(d){return d.cumulative;});
+    var bs=benchSeries(data),bv=bs?bs.usd:[];
+    var all=vals.concat(bv);
+    var mn=Math.min.apply(null,all.concat([0])),mx=Math.max.apply(null,all);
+    var rng=mx-mn||1;
+    var pad={t:bs?30:20,r:80,b:30,l:10},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+    function X(i){return pad.l+(i/(vals.length-1))*cw;}
+    function Y(v){return pad.t+((mx-v)/rng)*ch;}
+
+    x.strokeStyle='#182030';x.lineWidth=0.5;
+    for(var i=0;i<=5;i++){
+      var y=pad.t+(ch/5)*i;
+      x.beginPath();x.moveTo(pad.l,y);x.lineTo(W-pad.r,y);x.stroke();
+      var v=mx-(rng/5)*i;
+      x.fillStyle='#3d5570';x.font='10px DM Mono';x.textAlign='right';
+      x.fillText((v>=0?'+':'')+fmtD(Math.round(v)),W-pad.r+70,y+4);
+    }
+    if(mn<0){
+      var zy=Y(0);
+      x.strokeStyle='#3d5570';x.setLineDash([4,4]);
+      x.beginPath();x.moveTo(pad.l,zy);x.lineTo(W-pad.r,zy);x.stroke();
+      x.setLineDash([]);
+    }
+
+    var last=vals[vals.length-1];
+    var col=last>=0?'#00E8A2':'#FF4466',gColor=last>=0?'0,232,162':'255,68,102';
+    x.beginPath();
+    for(var i=0;i<vals.length;i++){if(i===0)x.moveTo(X(i),Y(vals[i]));else x.lineTo(X(i),Y(vals[i]));}
+    x.lineTo(pad.l+cw,pad.t+ch);x.lineTo(pad.l,pad.t+ch);x.closePath();
+    var g=x.createLinearGradient(0,pad.t,0,H);
+    g.addColorStop(0,'rgba('+gColor+',0.15)');g.addColorStop(1,'rgba('+gColor+',0)');
+    x.fillStyle=g;x.fill();
+
+    // NASDAQ-100 benchmark (dashed, behind your line)
+    if(bs){
+      x.beginPath();
+      for(var i=0;i<bv.length;i++){if(i===0)x.moveTo(X(i),Y(bv[i]));else x.lineTo(X(i),Y(bv[i]));}
+      x.strokeStyle='rgba(234,242,245,0.8)';x.lineWidth=1.6;x.setLineDash([5,4]);x.stroke();x.setLineDash([]);
+      var bly=Y(bv[bv.length-1]);
+      x.beginPath();x.arc(pad.l+cw,bly,3.5,0,Math.PI*2);x.fillStyle='#EAF2F5';x.fill();
+    }
+
+    x.beginPath();
+    for(var i=0;i<vals.length;i++){if(i===0)x.moveTo(X(i),Y(vals[i]));else x.lineTo(X(i),Y(vals[i]));}
+    x.strokeStyle=col;x.lineWidth=2;x.stroke();
+    var lx=pad.l+cw,ly=Y(last);
+    x.beginPath();x.arc(lx,ly,5,0,Math.PI*2);x.fillStyle=col;x.fill();
+    x.beginPath();x.arc(lx,ly,5,0,Math.PI*2);x.strokeStyle='#04080D';x.lineWidth=2;x.stroke();
+
+    // Legend
+    if(bs){
+      x.font='10px DM Mono';x.textAlign='left';x.textBaseline='middle';
+      var ly0=10,lx0=pad.l;
+      x.strokeStyle=col;x.lineWidth=2;x.beginPath();x.moveTo(lx0,ly0);x.lineTo(lx0+16,ly0);x.stroke();
+      x.fillStyle='#9FB0B8';x.fillText('You',lx0+22,ly0);
+      var lx1=lx0+22+x.measureText('You').width+18;
+      x.strokeStyle='#EAF2F5';x.lineWidth=1.6;x.setLineDash([5,4]);x.beginPath();x.moveTo(lx1,ly0);x.lineTo(lx1+16,ly0);x.stroke();x.setLineDash([]);
+      var nl='NASDAQ-100 '+fmtP(bs.pct[bs.pct.length-1]);
+      x.fillStyle='#9FB0B8';x.fillText(nl,lx1+22,ly0);
+      x.textBaseline='alphabetic';
+    }
+
+    c.onmousemove=function(e){
+      var rect=c.getBoundingClientRect();var rx=e.clientX-rect.left-pad.l;
+      var idx=Math.round((rx/cw)*(vals.length-1));
+      if(idx<0||idx>=vals.length){window.drawLiveEqChart();return;}
+      window.drawLiveEqChart();
+      var hx=X(idx),hy=Y(vals[idx]);
+      x.strokeStyle='rgba(0,232,162,0.25)';x.lineWidth=1;x.setLineDash([3,3]);
+      x.beginPath();x.moveTo(hx,pad.t);x.lineTo(hx,pad.t+ch);x.stroke();x.setLineDash([]);
+      if(bs){var by=Y(bv[idx]);x.beginPath();x.arc(hx,by,3.5,0,Math.PI*2);x.fillStyle='#EAF2F5';x.fill();}
+      x.beginPath();x.arc(hx,hy,6,0,Math.PI*2);x.fillStyle='rgba(0,232,162,0.15)';x.fill();
+      x.beginPath();x.arc(hx,hy,4,0,Math.PI*2);x.fillStyle=vals[idx]>=0?'#00E8A2':'#FF4466';x.fill();
+      x.beginPath();x.arc(hx,hy,4,0,Math.PI*2);x.strokeStyle='#04080D';x.lineWidth=1.5;x.stroke();
+      var d=data[idx],tx=Math.min(Math.max(hx,60),pad.l+cw-60),ty=Math.max(hy-14,pad.t+(bs?30:16));
+      x.fillStyle=vals[idx]>=0?'#00E8A2':'#FF4466';x.font='bold 12px DM Mono';x.textAlign='center';
+      x.fillText((vals[idx]>=0?'+':'')+fmtD(vals[idx]),tx,ty);
+      x.fillStyle='#405060';x.font='9px DM Mono';
+      x.fillText((d.strategy||'')+' '+(d.result||''),tx,ty-14);
+      if(bs){x.fillStyle='#EAF2F5';x.fillText('NDX '+fmtP(bs.pct[idx])+' · '+(bv[idx]>=0?'+':'')+fmtD(Math.round(bv[idx])),tx,ty-26);}
+    };
+    c.onmouseleave=function(){window.drawLiveEqChart();};
+  };
+})();
+</script>
 <script id="nq-eng-js">/* NQ ALPHA · section 02: signal-to-account flow + guardrails */
 (function(){
   var I={
