@@ -733,6 +733,46 @@ body::after{display:none!important;}
 /* investor login: button spacing matches the gap between fields */
 #loginPage #tosField[style*="none"] ~ .login-submit{margin-top:12px!important;}
 </style>
+<style id="nq-vol">/* ── Investor portal: volatility button ── */
+.nqvol-wrap{position:relative;}
+.nqvol{--c:#7D919C;--cb:rgba(255,255,255,.12);display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 13px 0 11px;border-radius:999px;border:1px solid var(--cb);background:rgba(255,255,255,.03);color:#E6EEF2;font-family:var(--mono);font-size:10px;letter-spacing:1.6px;text-transform:uppercase;cursor:pointer;transition:border-color .3s,background .3s;white-space:nowrap;}
+.nqvol:hover{background:rgba(255,255,255,.06);}
+.nqvol .nqvol-k{color:#7D919C;}
+.nqvol .nqvol-lv{color:var(--c);font-weight:500;}
+.nqvol-dot{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent),0 0 10px var(--c);flex:none;}
+.nqvol-low{--c:#00E8A2;--cb:rgba(0,232,162,.35);}
+.nqvol-medium{--c:#F5C451;--cb:rgba(245,196,81,.38);}
+.nqvol-high{--c:#FF4D6A;--cb:rgba(255,77,106,.4);}
+.nqvol-high .nqvol-dot{animation:nqvolPulse 1.6s ease-in-out infinite;}
+@keyframes nqvolPulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 0%,transparent),0 0 14px var(--c);}}
+.nqvol-pop{--c:#7D919C;position:absolute;right:0;top:calc(100% + 10px);width:330px;z-index:60;border-radius:18px;padding:18px 18px 14px;background:linear-gradient(180deg,rgba(12,18,20,.97),rgba(6,10,11,.98));border:1px solid rgba(255,255,255,.09);box-shadow:0 24px 60px rgba(0,0,0,.6);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .2s,transform .2s;text-transform:none;letter-spacing:0;}
+.nqvol-pop.open{opacity:1;transform:none;pointer-events:auto;}
+.nqvol-top{display:flex;align-items:center;gap:9px;font-size:13.5px;color:#F2F6F8;}
+.nqvol-top b{font-weight:700;}
+.nqvol-act{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--c);padding:4px 8px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 40%,transparent);background:color-mix(in srgb,var(--c) 10%,transparent);}
+.nqvol-big{font-family:'Archivo',sans-serif;font-stretch:112%;font-weight:800;font-size:34px;line-height:1;color:var(--c);margin:16px 0 14px;display:flex;align-items:baseline;gap:10px;}
+.nqvol-big small{font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#64808A;}
+.nqvol-meter{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;height:8px;}
+.nqvol-seg{border-radius:4px;}
+.nqvol-seg.s1{background:rgba(0,232,162,.55);}.nqvol-seg.s2{background:rgba(245,196,81,.55);}.nqvol-seg.s3{background:rgba(255,77,106,.55);}
+.nqvol-meter i{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(0,0,0,.6),0 0 12px var(--c);transition:left .6s cubic-bezier(.22,1,.36,1);}
+.nqvol-scale{display:flex;justify-content:space-between;margin-top:7px;font-family:var(--mono);font-size:9px;color:#5E747D;}
+.nqvol-note{margin:14px 0 12px;font-size:12.5px;line-height:1.6;color:#9FB0B8;}
+.nqvol-legend{display:grid;gap:6px;padding:12px 0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+.nqvol-legend div{display:grid;grid-template-columns:14px 64px 1fr auto;align-items:center;font-size:12px;color:#C9D3D8;}
+.nqvol-legend em{font-style:normal;font-family:var(--mono);font-size:10px;color:#64808A;}
+.nqvol-legend b{font-weight:500;font-size:11px;color:#8FA3AC;}
+.nqvol-legend .d{width:7px;height:7px;border-radius:50%;}
+.nqvol-legend .d.low{background:#00E8A2}.nqvol-legend .d.medium{background:#F5C451}.nqvol-legend .d.high{background:#FF4D6A}
+.nqvol-foot{margin-top:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.6px;color:#4F636B;}
+@media (max-width:640px){
+  .nqvol{height:30px;padding:0 10px;gap:6px;}
+  .nqvol .nqvol-k{display:none;}
+  .nqvol-pop{position:fixed;left:12px;right:12px;top:72px;width:auto;}
+}
+.nqvol-pop.nqvol-low{--c:#00E8A2}.nqvol-pop.nqvol-medium{--c:#F5C451}.nqvol-pop.nqvol-high{--c:#FF4D6A}
+.nqvol-pop{background:#070C0D!important;}
+</style>
 <style id="nq-eng">/* ── 02 · How it works + Guardrails ── */
 .x-eng{position:relative;border-radius:26px;background:linear-gradient(180deg,rgba(12,18,20,.72),rgba(6,10,11,.78));border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:44px 40px 30px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
 .x-eng-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:38px;}
@@ -6747,6 +6787,91 @@ document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:f
   document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else revive();});
   addEventListener('pageshow',function(){revive();});
   start();
+})();
+</script>
+<script id="nq-vol-js">/* NQ ALPHA · investor portal: market volatility button
+   Reads GET /market/volatility -> { pct_move, ref_price, last_price, updated_at }
+   Level (absolute % move of NQ from the session open):
+     < 0.50%        LOW     -> more trades for the bot
+     0.50% - <1.00% MEDIUM  -> fewer trades
+     >= 1.00%       HIGH    -> little to no trades                                   */
+(function(){
+  var LV={
+    low:{k:'low',name:'Low',head:'Low volatility',note:'Ideal conditions. Expect more trades from the bot.',act:'More trades'},
+    medium:{k:'medium',name:'Medium',head:'Medium volatility',note:'Choppier market. The bot trades more selectively.',act:'Fewer trades'},
+    high:{k:'high',name:'High',head:'High volatility',note:'Large moves. The bot stands aside, so expect little to no trades.',act:'Little to no trades'}
+  };
+  function level(p){var a=Math.abs(p);return a<0.5?LV.low:(a<1?LV.medium:LV.high);}
+  var state={data:null,err:false,timer:0,open:false};
+  function fmtPct(p){return (p>=0?'+':'−')+Math.abs(p).toFixed(2)+'%';}
+  function fmtPx(x){return x==null||isNaN(x)?'—':Number(x).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function ago(t){if(!t)return '';var s=(Date.now()-new Date(t).getTime())/1000;if(!(s>=0))return '';return s<90?'just now':Math.round(s/60)+' min ago';}
+
+  function render(){
+    var b=document.getElementById('nqVolBtn'),pop=document.getElementById('nqVolPop');if(!b)return;
+    var d=state.data;
+    var w=document.getElementById('nqVolWrap');if(w)w.style.display=(state.err&&!state.data)?'none':'';
+    if(!d||typeof d.pct_move!=='number'||isNaN(d.pct_move)){
+      b.className='nqvol nqvol-na';b.querySelector('.nqvol-lv').textContent=state.err?'Unavailable':'Loading';
+      if(pop)pop.querySelector('.nqvol-body').innerHTML='<p class="nqvol-note">Volatility data is not available right now.</p>';
+      return;
+    }
+    var L=level(d.pct_move);
+    b.className='nqvol nqvol-'+L.k;b.querySelector('.nqvol-lv').textContent=L.name;
+    b.setAttribute('aria-label','Market volatility: '+L.name);
+    if(!pop)return;
+    var a=Math.min(Math.abs(d.pct_move),1.5),pos=(a/1.5*100).toFixed(1);
+    pop.className='nqvol-pop nqvol-'+L.k+(state.open?' open':'');
+    pop.querySelector('.nqvol-body').innerHTML=
+      '<div class="nqvol-top"><span class="nqvol-dot"></span><b>'+L.head+'</b><span class="nqvol-act">'+L.act+'</span></div>'+
+      '<div class="nqvol-big">'+fmtPct(d.pct_move)+'<small>NQ move this session</small></div>'+
+      '<div class="nqvol-meter"><div class="nqvol-seg s1"></div><div class="nqvol-seg s2"></div><div class="nqvol-seg s3"></div><i style="left:'+pos+'%"></i></div>'+
+      '<div class="nqvol-scale"><span>0%</span><span>0.5%</span><span>1.0%</span><span>1.5%+</span></div>'+
+      '<p class="nqvol-note">'+L.note+'</p>'+
+      '<div class="nqvol-legend">'+
+        '<div><span class="d low"></span>Low<em>under 0.5%</em><b>More trades</b></div>'+
+        '<div><span class="d medium"></span>Medium<em>0.5% to 1%</em><b>Fewer trades</b></div>'+
+        '<div><span class="d high"></span>High<em>1% or more</em><b>Little to none</b></div>'+
+      '</div>'+
+      '<div class="nqvol-foot">Open '+fmtPx(d.ref_price)+' · Last '+fmtPx(d.last_price)+(d.updated_at?' · '+ago(d.updated_at):'')+'</div>';
+  }
+  async function load(){
+    try{
+      if(typeof apiCall!=='function')throw 0;
+      var d=await apiCall('GET','/market/volatility');
+      if(d&&d.pct_move!=null)d.pct_move=parseFloat(d.pct_move);
+      state.data=d;state.err=false;
+    }catch(e){state.err=true;}
+    render();
+  }
+  function toggle(e){
+    e.stopPropagation();state.open=!state.open;
+    var pop=document.getElementById('nqVolPop');if(pop)pop.classList.toggle('open',state.open);
+    var b=document.getElementById('nqVolBtn');if(b)b.setAttribute('aria-expanded',state.open);
+    if(state.open)load();
+  }
+  document.addEventListener('click',function(e){
+    if(!state.open)return;var w=document.getElementById('nqVolWrap');
+    if(w&&!w.contains(e.target)){state.open=false;var p=document.getElementById('nqVolPop');if(p)p.classList.remove('open');}
+  });
+  function mount(){
+    var nav=document.querySelector('#dashPage > nav');if(!nav||document.getElementById('nqVolWrap'))return;
+    var right=nav.querySelector(':scope > div:last-child');if(!right)return;
+    var w=document.createElement('div');w.id='nqVolWrap';w.className='nqvol-wrap';
+    w.innerHTML='<button type="button" id="nqVolBtn" class="nqvol nqvol-na" aria-haspopup="dialog" aria-expanded="false"><span class="nqvol-dot"></span><span class="nqvol-k">Volatility</span><span class="nqvol-lv">Loading</span></button>'+
+      '<div id="nqVolPop" class="nqvol-pop" role="dialog" aria-label="Market volatility"><div class="nqvol-body"></div></div>';
+    right.insertBefore(w,right.firstChild);
+    w.querySelector('#nqVolBtn').addEventListener('click',toggle);
+    state.open=false;load();clearInterval(state.timer);
+    state.timer=setInterval(function(){var dp=document.getElementById('dashPage');if(dp&&dp.classList.contains('active')&&!document.hidden)load();},60000);
+  }
+  function watch(){
+    var dp=document.getElementById('dashPage');if(!dp)return;
+    new MutationObserver(function(){if(!document.getElementById('nqVolWrap'))mount();}).observe(dp,{childList:true});
+    mount();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+  window.NQVolLevel=level;
 })();
 </script>
 <script id="nq-eng-js">/* NQ ALPHA · section 02: signal-to-account flow + guardrails */
